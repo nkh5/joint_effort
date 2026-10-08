@@ -1,0 +1,55 @@
+# amw_joy.yaml - turns controller (Pico) input into velocity commands V
+#
+# Pico -> joy indices:
+#   axes: 0 = stick X, 1 = stick Y, 2 = twist, 3 = encoder level
+#   buttons: 7 = TRANSLATE flag, 8 = ROTATE flag (latched by Pico, panel button 1 toggles)
+#
+# V = joystick (-1..1) * scale + offset; linear in m/s, angular in rad/s.
+
+joy_node:
+  ros__parameters:
+    device_id: 0
+    deadzone: 0.0 # level axis must pass through untouched; stick deadband is done on the Pico
+    autorepeat_rate: 50.0 # Hz; keeps publishing while the stick is held still
+    coalesce_interval_ms: 1
+
+joy_teleop:
+  ros__parameters:
+
+    translate:
+      type: topic
+      interface_type: geometry_msgs/msg/TwistStamped
+      topic_name: /amw/cmd_raw
+      deadman_buttons: [7]
+      axis_mappings:
+        twist-linear-x:
+          axis: 0
+          scale: 0.02 
+          offset: 0.0
+        twist-linear-y:
+          axis: 1
+          scale: 0.02
+          offset: 0.0
+        twist-linear-z:
+          axis: 2
+          scale: 0.02
+          offset: 0.0
+        header-frame_id:
+          value: 'base_link'
+
+    rotate:
+      type: topic
+      interface_type: geometry_msgs/msg/TwistStamped
+      topic_name: /amw/cmd_raw
+      deadman_buttons: [8]
+      axis_mappings:
+        twist-angular-z:
+          axis: 0
+          scale: 0.5 
+          offset: 0.0
+        twist-angular-y:
+          axis: 1
+          scale: 0.5 
+          offset: 0.0
+        header-frame_id:
+          value: 'base_link'
