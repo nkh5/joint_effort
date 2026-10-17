@@ -1,0 +1,578 @@
+{
+  "scope": "Cold mock endpoint feasibility above provisional PCB. Software +/-30 deg travel with 0.04 rad margin; free shaft roll. No path or complete workspace proof.",
+  "target_tip_z_m": 0.172,
+  "pcb_top_z_m": 0.152,
+  "geometric_solution_count": 7,
+  "candidate_count": 27,
+  "position_tolerance_m": 0.001,
+  "pointing_tolerance_deg": 1,
+  "elapsed_s": 3.267961210000067,
+  "targets": [
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.015434604358465588,
+      "best_pointing_error_rad": 0.13280017541211867,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.0011727013091079694,
+      "best_pointing_error_rad": 0.010868876566231764,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.006917546958043043,
+      "best_pointing_error_rad": 0.1614087970230142,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.016707111251798783,
+      "best_pointing_error_rad": 0.13495006396284775,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.0014321118471482214,
+      "best_pointing_error_rad": 0.01280764661231628,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.006877186688001587,
+      "best_pointing_error_rad": 0.16180797299409044,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.016995516275700187,
+      "best_pointing_error_rad": 0.12744107365031446,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          0.07274482803568945,
+          -0.027861372908516355,
+          0.48359554952600947,
+          0.06592544693267166,
+          -0.36623813153326884
+        ],
+        "position_error_m": 0.0009194159861525495,
+        "pointing_error_rad": 0.00792571907395592,
+        "score": 0.0013228326233180449
+      },
+      "best_position_error_m": 0.0009194159861525495,
+      "best_pointing_error_rad": 0.00792571907395592,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.04744352090356497
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.00692294715658856,
+      "best_pointing_error_rad": 0.16430643297109546,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.10135958612814472,
+          0.1716005893277324,
+          0.40520639834213673,
+          -0.10119861173543857,
+          0.023193090122305176
+        ],
+        "position_error_m": 1.468587572459985e-09,
+        "pointing_error_rad": 0.0,
+        "score": 1.9360922401629423e-09
+      },
+      "best_position_error_m": 1.468587572459985e-09,
+      "best_pointing_error_rad": 0.0,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.04879546681712149
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.09378733011519905,
+          0.2683770601403924,
+          0.08752719497069408,
+          -0.09517950150457712,
+          -0.45828688811088386
+        ],
+        "position_error_m": 8.348310760669711e-08,
+        "pointing_error_rad": 1.63159209621976e-06,
+        "score": 2.1282781103943476e-07
+      },
+      "best_position_error_m": 8.348310760669711e-08,
+      "best_pointing_error_rad": 1.63159209621976e-06,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.03382040311344109
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.009907386459922408,
+      "best_pointing_error_rad": 0.2144826582104754,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.01613133191115567,
+          0.16432797446632938,
+          0.4101334061565852,
+          -0.018756111024023744,
+          0.022356202586666162
+        ],
+        "position_error_m": 7.729806511757865e-10,
+        "pointing_error_rad": 2.1073424255447017e-08,
+        "score": 9.805368702080834e-10
+      },
+      "best_position_error_m": 7.729806511757865e-10,
+      "best_pointing_error_rad": 2.1073424255447017e-08,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.050623933286912365
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.013621410755409942,
+          0.2603664943639909,
+          0.0980905033564311,
+          -0.017621099947645123,
+          -0.45540942811744006
+        ],
+        "position_error_m": 3.275730804696821e-08,
+        "pointing_error_rad": 6.488424854599721e-07,
+        "score": 8.445563519730616e-08
+      },
+      "best_position_error_m": 3.275730804696821e-08,
+      "best_pointing_error_rad": 6.488424854599721e-07,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.03568036345275478
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.009831823516442448,
+      "best_pointing_error_rad": 0.21438254921392932,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          0.0694062919539783,
+          0.16912094615179518,
+          0.3986963125980529,
+          0.06380427380466601,
+          0.015248925787967656
+        ],
+        "position_error_m": 2.862297265215949e-10,
+        "pointing_error_rad": 1.4901161193847656e-08,
+        "score": 3.5668789735707645e-10
+      },
+      "best_position_error_m": 2.862297265215949e-10,
+      "best_pointing_error_rad": 1.4901161193847656e-08,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.05214700225562913
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          0.06682753927610101,
+          0.2663886889397698,
+          0.08826781005887867,
+          0.059970278576955104,
+          -0.4592876423653954
+        ],
+        "position_error_m": 1.0698735070860721e-07,
+        "pointing_error_rad": 2.1555754226338277e-06,
+        "score": 2.7992463565177175e-07
+      },
+      "best_position_error_m": 1.0698735070860721e-07,
+      "best_pointing_error_rad": 2.1555754226338277e-06,
+      "collision_check": {
+        "valid": true,
+        "contacts": []
+      },
+      "min_scaled_task_singular_value_m": 0.036736815541029165
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.009902762222279378,
+      "best_pointing_error_rad": 0.21676921896719112,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.0016744586080092404,
+      "best_pointing_error_rad": 0.0077201430227712385,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.011545102304258734,
+      "best_pointing_error_rad": 0.07540899762448287,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.01665542946081348,
+      "best_pointing_error_rad": 0.2897017681706727,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.001099484942640981,
+      "best_pointing_error_rad": 0.004258045298197865,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.011577772179365543,
+      "best_pointing_error_rad": 0.0707133075398424,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.016747505839982423,
+      "best_pointing_error_rad": 0.2887262053301867,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.0016921778891058582,
+      "best_pointing_error_rad": 0.005289793314275217,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.01245965083882803,
+      "best_pointing_error_rad": 0.07085551572566062,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.01764087514098866,
+      "best_pointing_error_rad": 0.28864801842726723,
+      "collision_check": null
+    }
+  ],
+  "collision_free_geometric_solution_count": 7,
+  "urdf_sha256": "265457c061d3833aece922bf64e2b1abdd4e091ea48ce5f42f90b4e60e2bbd2f"
+}

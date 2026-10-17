@@ -1,0 +1,101 @@
+{
+  "scope": "CAD iron-only cold mock. Provisional workspace, travel, calibration and collision hulls. No physical driver.",
+  "base_xyz_m": [
+    0,
+    0,
+    0.031
+  ],
+  "base_yaw_rad": 3.141592653589793,
+  "joint_limits_deg": [
+    -30,
+    30
+  ],
+  "proposed_ids": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "proposed_encoder_zero_counts": [
+    2048,
+    2048,
+    2048,
+    2048,
+    2048
+  ],
+  "proposed_encoder_sign": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "external_joint_to_servo_ratio": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "calibration_confirmed": false,
+  "provisional_servo_supply_voltage_v": 12.6,
+  "motor_variant": "Provisional 12.6V supply per user; matching motor-variant datasheet pending",
+  "supplied_datasheet_variant_voltage_range_v": [
+    4,
+    7.4
+  ],
+  "mock_effort_status": "0.49 Nm is a software/mock metadata choice, not a rating for the provisional 12.6V variant",
+  "encoder_counts_per_output_turn": 4096,
+  "internal_motor_reduction_not_external_ratio": 345,
+  "mock_max_joint_velocity_rad_s": 0.15,
+  "mock_max_joint_acceleration_rad_s2": 0.3,
+  "mock_effort_limit_nm": 0.49,
+  "task_orientation_length_m": 0.12,
+  "task_damping_m": 0.002,
+  "task_min_singular_value_m": 0.003,
+  "task_max_linear_speed_m_s": 0.003,
+  "task_max_angular_speed_rad_s": 0.03,
+  "table_center_m": [
+    0.25,
+    0,
+    -0.025
+  ],
+  "table_size_m": [
+    1.0,
+    0.8,
+    0.05
+  ],
+  "pcb_center_m": [
+    0.43,
+    0.04,
+    0.151
+  ],
+  "pcb_size_m": [
+    0.12,
+    0.08,
+    0.002
+  ],
+  "pcb_fixture_center_m": [
+    0.43,
+    0.04,
+    0.075
+  ],
+  "pcb_fixture_size_m": [
+    0.12,
+    0.08,
+    0.15
+  ],
+  "initial_positions_rad": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "proposed_future_mechanical_stop_deg": [
+    -35,
+    35
+  ],
+  "mechanical_stops_status": "Concept only, not modeled hardware or fabrication approval; validate +/-35 deg against the physical assembly before installing stops"
+}

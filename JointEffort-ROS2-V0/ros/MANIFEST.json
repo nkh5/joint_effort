@@ -1,0 +1,724 @@
+{
+  "files": {
+    ".gitignore": {
+      "bytes": 103,
+      "sha256": "ab8daecef7b3f40b5916cafd4e592ef39814df5177a89aa8f4f3089ae5805dab"
+    },
+    "README.md": {
+      "bytes": 1828,
+      "sha256": "28a675b2f31ed3f32689166c920ddd1b090c702ffca77935df628f1a0eeafe73"
+    },
+    "THIRD_PARTY.md": {
+      "bytes": 829,
+      "sha256": "cbf7de48ce7f09e03797df8e27b5074925a44729a6f3c13f4039b2dadbbef241"
+    },
+    "docs/CODE.md": {
+      "bytes": 3106,
+      "sha256": "ea140b0f01aa620e1ffea1df3696daa39d8e7988b9d7805d204ffd6f9f69f6f0"
+    },
+    "docs/FILES.md": {
+      "bytes": 16861,
+      "sha256": "9e28e2826065ccd5519b7638d95a5be80ea72922df2a7b6af29e397934a82856"
+    },
+    "docs/README.md": {
+      "bytes": 358,
+      "sha256": "02bf2ad6898cd7f1f67cee680b66a120f50598684abd2b9ede3a7c7ee0f532b9"
+    },
+    "docs/SETUP.md": {
+      "bytes": 1767,
+      "sha256": "0a44e08543a908c2900a2be503974b0ceb1df6cbcf65042da035bfd6f35d45dc"
+    },
+    "iron_prototype/DECISIONS.md": {
+      "bytes": 3311,
+      "sha256": "13e72e20df634c52a4ecdebdd5ae6a9c2a4cbed02500a6b65f92365697a375f2"
+    },
+    "iron_prototype/PICO-CONTROLLER-GUIDE.md": {
+      "bytes": 3343,
+      "sha256": "483b0cf825a8efbf788d0d06945cb4f32a64efb690c6c1bbd88a9a15c6c486ab"
+    },
+    "iron_prototype/README.md": {
+      "bytes": 2567,
+      "sha256": "a72eb02ad5dfe57eb7fbdd187a60b9650885f11b4a89ab89389a5d8af62ab92f"
+    },
+    "iron_prototype/calibration/README.md": {
+      "bytes": 1420,
+      "sha256": "2425a1a746a933241866e7f5fe8306955225675d7129fdaedf877061b9cc2e74"
+    },
+    "iron_prototype/calibration/measurements-template.csv": {
+      "bytes": 31,
+      "sha256": "39ed79cc2cab80cf5abe96fdd7ac0b0972bdfebe52138e49b143c32d1b00f184"
+    },
+    "ros2_ws/.gitignore": {
+      "bytes": 62,
+      "sha256": "45fdae53c235101e70ebe7b727abc2fcd92b898922894e17292c550dfb07a5a9"
+    },
+    "ros2_ws/README.md": {
+      "bytes": 550,
+      "sha256": "95f55b014e6c875bc0d762fdaa86d236ea074915f6b5aa5771f8d3b9d5f21526"
+    },
+    "ros2_ws/reports/README.md": {
+      "bytes": 581,
+      "sha256": "02fb414e83553c6cd6df997f9cc80f081980e0320ae19636c5f77bcb425b8b36"
+    },
+    "ros2_ws/reports/collision-endpoints.json": {
+      "bytes": 21162,
+      "sha256": "ec9c69579000d9fbb194f0acb51e725cbb1a62e4ae4004ebee8d7e19ce1c98be"
+    },
+    "ros2_ws/reports/joint-reference.csv": {
+      "bytes": 1392,
+      "sha256": "66687cb91498290021766015e83ffe643fe1a8f1f69cacab96cb9cef7fc6a488"
+    },
+    "ros2_ws/reports/workspace-study.json": {
+      "bytes": 21341,
+      "sha256": "9b690644dcc4e1b38dd05c7adadb1d7c1b43b0133583d963bf2f701e22c2359d"
+    },
+    "ros2_ws/reports/iron/calibration-check.json": {
+      "bytes": 441,
+      "sha256": "9823aece985b53b881b0357931a125c5298356cba693d01d2379a8eedcb72c35"
+    },
+    "ros2_ws/reports/iron/collision-hulls.json": {
+      "bytes": 2395,
+      "sha256": "234a7c802feaaa428f9fa3d38a882ab6f6d5c7b70fed81d860f43160cba0a5e7"
+    },
+    "ros2_ws/reports/iron/collision-samples.json": {
+      "bytes": 24930,
+      "sha256": "0b9ddefb1b34866b4fe2a5fa67f7c906b2103343981f0911542c7ead8006b700"
+    },
+    "ros2_ws/reports/iron/cycle-check.json": {
+      "bytes": 6737,
+      "sha256": "0aa8b631ee3c1890a40ffc859f4d1c9f483bd29d6f1cf4f437190443ec9dfb5c"
+    },
+    "ros2_ws/reports/iron/input-check.json": {
+      "bytes": 3912,
+      "sha256": "6fae917265df8daa1059c3f45563dfdbb94acb64379b63fb3be83a3104254e93"
+    },
+    "ros2_ws/reports/iron/proposed-motor-map.csv": {
+      "bytes": 833,
+      "sha256": "2dab29bc30c124a052a54272a63ef8a5095a9778a24216f738fd60f1daa3e9b1"
+    },
+    "ros2_ws/reports/iron/unit-tests.txt": {
+      "bytes": 5441,
+      "sha256": "71b3f2f024a498d2c473c2f8c5d537453af4a5b04c2fcfc539701db1a7ca1859"
+    },
+    "ros2_ws/reports/iron/workspace-study.json": {
+      "bytes": 14315,
+      "sha256": "db27dced50568e0910996e68dc3d2f9e072b3957a61c405bfb395578620104f5"
+    },
+    "ros2_ws/scripts/run_input.sh": {
+      "bytes": 217,
+      "sha256": "3f14bd80a08746bb6ffda90352d27256747d7306ed2ad7a87c9c07c45d33eca9"
+    },
+    "ros2_ws/scripts/run_iron.sh": {
+      "bytes": 215,
+      "sha256": "de1689ade25045ecfae6dd9f85f1cb2fb21cf390918fa1e366150819895baafb"
+    },
+    "ros2_ws/scripts/run_mock.sh": {
+      "bytes": 189,
+      "sha256": "d514cce1b135fcbfe6aa79893bbb53702838a920c7360417c2f6f46852e51be4"
+    },
+    "ros2_ws/scripts/start_clean.sh": {
+      "bytes": 514,
+      "sha256": "962556e18a8ec1bbb33f51b45177a1d8cca47b3db3a3a4d90a965178e385727f"
+    },
+    "ros2_ws/scripts/with_ros.sh": {
+      "bytes": 423,
+      "sha256": "3f647c76f328e2f795785d57f1a69b8c43cf5928132877a6b862eb907a08382f"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/CMakeLists.txt": {
+      "bytes": 210,
+      "sha256": "75944c8f621c8552573166e54f3cf606f8e91c5074879387d1c835f9aa2880fd"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/README.md": {
+      "bytes": 489,
+      "sha256": "2ee8a5bc768e832cf12a9227027fb5f65ede1b93d94e4a0f87a22b9b36b974a6"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/package.xml": {
+      "bytes": 655,
+      "sha256": "bcd170fe804ddcd83ee0dcc31208199bc00e1082145dbc763db6baeee8767362"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/config/display.rviz": {
+      "bytes": 979,
+      "sha256": "1c839659a1fb3c75a88eea63545636a682983bb4f1f29664b14c94ec7aded3ec"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/launch/display.launch.py": {
+      "bytes": 735,
+      "sha256": "905fcb2ba2d2ddc82fb12ad17ae0ea7db18ba683aef582574d97a40b0ba24d5d"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/base_link.stl": {
+      "bytes": 1972184,
+      "sha256": "4c58c1260f49098a301e149c76587e118ecb63cd22901ddf014f872fd051b5df"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/base_rotation_link.stl": {
+      "bytes": 3737884,
+      "sha256": "7f58d47cb80dbc1e08e5d07febafaea7cb721ebc91cbb26b4886849741e33b5c"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/forearm_link.stl": {
+      "bytes": 3601384,
+      "sha256": "1a61cf998602aaa3ba0f5a44be05f02ec30f20f09137d1e28bc120bb9918714b"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/tool_link.stl": {
+      "bytes": 1719684,
+      "sha256": "6e59e194fa02b832b20bf400500e125dba84bdc542947330476c86b0b8c48d81"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/upper_arm_link.stl": {
+      "bytes": 3601384,
+      "sha256": "1c9262425214cd227a88debb274cc417f0af6b146fa3772b701e4d0675d2bd9e"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/meshes/wrist_link.stl": {
+      "bytes": 3624784,
+      "sha256": "16ca09d32e64bbdb5c1693f56827b9315eb2a074c9b137bb58b87aadb30e7c8e"
+    },
+    "ros2_ws/src/joint_effort_arm_draft_description/urdf/joint_effort_arm_draft.urdf": {
+      "bytes": 4036,
+      "sha256": "5e1a0b6ecb0437ac0c103ce59696cef8d4c7922641f27aa8ce5f24dd8aa3fcf9"
+    },
+    "ros2_ws/src/joint_effort_cad_review/CMakeLists.txt": {
+      "bytes": 641,
+      "sha256": "7336ef93b7c7af1be87697df841c8fef3ff062882e38a66f78dd37bbfb3feeee"
+    },
+    "ros2_ws/src/joint_effort_cad_review/package.xml": {
+      "bytes": 849,
+      "sha256": "e3c15f528601d2d4382b79e33f732a758080103aafd81c85302cebb92f257fa4"
+    },
+    "ros2_ws/src/joint_effort_cad_review/config/review.rviz": {
+      "bytes": 842,
+      "sha256": "03ddf4f4d6f4d035679c403a1ee5608b85a0eee0c321dafdb64e8703127f2079"
+    },
+    "ros2_ws/src/joint_effort_cad_review/launch/review.launch.py": {
+      "bytes": 2235,
+      "sha256": "29f0a7f0c9c4001d5ca00f8e587f24da29b04b737fbe28fba1356d7bddeb0442"
+    },
+    "ros2_ws/src/joint_effort_cad_review/scripts/review_pose.py": {
+      "bytes": 1838,
+      "sha256": "e557ead202b4a22e9c16f2ee589a8a91ac37baf088dd0fcc8444dfd96041aa18"
+    },
+    "ros2_ws/src/joint_effort_cad_review/scripts/review_sliders.py": {
+      "bytes": 2333,
+      "sha256": "c31137bc1660b6a596eb0459587d8226c9eea5396d65c89b0dee5172a42939df"
+    },
+    "ros2_ws/src/joint_effort_cad_review/src/cad_rviz.cpp": {
+      "bytes": 3188,
+      "sha256": "4701015a8ce255c3f4aff35c23b14a5399052a89a7102a60d6ec3c3364743b39"
+    },
+    "ros2_ws/src/joint_effort_cad_review/urdf/cad_arm.urdf": {
+      "bytes": 4036,
+      "sha256": "5e1a0b6ecb0437ac0c103ce59696cef8d4c7922641f27aa8ce5f24dd8aa3fcf9"
+    },
+    "ros2_ws/src/joint_effort_input/package.xml": {
+      "bytes": 984,
+      "sha256": "f86ad908ead706764de47a9dfc27a9f2658ffe2bfd9ac742c4eddaa26b637c62"
+    },
+    "ros2_ws/src/joint_effort_input/setup.cfg": {
+      "bytes": 105,
+      "sha256": "3a56ade55c1e64b9e24d7d9ac2e31d2096b2e19b9629f6e04f3e7ac7e4cb1cda"
+    },
+    "ros2_ws/src/joint_effort_input/setup.py": {
+      "bytes": 733,
+      "sha256": "9a0c68d9719de757e2e556b0f1f31b5770e9ccf410f2bf8842a61f09849da439"
+    },
+    "ros2_ws/src/joint_effort_input/config/input.yaml": {
+      "bytes": 453,
+      "sha256": "71818ff7f5539007852caf3925fe0aba786c96b11b2c42d737cbee51d985054e"
+    },
+    "ros2_ws/src/joint_effort_input/config/teleop.yaml": {
+      "bytes": 748,
+      "sha256": "7d189cf1d305367b699be69366a0d1fcccd4cb6c994fa4bec160fb61c9619127"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/__init__.py": {
+      "bytes": 60,
+      "sha256": "abfeb1925aaecc2fcbb9633de0a6f57d2c3a2df658f53e89b99d0b2ef827ae68"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/core.py": {
+      "bytes": 4771,
+      "sha256": "97653c4bbbdf855a27022093e6acdfdcdc01dd092d70310768bd8f7e0503a10b"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/display.py": {
+      "bytes": 1556,
+      "sha256": "72c82fdc0cb9f653c8a9d2224549b6ee0daf356702c4ef93f93a0bb694023487"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/forwarder.py": {
+      "bytes": 16195,
+      "sha256": "01551cb05ac013ddf940d3e376dd2aab345076bed0e52f72171180a9aad9ce17"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/lease.py": {
+      "bytes": 685,
+      "sha256": "03af554e6b2b4cac5159124563114d6198f1c485d48b7dc413bc98aa278e0def"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/synthetic.py": {
+      "bytes": 1402,
+      "sha256": "02cf1698c1589ed030fb1024aafc4c127f35bbc5f4f3fb5fbd038f63b2f5b595"
+    },
+    "ros2_ws/src/joint_effort_input/joint_effort_input/teleop.py": {
+      "bytes": 575,
+      "sha256": "359f9c1406d20b65615a7c086776047e9507a871f48d81c48830685f4016c1ed"
+    },
+    "ros2_ws/src/joint_effort_input/launch/input.launch.py": {
+      "bytes": 1623,
+      "sha256": "f2f8a9c94b9a50edab0756ced84bf10324ccde90bf8f97d6373d7859f21c9075"
+    },
+    "ros2_ws/src/joint_effort_input/resource/joint_effort_input": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "ros2_ws/src/joint_effort_iron/package.xml": {
+      "bytes": 1351,
+      "sha256": "8a4e20f9248e3f2d9fdee3728d737a393761c08b90c7d15b07e678be54fdcac5"
+    },
+    "ros2_ws/src/joint_effort_iron/setup.cfg": {
+      "bytes": 103,
+      "sha256": "00c306752033958c0895cb3b9e0d3b361e31f59b4cffd71e151397c1d49c0650"
+    },
+    "ros2_ws/src/joint_effort_iron/setup.py": {
+      "bytes": 495,
+      "sha256": "9c3b3845911f251dc2bee93dc787cd75578a19b19c6caede31649122320bd8fb"
+    },
+    "ros2_ws/src/joint_effort_iron/config/controllers.yaml": {
+      "bytes": 724,
+      "sha256": "924b1b590622dd4c5d886810d3fe17cc7451264fa76793fe2ca8bb1035539627"
+    },
+    "ros2_ws/src/joint_effort_iron/config/iron.rviz": {
+      "bytes": 789,
+      "sha256": "775c3c3090c195123f2e60a7a07c9ee6dacbfb29e4cfae42dcde1b71c75e2ca7"
+    },
+    "ros2_ws/src/joint_effort_iron/config/iron.srdf": {
+      "bytes": 1704,
+      "sha256": "f6169f2b965a672d8f807661b821cc30e28b165a1a4b9d451408607e38b42fa0"
+    },
+    "ros2_ws/src/joint_effort_iron/config/joint_limits.yaml": {
+      "bytes": 807,
+      "sha256": "d1e1159268ac883e39670c97d8013802417f97573321a167ab338294bbee1463"
+    },
+    "ros2_ws/src/joint_effort_iron/config/kinematics.yaml": {
+      "bytes": 162,
+      "sha256": "5c85760d855c4e2424360097ec26160dc9a6a23504b9a94f62f59035e36e1ae0"
+    },
+    "ros2_ws/src/joint_effort_iron/config/model.json": {
+      "bytes": 1963,
+      "sha256": "072ca66d8639508bf18a59476d1b1146b4d88d68f4c15a3c8c582f5a5898dc1c"
+    },
+    "ros2_ws/src/joint_effort_iron/config/servo.yaml": {
+      "bytes": 1040,
+      "sha256": "127b4a8d0b4c41ee53d5beed911c47b118bc4f5fbec390b4048cf7109c3fc588"
+    },
+    "ros2_ws/src/joint_effort_iron/joint_effort_iron/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ros2_ws/src/joint_effort_iron/joint_effort_iron/bridge.py": {
+      "bytes": 5011,
+      "sha256": "be41b24e30b073da9d1e2d6a41edd9f615756998d47b402a9ccc7b78bb483f33"
+    },
+    "ros2_ws/src/joint_effort_iron/launch/mock.launch.py": {
+      "bytes": 3445,
+      "sha256": "aff06192aa4c886b1140fb2a9e62eedf64313a3f6dde8b2a7e50d7ce9572d175"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/base_link_hull.stl": {
+      "bytes": 10684,
+      "sha256": "20987e0f809c7f487238dd3da514507bf92a16829b07ffc9652dcbbd2370c763"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/base_rotation_link_hull.stl": {
+      "bytes": 41484,
+      "sha256": "f44545e51289b98237d2c7a72d48ec58453201e5858e64d1464ce92b05a8dd00"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/forearm_link_hull.stl": {
+      "bytes": 30884,
+      "sha256": "3ee818bce4490e9f0901d6c5d1295cf21ca0ccde6ec2a4241a49723eabfa25f4"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/tool_link_hull.stl": {
+      "bytes": 32484,
+      "sha256": "5d15032729739b7507d0da78917f66a378d607f2621d5c0c8614a24bd8d2e2a8"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/upper_arm_link_hull.stl": {
+      "bytes": 26384,
+      "sha256": "f106341531e00b2614636442656bbfc56f2010a3289149a118d092fc780d5157"
+    },
+    "ros2_ws/src/joint_effort_iron/meshes/wrist_link_hull.stl": {
+      "bytes": 36384,
+      "sha256": "163b5b54946626255104a8aa0326d33e544cb78f04249ead36dc293ea4c4bec8"
+    },
+    "ros2_ws/src/joint_effort_iron/resource/joint_effort_iron": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ros2_ws/src/joint_effort_iron/urdf/iron.urdf": {
+      "bytes": 8795,
+      "sha256": "265457c061d3833aece922bf64e2b1abdd4e091ea48ce5f42f90b4e60e2bbd2f"
+    },
+    "ros2_ws/src/joint_effort_moveit/CMakeLists.txt": {
+      "bytes": 1814,
+      "sha256": "52336754d2c4c585628c89e4b59e98108cf69ed6a933c772a81d319b27c425a8"
+    },
+    "ros2_ws/src/joint_effort_moveit/UPSTREAM.md": {
+      "bytes": 863,
+      "sha256": "74840c5cc6660fcc772f4f84711698934790acb7c8a77da65581af0c5dcc40ff"
+    },
+    "ros2_ws/src/joint_effort_moveit/controllers_plugin.xml": {
+      "bytes": 385,
+      "sha256": "c4c05cf86785a6afcc79bd2b26ff691b7f4ce00287c3e7c68b2131aa74eee7fe"
+    },
+    "ros2_ws/src/joint_effort_moveit/package.xml": {
+      "bytes": 535,
+      "sha256": "8c40a93b19d4128ebf22843ce926aee5e50837bea496bb1ab5c1dfc7ad35d44c"
+    },
+    "ros2_ws/src/joint_effort_moveit/src/iron_collision_audit.cpp": {
+      "bytes": 2456,
+      "sha256": "822c288fd5ea7bd688377ed338797fab9d4369bfae7391b590b44eaab7cef53c"
+    },
+    "ros2_ws/src/joint_effort_moveit/src/mount_clearance.cpp": {
+      "bytes": 1488,
+      "sha256": "2309bca82178f2f467dd13f693779a4661140f8bf758bff31c672f93ba8a6ed4"
+    },
+    "ros2_ws/src/joint_effort_moveit/src/move_group_lifetime.cpp": {
+      "bytes": 12989,
+      "sha256": "b255c5e89ffa229aae2315877e64c1fa168101d13314fca5b839bd1144614831"
+    },
+    "ros2_ws/src/joint_effort_moveit/src/no_execution_controller_manager.cpp": {
+      "bytes": 1377,
+      "sha256": "ef24efbc8f222b49193ebf730b4fc7ebc0689aca0390812c74bc36c82e7c085d"
+    },
+    "ros2_ws/src/joint_effort_moveit/src/servo_lifetime.cpp": {
+      "bytes": 912,
+      "sha256": "1a7659dec6a8996d57073b0e6d8d412015c8f9ad25f91349313ae237713c8e15"
+    },
+    "ros2_ws/src/joint_effort_robot/package.xml": {
+      "bytes": 1406,
+      "sha256": "b9e0875bc527a9d840f94a87dfd3124089c3557984bc21221522a38f93e5ad7d"
+    },
+    "ros2_ws/src/joint_effort_robot/setup.cfg": {
+      "bytes": 105,
+      "sha256": "7c0db0604f1f97dafc4b7336fb89fd4b5240c0ffc5f8fecf20b76572f17dc40a"
+    },
+    "ros2_ws/src/joint_effort_robot/setup.py": {
+      "bytes": 573,
+      "sha256": "5c3be5eddb4b9eeae8f577bbd17d6dd5e458090c22c6f19955b9b5c309a23dde"
+    },
+    "ros2_ws/src/joint_effort_robot/config/controllers.yaml": {
+      "bytes": 1431,
+      "sha256": "3bc0022378e72281d34b0ea56a656cdf02df9603c63b4637dcd91748484c55d3"
+    },
+    "ros2_ws/src/joint_effort_robot/config/iron_servo.yaml": {
+      "bytes": 1040,
+      "sha256": "395603d0147aa2569fb04095f769401033ba0d3a680131741cdc32ab0d6d90b0"
+    },
+    "ros2_ws/src/joint_effort_robot/config/joint_effort.srdf": {
+      "bytes": 3126,
+      "sha256": "31e369911b9907eb9bc644fe6d58fc92f56cd1959132b3854e4c342ccd9c6c5e"
+    },
+    "ros2_ws/src/joint_effort_robot/config/joint_limits.yaml": {
+      "bytes": 1673,
+      "sha256": "8f028c2d32f670537583753901c5736e0303adc98e28c622a4c09214c5bd00a4"
+    },
+    "ros2_ws/src/joint_effort_robot/config/kinematics.yaml": {
+      "bytes": 321,
+      "sha256": "8b08c9d47f93517fec5ebd44792d18e4605541cae3a1e4adb6b57ee5811553bd"
+    },
+    "ros2_ws/src/joint_effort_robot/config/model.json": {
+      "bytes": 2131,
+      "sha256": "f6f6dfa463c677a9e5975767dfbafd73c6f167d6fb6e421eb38b6c9ac0b3986f"
+    },
+    "ros2_ws/src/joint_effort_robot/config/model.rviz": {
+      "bytes": 637,
+      "sha256": "3e5088c491298f6183f3293ffd8516f25a5f7fe3c86a3bd6919b7b66bb606a7f"
+    },
+    "ros2_ws/src/joint_effort_robot/config/wire_servo.yaml": {
+      "bytes": 1040,
+      "sha256": "c54392785d7a08db8d8e442f71c88b0353e0bae3e5f1fd29b78671b7e1c3a1b5"
+    },
+    "ros2_ws/src/joint_effort_robot/joint_effort_robot/__init__.py": {
+      "bytes": 79,
+      "sha256": "cefeac5283b975c87e1b0ff653c42467557243adb1bb9fd5aa4be894f3ec073b"
+    },
+    "ros2_ws/src/joint_effort_robot/joint_effort_robot/kinematics.py": {
+      "bytes": 7374,
+      "sha256": "f35f6ca961bca2708f7eb9402b075fc526212369f6ae169b0bb3edd0fe7a8d17"
+    },
+    "ros2_ws/src/joint_effort_robot/joint_effort_robot/task_bridge.py": {
+      "bytes": 6784,
+      "sha256": "41a8e9742148db294e48a6447807693fd6e249c773e93f3bded184ee2a171c1e"
+    },
+    "ros2_ws/src/joint_effort_robot/launch/mock.launch.py": {
+      "bytes": 3258,
+      "sha256": "b0620ad6de2204d863fe12dcdbb6bbe91a8d2c30733c11ab385ac71f49f1ea0b"
+    },
+    "ros2_ws/src/joint_effort_robot/resource/joint_effort_robot": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ros2_ws/src/joint_effort_robot/urdf/joint_effort.urdf": {
+      "bytes": 24215,
+      "sha256": "8aa949ef85b50a9747004d6180dff543dac5921ca088e04b14a055fc98746fae"
+    },
+    "ros2_ws/src/vendor/teleop_tools/README.md": {
+      "bytes": 348,
+      "sha256": "3480a638f58169231773e4d3b196858bdcc8e382f2f7f9ce2ae5efb085d678ca"
+    },
+    "ros2_ws/src/vendor/teleop_tools/UPSTREAM.json": {
+      "bytes": 222,
+      "sha256": "28b978de043d6be4439add56efa5804b8015c03af55f402cfcfa5ed2142d0a25"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/CHANGELOG.rst": {
+      "bytes": 8576,
+      "sha256": "b723098182d55f37e39839bcf1000664fb560b746b038d88f7c3fc7ff3a6b16e"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/README.md": {
+      "bytes": 100,
+      "sha256": "1c97c37d087f96dd56bc27a9a17c25f23af66244508c6fa538fb00a95b1dd347"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/package.xml": {
+      "bytes": 1277,
+      "sha256": "fc2a587690f8b25c4e2ef00612196b37cb73935903ff75873f47f25382cb807b"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/setup.cfg": {
+      "bytes": 89,
+      "sha256": "a75c891558a10a216c2aa443b9d47166d1c6fe127c615a31599a5b3c3e9faeac"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/setup.py": {
+      "bytes": 1633,
+      "sha256": "ad6699108a9f4237df13d6e940b5c1c065f72d2399526d00638024573f956557"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/config/joy_teleop_example.yaml": {
+      "bytes": 3092,
+      "sha256": "731780df3b166e278eb00ae07485796d4a8815713d3eb7a6362cca69c57fa86a"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/joy_teleop/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/joy_teleop/incrementer_server.py": {
+      "bytes": 3672,
+      "sha256": "30e322accd427005552cd7f4d25c468a92014df2a4678b511593265b183f4b38"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/joy_teleop/joy_teleop.py": {
+      "bytes": 19558,
+      "sha256": "a2f623e1f8d77491aa093bed82246eb20243f28fdb207634cbd6b32ae52658d8"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/launch/example.launch.py": {
+      "bytes": 1649,
+      "sha256": "5ca9c7adfa99e17b5ee6cdfc78af9d109716cd39c297a7d26e48fdb32884e350"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/resource/joy_teleop": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/joy_teleop_testing_common.py": {
+      "bytes": 3585,
+      "sha256": "f1158110d98d03f7c8ca7aaa7599ca9694c3ba8237fee12780e4526db4a11a2f"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_action_fibonacci.py": {
+      "bytes": 3656,
+      "sha256": "4c6f8f041a2a5adb33e97bd211aece6bea739273336f0d3e5432d4f98bb6c1d7"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_array_indexing.py": {
+      "bytes": 4238,
+      "sha256": "74ea36223c658b694dc2d0df99fab34b0b70c3ec42c668e0a500eb643b33d338"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_copyright.py": {
+      "bytes": 782,
+      "sha256": "aa3f427ec9380425a42fc885a592132dcd52f4ef7c1f6c74482ab437345cd37b"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_debounce.py": {
+      "bytes": 3731,
+      "sha256": "d04314dfc8288e38c9229c6d88e812b79f631c7bf738c51eafcc59e0581b72d4"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_flake8.py": {
+      "bytes": 770,
+      "sha256": "7a314a95146975861aa8c6a07e001e0bb9f64aaf51ce5faabd1ed99d5b60c2da"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_get_interface_type.py": {
+      "bytes": 2777,
+      "sha256": "fe480139f91cf8a26039a87a73ac882877bd18384fb471c5ea1e9296d9b01925"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_multi_button_command.py": {
+      "bytes": 4309,
+      "sha256": "5bd361edeb32237070cc356d9f28b6b41fec6df49d50f283f4ff9bb1b4e98a0f"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_parameter_failures.py": {
+      "bytes": 10740,
+      "sha256": "f4716581d3d815459a14a0c5d5b9cafeaa528e1ba7d7496ad7b189c93d5a8950"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_pep257.py": {
+      "bytes": 795,
+      "sha256": "121557ca2ec5ebeef046e0994a82aa5acd3f01dca2a1d457d542cd80b12d6437"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_service_add_two_ints.py": {
+      "bytes": 3502,
+      "sha256": "b5f30ba39236e0f6c621705c171c7f52d8e7877e3f68a5644e78a6fea5c5e7d7"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_service_not_ready.py": {
+      "bytes": 5737,
+      "sha256": "76c6a79f52a9a31ea2e48dd2f51d8cbe02271164932a66e0ba96b13ebf796267"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_service_trigger.py": {
+      "bytes": 3303,
+      "sha256": "6b0de852806bb3116a054e96a90193fb61f980750fd18db25c9c8683abc47474"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_topic_axis_mappings.py": {
+      "bytes": 4820,
+      "sha256": "a965e1de8ef2a47cf2effa8e4308b4a900b1b007cdedb45e13548de9466cc497"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_topic_message_value.py": {
+      "bytes": 3774,
+      "sha256": "10b4b067e1120afaffa9b62aee2b177ed5e756862e961094231987a23ae8992c"
+    },
+    "ros2_ws/src/vendor/teleop_tools/joy_teleop/test/test_xmllint.py": {
+      "bytes": 773,
+      "sha256": "db5f6bb9195d7a3b472b48a24af1918ff0fe5f8dda10ba701efce7b79461897e"
+    },
+    "ros2_ws/src/vendor/teleop_tools/teleop_tools_msgs/CHANGELOG.rst": {
+      "bytes": 1309,
+      "sha256": "cbe4d9223b7822597e942ec517e5f4f16fcf779e9bd165bbb0f92207d26ea3b4"
+    },
+    "ros2_ws/src/vendor/teleop_tools/teleop_tools_msgs/CMakeLists.txt": {
+      "bytes": 707,
+      "sha256": "4cc3f375accb1a63beffcc906701a0451a5f21eced9e3032340b5f3674f32b35"
+    },
+    "ros2_ws/src/vendor/teleop_tools/teleop_tools_msgs/package.xml": {
+      "bytes": 702,
+      "sha256": "0cbcaa80ece37dd89d8561e8673d4c5004145c2102e71b101a1752726151f4d1"
+    },
+    "ros2_ws/src/vendor/teleop_tools/teleop_tools_msgs/action/Increment.action": {
+      "bytes": 31,
+      "sha256": "fa2e4e05d68b1dd784a9c5b0376ef6709a955a94da431ceee532e2ac74bfae4f"
+    },
+    "ros2_ws/tests/test_bridge.py": {
+      "bytes": 2054,
+      "sha256": "8843bfc793a958be7b70f62161058c2fdd115f9547f377a20ccb9a8003770537"
+    },
+    "ros2_ws/tests/test_input.py": {
+      "bytes": 4141,
+      "sha256": "8aced608b478d1e7f1fa1db861c61d03fa97ce2e8d17837e014571896100cd27"
+    },
+    "ros2_ws/tests/test_input_forwarding.py": {
+      "bytes": 2490,
+      "sha256": "36399d30ae6f1c1e912a71ba3f4791d5650f1ea12df7a246cf76defcd4c07a41"
+    },
+    "ros2_ws/tests/test_iron.py": {
+      "bytes": 2597,
+      "sha256": "7b919de0d5c3296fd3f8e29bc3357e1c2333e8cb373419acdde5f38b2e603f38"
+    },
+    "ros2_ws/tests/test_iron_bridge.py": {
+      "bytes": 2378,
+      "sha256": "0fdc5c7dc9a2363d25a253716b4cfd7319fe696fb92b7173a546b706c67b871b"
+    },
+    "ros2_ws/tests/test_iron_workflows.py": {
+      "bytes": 6420,
+      "sha256": "76ad379c98090451916983f105c6a0b76231d81ee805b356ec359037ec665217"
+    },
+    "ros2_ws/tests/test_kinematics.py": {
+      "bytes": 2705,
+      "sha256": "d4a418e238e2b040856f2972ae00a5dc6417ca19d05cb9607c3ceaa1f0ae1590"
+    },
+    "ros2_ws/tools/check_input_live.py": {
+      "bytes": 13251,
+      "sha256": "22b365768846466eb625663c2860c752d7c96ea5025abf8da5b842e37f7d91c0"
+    },
+    "ros2_ws/tools/check_iron_calibration.py": {
+      "bytes": 2718,
+      "sha256": "917acb5d4c4927a59622174eea05f3559961c69f3477474eb29fef695886952b"
+    },
+    "ros2_ws/tools/check_iron_cycle.py": {
+      "bytes": 8983,
+      "sha256": "f6545ecf4fbf721e1905c8bf15b270380d195932f950c90ea8f754cadf7e1a49"
+    },
+    "ros2_ws/tools/check_iron_demo.py": {
+      "bytes": 1958,
+      "sha256": "ea1180fdc10f49cd23eedea66711c7c8dee918ee45700744616badb8716cf696"
+    },
+    "ros2_ws/tools/check_iron_live.py": {
+      "bytes": 14173,
+      "sha256": "09555b14bb204e58013f70079769a2c3ffb3e4e91fe122bc38b30c5ba5842377"
+    },
+    "ros2_ws/tools/check_live.py": {
+      "bytes": 9689,
+      "sha256": "4d3b2ed7fd5887d9cf184808ae684304c557d278e012fd8f923e32a8afc54ea3"
+    },
+    "ros2_ws/tools/check_shutdown.py": {
+      "bytes": 2536,
+      "sha256": "ba5d07120d38d9eb1561ef812f31fa0ab72f1961b31943f9bda106accb5bcbf2"
+    },
+    "ros2_ws/tools/demo_both.py": {
+      "bytes": 6456,
+      "sha256": "9ae3f773d4768949267ae74efc8afdb2db06ecaa8a4a5b05d6ad6cf0b94219fd"
+    },
+    "ros2_ws/tools/demo_motion.py": {
+      "bytes": 6210,
+      "sha256": "7ef2a6021b080912696f425399d6cd157369141814965518969ac060c1a9978f"
+    },
+    "ros2_ws/tools/generate_assets.py": {
+      "bytes": 11498,
+      "sha256": "11f7cd5fd7592c634ba4c3efd1f10587b1efe907960507f7be0aad07c4815b89"
+    },
+    "ros2_ws/tools/generate_iron.py": {
+      "bytes": 8561,
+      "sha256": "c52f3f0ff46cd45c6018b3180cd37b6766f84dee3b7213c70bc76e9740b4f7b7"
+    },
+    "ros2_ws/tools/input_demo.py": {
+      "bytes": 3085,
+      "sha256": "d56dbb7fe1fb0f8fade917d5ed19e07049be84e44733bdde556db5ecd40450b5"
+    },
+    "ros2_ws/tools/input_probe.py": {
+      "bytes": 1910,
+      "sha256": "87b949a23156e334f7d7f4553350c482c4041635fe7d096be7e9e1efaa0303da"
+    },
+    "ros2_ws/tools/iron_calibration.py": {
+      "bytes": 4601,
+      "sha256": "d9f5caaa1a5e01a36ec7e7ee9c76578ef1c02f2536df1f9798926ae06512ce46"
+    },
+    "ros2_ws/tools/iron_cycle.py": {
+      "bytes": 5522,
+      "sha256": "f78936995eed719ef1085e4f1efb8bf678e5c0451ae74543dc949e1e9ebb1571"
+    },
+    "ros2_ws/tools/iron_demo.py": {
+      "bytes": 6736,
+      "sha256": "7be1c3766767ba180cb7665cd2d6eb5925e28af8b0d77593013d09e7e114bac5"
+    },
+    "ros2_ws/tools/iron_motion.py": {
+      "bytes": 16817,
+      "sha256": "9c8d2f735593ee2f6bdff4bc2b7acc18229dec0591582b68a454a826a8d33bfa"
+    },
+    "ros2_ws/tools/iron_plan.py": {
+      "bytes": 2616,
+      "sha256": "1e5efb4f6b4dfaecaba65c3b7a7a0ab9e07aac91428fd39d2e6a66ff63b34527"
+    },
+    "ros2_ws/tools/iron_status.py": {
+      "bytes": 1993,
+      "sha256": "39d72da056da857934f1ed2a874ff90925720e8b43c81c457bebede946c314e3"
+    },
+    "ros2_ws/tools/iron_stop.py": {
+      "bytes": 1520,
+      "sha256": "2796eb003252052cb8767bd8c6b6d32811fbb781a5b4d2b10b52cd4bde78abcd"
+    },
+    "ros2_ws/tools/iron_trajectory.py": {
+      "bytes": 5078,
+      "sha256": "f078f0ecd7a94f38ee620c236cb9321ecc597c2941cee29b024c710e9824ac83"
+    },
+    "ros2_ws/tools/model_status.py": {
+      "bytes": 2400,
+      "sha256": "6f574714a6725be13e0057d43ff0afa4e159cfb0d253002c079f6dfdf72aeab9"
+    },
+    "ros2_ws/tools/plot_study.py": {
+      "bytes": 2570,
+      "sha256": "4949223008fdb1c7b4457d22da5287322cbc49e7b9d2e25a5f3ebcbbd7b8c55f"
+    },
+    "ros2_ws/tools/render_iron.py": {
+      "bytes": 2671,
+      "sha256": "b1d05bcaaca1518a8129bb09d4f66f8103b37c8d2f5d3bca8261c481d6e788a1"
+    },
+    "ros2_ws/tools/review_cad_urdf.py": {
+      "bytes": 5278,
+      "sha256": "2167327acf2e04856ffdbddb12d8c9a35327340571d9312bc2c39ff4224b5e28"
+    },
+    "ros2_ws/tools/study_iron_workspace.py": {
+      "bytes": 2668,
+      "sha256": "5328f979f1c593fb503c56f91ede89177adbe8bf1b57e5857a01a3bd1300fe2a"
+    },
+    "ros2_ws/tools/study_workspace.py": {
+      "bytes": 3016,
+      "sha256": "f76409e679f98fa717b6c06976d611a810296bcac2102f94431160e61e4da078"
+    },
+    "tools/package_github.py": {
+      "bytes": 15361,
+      "sha256": "0512364e923f3ae080a14597123a670b8169101fc2e2ae117f78bd38c440762a"
+    }
+  }
+}

@@ -1,0 +1,786 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="joint_effort">
+  <link name="world" />
+  <link name="table">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="10" />
+      <inertia ixx="0.3528333333333334" iyy="0.5340833333333335" izz="0.8854166666666669" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.8 0.65 0.03" />
+      </geometry>
+      <material name="table_2">
+        <color rgba="0.55 0.60 0.65 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.8 0.65 0.03" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="table_fixed" type="fixed">
+    <parent link="world" />
+    <child link="table" />
+    <origin xyz="0 0.15 -0.015" rpy="0 0 0" />
+  </joint>
+  <link name="pcb">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.05" />
+      <inertia ixx="1.5016666666666668e-05" iyy="6.001666666666667e-05" izz="7.5e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 -0.001" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.06 0.002" />
+      </geometry>
+      <material name="pcb_2">
+        <color rgba="0.15 0.55 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.001" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.06 0.002" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="pcb_fixed" type="fixed">
+    <parent link="world" />
+    <child link="pcb" />
+    <origin xyz="0 0.2 0.045" rpy="0 0 0" />
+  </joint>
+  <link name="pcb_fixture">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.3" />
+      <inertia ixx="8.5e-05" iyy="0.0002725" izz="0.00031250000000000006" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.021" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1 0.05 0.042" />
+      </geometry>
+      <material name="pcb_fixture_2">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.021" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1 0.05 0.042" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fixture_fixed" type="fixed">
+    <parent link="world" />
+    <child link="pcb_fixture" />
+    <origin xyz="0 0.2 0" rpy="0 0 0" />
+  </joint>
+  <link name="pcb_workspace" />
+  <joint name="workspace_fixed" type="fixed">
+    <parent link="pcb" />
+    <child link="pcb_workspace" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="iron_base">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.166666666666668e-05" iyy="4.166666666666668e-05" izz="4.166666666666668e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.003" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.1 0.006" />
+      </geometry>
+      <material name="iron_base_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.003" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.1 0.006" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_mount" type="fixed">
+    <parent link="world" />
+    <child link="iron_base" />
+    <origin xyz="-0.2 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="iron_turret">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.2" />
+      <inertia ixx="8.333333333333336e-05" iyy="8.333333333333336e-05" izz="8.333333333333336e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.066" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.028" length="0.12" />
+      </geometry>
+      <material name="iron_turret_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.066" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.028" length="0.12" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_base_yaw" type="revolute">
+    <parent link="iron_base" />
+    <child link="iron_turret" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.5707963268" upper="1.5707963268" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="iron_upper_arm">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="0.00019083333333333333" izz="0.00018869999999999998" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+      <material name="iron_upper_arm_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="iron_upper_arm_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="iron_upper_arm_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_shoulder_pitch" type="revolute">
+    <parent link="iron_turret" />
+    <child link="iron_upper_arm" />
+    <origin xyz="0 0 0.155" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.0471975512" upper="1.745329252" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="iron_forearm">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="0.00019083333333333333" izz="0.00018869999999999998" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+      <material name="iron_forearm_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="iron_forearm_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="iron_forearm_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_elbow_pitch" type="revolute">
+    <parent link="iron_upper_arm" />
+    <child link="iron_forearm" />
+    <origin xyz="0.15 0 0" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.4434609528" upper="2.4434609528" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="iron_wrist_bridge">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="3.3333333333333335e-05" izz="3.12e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.03 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.012 0.02" />
+      </geometry>
+      <material name="iron_wrist_bridge_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.03 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="iron_wrist_bridge_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="iron_wrist_bridge_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_wrist_pitch" type="revolute">
+    <parent link="iron_forearm" />
+    <child link="iron_wrist_bridge" />
+    <origin xyz="0.15 0 0" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.9198621772" upper="1.9198621772" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="iron_tool">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.15" />
+      <inertia ixx="2.745e-05" iyy="0.00019125" izz="0.00019619999999999997" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.01 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.08 0.036 0.03" />
+      </geometry>
+      <material name="iron_tool_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.01 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.08 0.036 0.03" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.0725 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.007" length="0.08499999999999999" />
+      </geometry>
+      <material name="iron_tool_4">
+        <color rgba="0.65 0.67 0.70 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0725 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.007" length="0.08499999999999999" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_wrist_yaw" type="revolute">
+    <parent link="iron_wrist_bridge" />
+    <child link="iron_tool" />
+    <origin xyz="0.06 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.5707963268" upper="1.5707963268" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="iron_tip">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.005" />
+      <inertia ixx="3e-08" iyy="2.541666666666667e-08" izz="2.541666666666667e-08" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.0025 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.003" length="0.005" />
+      </geometry>
+      <material name="iron_tip_2">
+        <color rgba="0.12 0.50 0.80 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0025 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.003" length="0.005" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="iron_tip_fixed" type="fixed">
+    <parent link="iron_tool" />
+    <child link="iron_tip" />
+    <origin xyz="0.12 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="iron_tcp" />
+  <joint name="iron_tcp_fixed" type="fixed">
+    <parent link="iron_tip" />
+    <child link="iron_tcp" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="wire_base">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.166666666666668e-05" iyy="4.166666666666668e-05" izz="4.166666666666668e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.003" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.1 0.006" />
+      </geometry>
+      <material name="wire_base_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.003" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.1 0.006" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_mount" type="fixed">
+    <parent link="world" />
+    <child link="wire_base" />
+    <origin xyz="0.2 0 0" rpy="0 0 3.141592654" />
+  </joint>
+  <link name="wire_turret">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.2" />
+      <inertia ixx="8.333333333333336e-05" iyy="8.333333333333336e-05" izz="8.333333333333336e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.066" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.028" length="0.12" />
+      </geometry>
+      <material name="wire_turret_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.066" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.028" length="0.12" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_base_yaw" type="revolute">
+    <parent link="wire_base" />
+    <child link="wire_turret" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.5707963268" upper="1.5707963268" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="wire_upper_arm">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="0.00019083333333333333" izz="0.00018869999999999998" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+      <material name="wire_upper_arm_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="wire_upper_arm_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="wire_upper_arm_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_shoulder_pitch" type="revolute">
+    <parent link="wire_turret" />
+    <child link="wire_upper_arm" />
+    <origin xyz="0 0 0.155" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.0471975512" upper="1.745329252" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="wire_forearm">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="0.00019083333333333333" izz="0.00018869999999999998" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+      <material name="wire_forearm_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="wire_forearm_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="wire_forearm_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_elbow_pitch" type="revolute">
+    <parent link="wire_upper_arm" />
+    <child link="wire_forearm" />
+    <origin xyz="0.15 0 0" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-2.4434609528" upper="2.4434609528" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="wire_wrist_bridge">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="4.533333333333334e-06" iyy="3.3333333333333335e-05" izz="3.12e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.03 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.012 0.02" />
+      </geometry>
+      <material name="wire_wrist_bridge_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.03 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.012 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+      <material name="wire_wrist_bridge_4">
+        <color rgba="0.35 0.38 0.42 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.045" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+      <material name="wire_wrist_bridge_6">
+        <color rgba="0.20 0.22 0.25 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.043 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.04523 0.02473 0.035" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_wrist_pitch" type="revolute">
+    <parent link="wire_forearm" />
+    <child link="wire_wrist_bridge" />
+    <origin xyz="0.15 0 0" rpy="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-1.9198621772" upper="1.9198621772" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="wire_tool">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.15" />
+      <inertia ixx="2.745e-05" iyy="0.00019125" izz="0.00019619999999999997" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.01 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.035 0.02 0.02" />
+      </geometry>
+      <material name="wire_tool_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.01 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.035 0.02 0.02" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.0725 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.003" length="0.08499999999999999" />
+      </geometry>
+      <material name="wire_tool_4">
+        <color rgba="0.65 0.67 0.70 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0725 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.003" length="0.08499999999999999" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_wrist_yaw" type="revolute">
+    <parent link="wire_wrist_bridge" />
+    <child link="wire_tool" />
+    <origin xyz="0.06 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.5707963268" upper="1.5707963268" velocity="0.15" effort="0.49" />
+  </joint>
+  <link name="wire_tip">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.005" />
+      <inertia ixx="3e-08" iyy="2.541666666666667e-08" izz="2.541666666666667e-08" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.0025 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.001" length="0.005" />
+      </geometry>
+      <material name="wire_tip_2">
+        <color rgba="0.90 0.45 0.10 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0025 0 0" rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.001" length="0.005" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wire_tip_fixed" type="fixed">
+    <parent link="wire_tool" />
+    <child link="wire_tip" />
+    <origin xyz="0.12 0 0" rpy="0 0 0" />
+  </joint>
+  <link name="wire_tcp" />
+  <joint name="wire_tcp_fixed" type="fixed">
+    <parent link="wire_tip" />
+    <child link="wire_tcp" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  <ros2_control name="JointEffortMock" type="system">
+    <hardware>
+      <plugin>mock_components/GenericSystem</plugin>
+    </hardware>
+    <joint name="iron_base_yaw">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">1.1</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="iron_shoulder_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.7</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="iron_elbow_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-1.4</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="iron_wrist_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.6</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="iron_wrist_yaw">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="wire_base_yaw">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-1.1</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="wire_shoulder_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.7</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="wire_elbow_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-1.4</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="wire_wrist_pitch">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.6</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="wire_wrist_yaw">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+    </joint>
+  </ros2_control>
+</robot>

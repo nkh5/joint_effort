@@ -1,0 +1,10 @@
+**/build/
+**/install/
+**/log/
+**/work/
+**/__pycache__/
+*.pyc
+*.log
+launch_params_*
+releases/
+.DS_Store

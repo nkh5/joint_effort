@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="joint_effort">
+  <group name="iron_arm">
+    <chain base_link="iron_base" tip_link="iron_tcp" />
+  </group>
+  <group_state name="park" group="iron_arm">
+    <joint name="iron_base_yaw" value="1.1" />
+    <joint name="iron_shoulder_pitch" value="0.7" />
+    <joint name="iron_elbow_pitch" value="-1.4" />
+    <joint name="iron_wrist_pitch" value="0.6" />
+    <joint name="iron_wrist_yaw" value="0.0" />
+  </group_state>
+  <group name="wire_arm">
+    <chain base_link="wire_base" tip_link="wire_tcp" />
+  </group>
+  <group_state name="park" group="wire_arm">
+    <joint name="wire_base_yaw" value="-1.1" />
+    <joint name="wire_shoulder_pitch" value="0.7" />
+    <joint name="wire_elbow_pitch" value="-1.4" />
+    <joint name="wire_wrist_pitch" value="0.6" />
+    <joint name="wire_wrist_yaw" value="0.0" />
+  </group_state>
+  <group name="both_arms">
+    <group name="iron_arm" />
+    <group name="wire_arm" />
+  </group>
+  <disable_collisions link1="world" link2="table" reason="Adjacent" />
+  <disable_collisions link1="world" link2="pcb" reason="Adjacent" />
+  <disable_collisions link1="world" link2="pcb_fixture" reason="Adjacent" />
+  <disable_collisions link1="pcb" link2="pcb_workspace" reason="Adjacent" />
+  <disable_collisions link1="world" link2="iron_base" reason="Adjacent" />
+  <disable_collisions link1="iron_base" link2="iron_turret" reason="Adjacent" />
+  <disable_collisions link1="iron_turret" link2="iron_upper_arm" reason="Adjacent" />
+  <disable_collisions link1="iron_upper_arm" link2="iron_forearm" reason="Adjacent" />
+  <disable_collisions link1="iron_forearm" link2="iron_wrist_bridge" reason="Adjacent" />
+  <disable_collisions link1="iron_wrist_bridge" link2="iron_tool" reason="Adjacent" />
+  <disable_collisions link1="iron_tool" link2="iron_tip" reason="Adjacent" />
+  <disable_collisions link1="iron_tip" link2="iron_tcp" reason="Adjacent" />
+  <disable_collisions link1="world" link2="wire_base" reason="Adjacent" />
+  <disable_collisions link1="wire_base" link2="wire_turret" reason="Adjacent" />
+  <disable_collisions link1="wire_turret" link2="wire_upper_arm" reason="Adjacent" />
+  <disable_collisions link1="wire_upper_arm" link2="wire_forearm" reason="Adjacent" />
+  <disable_collisions link1="wire_forearm" link2="wire_wrist_bridge" reason="Adjacent" />
+  <disable_collisions link1="wire_wrist_bridge" link2="wire_tool" reason="Adjacent" />
+  <disable_collisions link1="wire_tool" link2="wire_tip" reason="Adjacent" />
+  <disable_collisions link1="wire_tip" link2="wire_tcp" reason="Adjacent" />
+  <disable_collisions link1="iron_base" link2="table" reason="Mount contact" />
+  <disable_collisions link1="iron_turret" link2="table" reason="Invariant mounting clearance" />
+  <disable_collisions link1="wire_base" link2="table" reason="Mount contact" />
+  <disable_collisions link1="wire_turret" link2="table" reason="Invariant mounting clearance" />
+  <disable_collisions link1="table" link2="pcb_fixture" reason="Fixture contact" />
+  <disable_collisions link1="pcb" link2="pcb_fixture" reason="Fixed fixture clearance" />
+</robot>
