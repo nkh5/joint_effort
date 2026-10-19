@@ -1,0 +1,64 @@
+{
+  "assembled_date": "2026-10-18",
+  "python_checks": {
+    "result": "PASS",
+    "count": 34
+  },
+  "native_protocol_checks": {
+    "result": "PASS",
+    "count": 12
+  },
+  "clean_ros_build": {
+    "result": "PASS",
+    "packages": 10,
+    "environment": "Ubuntu 24.04 / ROS 2 Jazzy"
+  },
+  "packaged_cli": {
+    "scope": "Packaged commands with pseudo-terminal motor replies; no real adapter",
+    "checks": [
+      {
+        "command": [
+          "prepare"
+        ],
+        "result": "PASS",
+        "measured_change_degrees": null
+      },
+      {
+        "command": [
+          "step",
+          "--motor",
+          "base",
+          "--counts",
+          "4",
+          "--execute"
+        ],
+        "result": "PASS",
+        "measured_change_degrees": 0.3515625
+      },
+      {
+        "command": [
+          "prepare-turn",
+          "--motor",
+          "base",
+          "--direction",
+          "positive"
+        ],
+        "result": "PASS",
+        "measured_change_degrees": null
+      },
+      {
+        "command": [
+          "turn",
+          "--motor",
+          "base",
+          "--execute"
+        ],
+        "result": "PASS",
+        "measured_change_degrees": 10.1953125
+      }
+    ]
+  },
+  "new_physical_movement_during_packaging": false,
+  "ten_degree_extension_physically_tested": false,
+  "full_five_joint_physical_control_validated": false
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package format="3"><name>joint_effort_cad_review</name><version>0.1.0</version>
+<description>Isolated CAD axis and frame review; no motor control.</description>
+<maintainer email="team@example.invalid">Joint Effort team</maintainer><license>LicenseRef-Unlicensed</license>
+<buildtool_depend>ament_cmake</buildtool_depend>
+<exec_depend>launch</exec_depend><exec_depend>launch_ros</exec_depend><exec_depend>ament_index_python</exec_depend>
+<exec_depend>rclpy</exec_depend><exec_depend>sensor_msgs</exec_depend><exec_depend>rcl_interfaces</exec_depend>
+<exec_depend>robot_state_publisher</exec_depend><exec_depend>rviz2</exec_depend><exec_depend>python3-pyqt5</exec_depend>
+<export><build_type>ament_cmake</build_type></export><depend>rviz_common</depend><depend>rclcpp</depend><build_depend>qtbase5-dev</build_depend></package>

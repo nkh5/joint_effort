@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+from joint_effort_hardware.commission import main
+raise SystemExit(main())

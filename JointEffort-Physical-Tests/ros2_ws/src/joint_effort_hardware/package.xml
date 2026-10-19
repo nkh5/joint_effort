@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>joint_effort_hardware</name><version>0.1.0</version>
+  <description>STS position interface for the iron arm, with measured calibration.</description>
+  <maintainer email="team@example.invalid">Joint Effort team</maintainer>
+  <license>LicenseRef-Unlicensed</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <depend>hardware_interface</depend><depend>pluginlib</depend><depend>rclcpp</depend><depend>rclcpp_lifecycle</depend>
+  <exec_depend>joint_effort_iron</exec_depend><exec_depend>amw_pi_bridge</exec_depend>
+  <exec_depend>python3-yaml</exec_depend><exec_depend>python3-serial</exec_depend>
+  <exec_depend>joint_effort_input</exec_depend><exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

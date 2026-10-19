@@ -1,0 +1,11 @@
+**/build/
+**/install/
+**/log/
+**/work/
+**/__pycache__/
+*.pyc
+*.log
+.DS_Store
+ros2_ws/reports/
+releases/
+ros2_ws/hardware/*measured*.json

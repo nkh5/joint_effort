@@ -1,0 +1,5 @@
+<library path="iron_system">
+  <class name="joint_effort_hardware/IronSystem" type="joint_effort_hardware::IronSystem" base_class_type="hardware_interface::SystemInterface">
+    <description>Calibrated five-joint STS position interface.</description>
+  </class>
+</library>
