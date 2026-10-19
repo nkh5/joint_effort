@@ -1,6 +1,6 @@
 # Physical ROS source
 
-Start with the README in the parent folder. The base/shoulder tests can run
+Start with the README in the parent folder. The three-motor fixed-base tests can run
 without ROS using `../motor_test.sh`. See `../docs/ROS-HARDWARE.md` for the full
 five-joint driver, its dependencies and the calibration still required.
 

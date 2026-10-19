@@ -68,8 +68,9 @@ Paths are relative to `JointEffort-Physical-Tests`.
 | `ros2_ws/src/joint_effort_hardware/hardware.xml` | Register the physical hardware plugin. |
 | `ros2_ws/src/joint_effort_hardware/include/joint_effort_hardware/sts_bus.hpp` | Declare serial and joint-conversion interfaces. |
 | `ros2_ws/src/joint_effort_hardware/joint_effort_hardware/__init__.py` | Python/ROS package registration. |
-| `ros2_ws/src/joint_effort_hardware/joint_effort_hardware/commission.py` | Run bounded base/shoulder motor movements. |
+| `ros2_ws/src/joint_effort_hardware/joint_effort_hardware/commission.py` | Hold base 1 and test shoulder 2 or elbow 3. |
 | `ros2_ws/src/joint_effort_hardware/joint_effort_hardware/configuration.py` | Validate calibration and generate the physical robot description. |
+| `ros2_ws/src/joint_effort_hardware/joint_effort_hardware/id_assignment.py` | Assign and verify one isolated motor ID in EEPROM. |
 | `ros2_ws/src/joint_effort_hardware/launch/hardware.launch.py` | Start the inactive physical ROS system. |
 | `ros2_ws/src/joint_effort_hardware/launch/input.launch.py` | Setup, operating instructions, status or source credits. |
 | `ros2_ws/src/joint_effort_hardware/package.xml` | Build/install rules or package dependencies. |
@@ -174,6 +175,7 @@ Paths are relative to `JointEffort-Physical-Tests`.
 | `ros2_ws/src/vendor/teleop_tools/teleop_tools_msgs/package.xml` | Vendored joystick mapping/message source or retained upstream notice. |
 | `ros2_ws/tests/test_commission.py` | Automated hardware-code check; does not use real motors. |
 | `ros2_ws/tests/test_hardware.py` | Automated hardware-code check; does not use real motors. |
+| `ros2_ws/tests/test_id_assignment.py` | Automated hardware-code check; does not use real motors. |
 | `ros2_ws/tests/test_motor_identification.py` | Automated hardware-code check; does not use real motors. |
 | `ros2_ws/tools/hardware_check.py` | Check calibration without serial access. |
 | `ros2_ws/tools/hardware_stop.py` | Request a software hold without torque release. |

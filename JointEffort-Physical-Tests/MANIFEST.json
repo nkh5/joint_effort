@@ -1,6 +1,6 @@
 {
   "name": "JointEffort-Physical-Tests",
-  "scope": "Physical base/shoulder tests and optional full-arm ROS source; calibration pending",
+  "scope": "Three-motor fixed-base tests and optional full-arm ROS source; calibration pending",
   "files": {
     ".gitignore": {
       "bytes": 137,
@@ -8,8 +8,8 @@
       "executable": false
     },
     "README.md": {
-      "bytes": 5977,
-      "sha256": "6af6ca3e764ce4bddff9f253f4c6e70e5b0355db1b945c946066ef96435a3014",
+      "bytes": 10228,
+      "sha256": "1fc4120c525dcaec91079137fcdacd445fcae1b767125d837b3aaeb7e4210327",
       "executable": false
     },
     "THIRD_PARTY.md": {
@@ -28,28 +28,28 @@
       "executable": true
     },
     "docs/FILES.md": {
-      "bytes": 20929,
-      "sha256": "1ee8482e010a992a5585ed2fe85997f412e91d9800a382edb684271a78ba813f",
+      "bytes": 21163,
+      "sha256": "376f3c25e09a0d7ccaa93d5b49df8a5114307254eaf1757a64cce951239ac44b",
       "executable": false
     },
     "docs/ROS-HARDWARE.md": {
-      "bytes": 4623,
-      "sha256": "4c2a68b9a475c8e60d6907658a9c5f808bd55a4804d1499e3ac73b5a1af694e3",
+      "bytes": 4643,
+      "sha256": "616bcda89e6b7c4f0713ac288a693b35ec4425a5d9f7713e4d41ce00012a0135",
       "executable": false
     },
     "docs/STATUS.md": {
-      "bytes": 2000,
-      "sha256": "463b3af596b089eef31d5a62bd3db781adf88a7c250f792b8df503c188593139",
+      "bytes": 3117,
+      "sha256": "d302a5ef732ffd4db986108292e907b9271267032c0d4deadc656354e81bc255",
       "executable": false
     },
     "docs/TEST-DETAILS.md": {
-      "bytes": 2344,
-      "sha256": "cf7163c808b8e8ab20251993a1438855dfadbeb424635b33ff31f7026e03395c",
+      "bytes": 4576,
+      "sha256": "2fa8fcb5aa7b1bb4aae1c2f61168186e4291f09bdfbdf0d4de34bec63ea1b772",
       "executable": false
     },
     "docs/VERIFICATION.json": {
-      "bytes": 1378,
-      "sha256": "03dcf7c574e6aa87a79f0178bffe382746f1a451b149061ad07484858cb5c4cb",
+      "bytes": 3626,
+      "sha256": "6467595baac95971d1f24b67f362b09c75f37a3ae88e1666571a511e3036a6b1",
       "executable": false
     },
     "inspect_motors.sh": {
@@ -63,8 +63,8 @@
       "executable": true
     },
     "ros2_ws/README.md": {
-      "bytes": 477,
-      "sha256": "a249108a81e6a4a3c5ec72628d413b077493e0dd9ffc12ddbe3f9bbc1e7c6e18",
+      "bytes": 486,
+      "sha256": "37dc78ea45d3b3be43a95ead89b4835145c45be5a49b32a3b5f4d8b71dfa25a4",
       "executable": false
     },
     "ros2_ws/firmware/COLCON_IGNORE": {
@@ -328,13 +328,18 @@
       "executable": false
     },
     "ros2_ws/src/joint_effort_hardware/joint_effort_hardware/commission.py": {
-      "bytes": 17575,
-      "sha256": "36f306aeb93e6e0d4b89ba9d65e231dd5100202f508f8d5d604ab7b45a779b5b",
+      "bytes": 22892,
+      "sha256": "c59ec35726b62af2bf24727d6dc3c8133528d9ed1f8ce020d9645d4741627cf0",
       "executable": false
     },
     "ros2_ws/src/joint_effort_hardware/joint_effort_hardware/configuration.py": {
       "bytes": 4447,
       "sha256": "d7f309e1582d54edfbc5dc19374b8d681913823b91e5bae0b559890ee6f64b1f",
+      "executable": false
+    },
+    "ros2_ws/src/joint_effort_hardware/joint_effort_hardware/id_assignment.py": {
+      "bytes": 6810,
+      "sha256": "781ec564c879b9dffbbff5fbb94fa0499bb1e7f670e32e8718e5accfd11eb393",
       "executable": false
     },
     "ros2_ws/src/joint_effort_hardware/launch/hardware.launch.py": {
@@ -848,13 +853,18 @@
       "executable": false
     },
     "ros2_ws/tests/test_commission.py": {
-      "bytes": 11424,
-      "sha256": "a0402c1f60d60cdfe8ad818c3878cd456940bd1fb0c7581b1970e33013c1ec63",
+      "bytes": 16623,
+      "sha256": "37c498bac5fc108dcf9ea1ea8f2d4872307af984e833c442922e404617091272",
       "executable": false
     },
     "ros2_ws/tests/test_hardware.py": {
       "bytes": 4428,
       "sha256": "308b6ac51557a045fbf0a4fcd12bd84d0f1e2dda3c27e0044ae1a6d7995fdf10",
+      "executable": false
+    },
+    "ros2_ws/tests/test_id_assignment.py": {
+      "bytes": 7725,
+      "sha256": "30ce7e31f8dcdcccaf716c67af8d494bb75756b163d2f491cb6b2a56f3724b95",
       "executable": false
     },
     "ros2_ws/tests/test_motor_identification.py": {
@@ -898,8 +908,8 @@
       "executable": true
     },
     "tools/package_physical_tests.py": {
-      "bytes": 27745,
-      "sha256": "dc1038cc3133ee5e1d812b274fdfe0f007b3a7d95a5717fa2b143252cd0956ee",
+      "bytes": 35466,
+      "sha256": "f6fbc321bca6b4dfedb9181b099bb75b5e16f751154455e0f63dbb112787ac95",
       "executable": false
     }
   }

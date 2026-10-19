@@ -14,7 +14,23 @@ Prepared on October 18, 2026 from the current Ubuntu workspace.
 - A small base test returned PASS. One saved result showed two counts of actual
   movement for a four-count target change, within the test's final tolerance.
 
-## Software checks
+## Three-motor update (October 18, 2026)
+
+- The primary Python/ROS commissioning entry point now requires IDs 1, 2 and 3.
+- Motor 1 holds its starting measured position; only shoulder 2 and elbow 3 can
+  receive movement tests. Both small steps and the 10-degree extension enforce it.
+- A held-base drift or torque loss stops subsequent movement goals. Preparation
+  remains read-only. New three-motor sessions are required.
+- The updated folder passed 57 focused Python checks on Linux using pseudo-terminal
+  motor replies, including 30 commissioning and 13 EEPROM-ID checks. No physical motors were used.
+- Permanent EEPROM ID assignment now supports numeric IDs 1..6, with read-only
+  post-power-cycle verification. Motion testing remains limited to IDs 1..3.
+  ID writes, missing acknowledgements and failed-write relocking are emulator-tested.
+- Third-motor identity, three-motor feedback timing and hold behavior under load
+  remain physically unvalidated. Earlier physical results below concern the
+  original two-motor version and do not establish this update's bench results.
+
+## Earlier release software checks (before this update)
 
 - The current full workspace passed 75 Python tests locally.
 - The 16 original commissioning checks passed on the Pi before the 10-degree
@@ -35,4 +51,4 @@ Prepared on October 18, 2026 from the current Ubuntu workspace.
 
 Automated checks do not establish physical soldering accuracy or collision-free
 motion. Full-arm calibration remains blank. The main README provides the limited
-base-and-shoulder tests that can be run now.
+three-motor fixed-base test commands.

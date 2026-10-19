@@ -1,4 +1,4 @@
-"""Small, measured-position tests for the base and shoulder motors."""
+"""Three-motor tests: hold base ID 1 stationary; move shoulder ID 2 or elbow ID 3."""
 import argparse
 import json
 import math
@@ -6,9 +6,14 @@ from pathlib import Path
 import time
 
 PORT = '/dev/serial/by-id/usb-1a86_USB_Single_Serial_5B14028914-if00'
-IDS = {'base': 1, 'shoulder': 2}
+IDS = {'base': 1, 'shoulder': 2, 'elbow': 3}
+MOVABLE = {'shoulder': 2, 'elbow': 3}
+MOTOR_IDS = tuple(IDS.values())
+PROFILE = 'three-motor-fixed-base-v1'
+HOLD_TOLERANCE = 2              # Encoder counts; never retarget a drifting base.
 SPAN = 8                         # About 0.70 degrees at the motor shaft.
 SPEED = 10                       # Nonzero; phase 12 selects counts/second.
+FEEDBACK_DEADLINE = .015         # Complete three-motor read budget.
 PERIOD = .02
 MOVE_INTERVAL = .1
 SETTLE_SECONDS = .5
@@ -28,7 +33,7 @@ def word(data, offset=0):
 
 
 def frame(ident, opcode, parameters):
-    require(ident in (1, 2), 'Only motor IDs 1 and 2 are allowed')
+    require(type(ident) is int and ident in MOTOR_IDS, 'Only motor IDs 1, 2 and 3 are allowed')
     body = bytes([ident, len(parameters)+2, opcode, *parameters])
     return b'\xff\xff'+body+bytes([~sum(body) & 255])
 
@@ -38,6 +43,7 @@ class Bus:
         self.port = port
         self.selected = None
         self.bounds = None
+        self.hold_target = None
         self.healthy = True
         self.writes = []
 
@@ -69,15 +75,22 @@ class Bus:
         return self.exchange(ident, 2, [address, count], count)
 
     def goal(self, ident, target):
-        require(ident == self.selected and self.bounds is not None, 'Motor is not selected')
-        require(type(target) is int and self.bounds[0] <= target <= self.bounds[1], 'Target outside test window')
+        if ident == IDS['base']:
+            require(type(self.hold_target) is int and target == self.hold_target,
+                    'Motor 1 is stationary; only its latched starting position is allowed')
+        else:
+            require(ident in MOVABLE.values() and ident == self.selected and self.bounds is not None,
+                    'Motor is not selected')
+            require(type(target) is int and self.bounds[0] <= target <= self.bounds[1], 'Target outside test window')
+        require(type(target) is int and 0 <= target <= 4095, 'Invalid encoder target')
         # RAM only: acceleration, goal position, time=0, nonzero speed.
         parameters = [41, 1, target & 255, target >> 8, 0, 0, SPEED, 0]
         self.writes.append({'id': ident, 'address': 41, 'target': target})
         self.exchange(ident, 3, parameters, 0)
 
     def enable(self, ident):
-        require(ident == self.selected, 'Motor is not selected')
+        require((ident == IDS['base'] and type(self.hold_target) is int)
+                or (ident in MOVABLE.values() and ident == self.selected), 'Motor is not selected')
         self.writes.append({'id': ident, 'address': 40, 'value': 1})
         self.exchange(ident, 3, [40, 1], 0)
 
@@ -98,7 +111,7 @@ def identity(bus, ident):
 def sample(bus):
     start = time.monotonic()
     states = {}
-    for ident in (1, 2):
+    for ident in MOTOR_IDS:
         data = bus.read(ident, 33, 38)
         raw = word(data, 23)
         voltage = data[29]/10
@@ -111,7 +124,7 @@ def sample(bus):
         states[str(ident)] = {'counts': raw, 'torque': data[7], 'voltage_v': voltage,
                              'temperature_c': data[30], 'moving': data[33], 'status': data[32]}
     elapsed = time.monotonic()-start
-    require(elapsed <= .015, 'Two-motor feedback took more than 15 ms')
+    require(elapsed <= FEEDBACK_DEADLINE, 'Three-motor feedback took more than 15 ms')
     return states, elapsed
 
 
@@ -123,7 +136,7 @@ def save(path, data):
 
 
 def prepare(bus, port, session_path, seconds=3.):
-    info = {str(i): identity(bus, i) for i in (1, 2)}
+    info = {str(i): identity(bus, i) for i in MOTOR_IDS}
     first = None
     latencies = []
     ticks = max(2, math.ceil(seconds/PERIOD))
@@ -151,18 +164,19 @@ def prepare(bus, port, session_path, seconds=3.):
         require(info[key]['motor_min']+SPAN <= center <= info[key]['motor_max']-SPAN,
                 f'Motor {key}: too close to the motor angle boundary')
         motors[key] = {**info[key], **state, 'anchor': center, 'min': center-SPAN, 'max': center+SPAN}
-    result = {'scope': 'Two-motor commissioning only; not arm calibration or MoveIt control',
+    result = {'profile': PROFILE,
+              'scope': 'Three-motor commissioning; base ID 1 fixed; not arm calibration or MoveIt control',
               'port': port, 'created_unix': time.time(), 'motors': motors,
               'samples': ticks, 'requested_rate_hz': 50,
               'measured_rate_hz': ticks/(time.monotonic()-started), 'max_interval_ms': 1000*max_interval,
-              'max_pair_read_ms': 1000*max(latencies),
+              'max_feedback_read_ms': 1000*max(latencies),
               'writes_sent': len(bus.writes), 'multimeter_supply_v': 12.6}
     save(session_path, result)
     return result
 
 
 def prepare_turn(bus, port, session_path, motor, direction, seconds=3.):
-    require(motor in IDS and direction in (-1, 1), 'Invalid motor or direction')
+    require(motor in MOVABLE and direction in (-1, 1), 'Motor 1 is stationary; choose shoulder or elbow and a valid direction')
     session = prepare(bus, port, session_path, seconds)
     session_path.unlink()  # Only save the larger window after all its checks pass.
     saved = session['motors'][str(IDS[motor])]
@@ -179,6 +193,9 @@ def prepare_turn(bus, port, session_path, motor, direction, seconds=3.):
 
 
 def step(bus, port, session, motor, delta, ten_degree=False):
+    require(motor in MOVABLE, 'Motor 1 is stationary; choose shoulder or elbow')
+    require(session.get('profile') == PROFILE and set(session.get('motors', {})) == {'1', '2', '3'},
+            'Run prepare again for the three-motor fixed-base setup; old sessions are not accepted')
     if ten_degree:
         turn = session.get('turn', {})
         require(turn.get('motor') == motor and turn.get('direction') in (-1, 1)
@@ -191,7 +208,7 @@ def step(bus, port, session, motor, delta, ten_degree=False):
         require(type(delta) is int and 1 <= abs(delta) <= SPAN, 'Use a nonzero count step between -8 and 8')
     require(session['port'] == port and 0 <= time.time()-session['created_unix'] <= 900,
             'Preparation is missing, expired or for a different port; run prepare again')
-    for ident_check in (1, 2):
+    for ident_check in MOTOR_IDS:
         saved = session['motors'][str(ident_check)]
         expected_min, expected_max = saved['anchor']-SPAN, saved['anchor']+SPAN
         if ten_degree and ident_check == IDS[motor]:
@@ -204,7 +221,7 @@ def step(bus, port, session, motor, delta, ten_degree=False):
                 'Invalid prepared motor window; run prepare again')
     ident = IDS[motor]
     key = str(ident)
-    for i in (1, 2):
+    for i in MOTOR_IDS:
         identity(bus, i)
     states, _ = sample(bus)
     bounds = session['motors'][key]
@@ -220,9 +237,14 @@ def step(bus, port, session, motor, delta, ten_degree=False):
         if state['torque']:
             old_goal = word(bus.read(int(k), 41, 7), 1)
             require(abs(old_goal-state['counts']) <= 2, 'An enabled motor has a pending movement; stopped')
-    other = str(3-ident)
+    stationary = str(IDS['base'])
+    hold_target = states[stationary]['counts']
+    require(abs(hold_target-session['motors'][stationary]['anchor']) <= HOLD_TOLERANCE,
+            'Stationary motor 1 moved since preparation; support it and prepare again')
+    other = str(next(i for i in MOVABLE.values() if i != ident))
     other_start = states[other]['counts']
     other_torque = states[other]['torque']
+    bus.hold_target = hold_target
     bus.selected, bus.bounds = ident, (bounds['min'], bounds['max'])
     last_states = states
     last_receipt = time.monotonic()
@@ -230,15 +252,29 @@ def step(bus, port, session, motor, delta, ten_degree=False):
     complete = False
     latencies = []
     try:
+        # Latch and verify ID 1's measured goal BEFORE enabling its hold torque.
+        # This goal never follows drift and is never changed to a movement target.
         wrote = True
-        bus.goal(ident, start)
-        goal = bus.read(ident, 41, 7)
-        require(goal == [1, start & 255, start >> 8, 0, 0, SPEED, 0], 'Measured-position preload did not verify')
-        states, _ = sample(bus)
-        last_states, last_receipt = states, time.monotonic()
-        require(abs(states[key]['counts']-start) <= 1, 'Selected motor moved during preload')
-        if states[key]['torque'] == 0:
-            bus.enable(ident)
+        for preload_id, preload_target in ((IDS['base'], hold_target), (ident, start)):
+            bus.goal(preload_id, preload_target)
+            goal = bus.read(preload_id, 41, 7)
+            require(goal == [1, preload_target & 255, preload_target >> 8, 0, 0, SPEED, 0],
+                    'Measured-position preload did not verify')
+            states, _ = sample(bus)
+            last_states, last_receipt = states, time.monotonic()
+            require(abs(states[str(preload_id)]['counts']-preload_target) <= 1,
+                    'Motor moved during preload')
+            require(abs(states[stationary]['counts']-hold_target) <= HOLD_TOLERANCE,
+                    'Stationary motor 1 moved during preload')
+            if states[str(preload_id)]['torque'] == 0:
+                bus.enable(preload_id)
+            states, _ = sample(bus)
+            last_states, last_receipt = states, time.monotonic()
+            require(states[str(preload_id)]['torque'] == 1, 'Motor torque enable did not verify')
+            require(abs(states[stationary]['counts']-hold_target) <= HOLD_TOLERANCE,
+                    'Stationary motor 1 moved while enabling hold')
+            require(abs(states[other]['counts']-other_start) <= 2
+                    and states[other]['torque'] == other_torque, 'Unselected motor moved or changed torque state')
         scheduled = start
         began = time.monotonic()
         deadline = began
@@ -253,6 +289,9 @@ def step(bus, port, session, motor, delta, ten_degree=False):
             last_states, last_receipt = states, time.monotonic()
             latencies.append(latency)
             measured = states[key]['counts']
+            require(states[stationary]['torque'] == 1
+                    and abs(states[stationary]['counts']-hold_target) <= HOLD_TOLERANCE,
+                    'Stationary motor 1 moved or lost hold torque; stop and support it')
             require(states[key]['torque'] == 1, 'Selected motor lost torque')
             require(bounds['min'] <= measured <= bounds['max'], 'Measured position exceeded the test window')
             require(abs(measured-scheduled) <= 4, 'Motor is not following the small test command')
@@ -278,8 +317,10 @@ def step(bus, port, session, motor, delta, ten_degree=False):
         return {'result': 'PASS', 'motor': motor, 'id': ident, 'start_counts': start,
                 'target_counts': target, 'end_counts': end, 'measured_change_counts': end-start,
                 'shaft_change_degrees': (end-start)*360/4096,
-                'max_pair_read_ms': 1000*max(latencies), 'final_states': last_states,
-                'torque_left_enabled': True}
+                'max_feedback_read_ms': 1000*max(latencies), 'final_states': last_states,
+                'torque_left_enabled': True, 'stationary_motor_id': 1,
+                'stationary_target_counts': hold_target,
+                'stationary_end_counts': last_states[stationary]['counts']}
     finally:
         # Do not release a loaded arm. On a healthy connection, stop at the latest
         # measured position. Never resend stale feedback after a serial fault.
@@ -294,30 +335,59 @@ def step(bus, port, session, motor, delta, ten_degree=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port', default=PORT)
-    parser.add_argument('--session', type=Path, default=Path('work/two-motor-session.json'))
-    parser.add_argument('--report', type=Path, default=Path('reports/iron/two-motor-last-test.json'))
+    parser.add_argument('--session', type=Path, default=Path('work/three-motor-session.json'))
+    parser.add_argument('--report', type=Path, default=Path('reports/iron/three-motor-last-test.json'))
     sub = parser.add_subparsers(dest='command', required=True)
-    sub.add_parser('prepare', help='Read both motors at 50 Hz and record a small test window; no writes')
-    run = sub.add_parser('step', help='Move one selected motor; leave torque enabled at the end')
-    run.add_argument('--motor', choices=IDS, required=True)
+    sub.add_parser('prepare', help='Read all three motors at 50 Hz and record a small test window; no writes')
+    run = sub.add_parser('step', help='Hold motor 1 and move shoulder 2 or elbow 3; leave torque enabled')
+    run.add_argument('--motor', choices=MOVABLE, required=True)
     run.add_argument('--counts', type=int, default=4)
     run.add_argument('--execute', action='store_true', required=True)
     larger = sub.add_parser('prepare-turn', help='Prepare one bounded ten-degree test; reads only')
-    larger.add_argument('--motor', choices=IDS, required=True)
+    larger.add_argument('--motor', choices=MOVABLE, required=True)
     larger.add_argument('--direction', choices=['positive', 'negative'], default='positive')
     turn = sub.add_parser('turn', help='Run the prepared ten-degree shaft movement')
-    turn.add_argument('--motor', choices=IDS, required=True)
+    turn.add_argument('--motor', choices=MOVABLE, required=True)
     turn.add_argument('--execute', action='store_true', required=True)
+    assign = sub.add_parser('assign-id', help='Permanently assign one physically isolated motor ID in EEPROM')
+    assign_target = assign.add_mutually_exclusive_group(required=True)
+    assign_target.add_argument('--motor', choices=IDS, help='Role alias for base 1, shoulder 2 or elbow 3')
+    assign_target.add_argument('--new-id', type=int, choices=range(1, 7), help='Permanent target ID, 1 through 6')
+    assign.add_argument('--old-id', type=int, choices=range(254), required=True, metavar='0..253')
+    assign.add_argument('--single-motor-connected', action='store_true', required=True)
+    assign.add_argument('--disable-torque', action='store_true', help='Explicit torque-off for an unloaded/supported motor')
+    assign.add_argument('--execute', action='store_true', required=True)
+    verify = sub.add_parser('verify-id', help='Read-only check of the assigned ID after an operator power cycle')
+    verify_target = verify.add_mutually_exclusive_group(required=True)
+    verify_target.add_argument('--motor', choices=IDS)
+    verify_target.add_argument('--id', type=int, choices=range(1, 7), help='ID to verify, 1 through 6')
+    verify.add_argument('--single-motor-connected', action='store_true', required=True)
     args = parser.parse_args()
-    if args.command in ('prepare', 'prepare-turn') and args.session.exists():
+    if args.command in ('prepare', 'prepare-turn', 'assign-id') and args.session.exists():
         args.session.unlink()  # Failed preparation must not leave an old valid session.
     result = {'result': 'FAIL', 'command': args.command, 'writes': []}
     try:
         import serial
-        with serial.Serial(args.port, 1000000, timeout=.001, write_timeout=.01, exclusive=True) as port:
-            bus = Bus(port)
-            result['writes'] = bus.writes
-            if args.command == 'prepare':
+        write_timeout = .2 if args.command in ('assign-id', 'verify-id') else .01
+        with serial.Serial(args.port, 1000000, timeout=.001, write_timeout=write_timeout, exclusive=True) as port:
+            if args.command in ('assign-id', 'verify-id'):
+                from .id_assignment import IDBus, assign_isolated, verify_isolated
+                bus = IDBus(port)
+                result['writes'] = bus.writes
+                if args.command == 'assign-id':
+                    target_id = IDS[args.motor] if args.motor else args.new_id
+                    result.update(assign_isolated(bus, args.old_id, target_id,
+                        single_motor_connected=args.single_motor_connected, disable_torque=args.disable_torque))
+                else:
+                    target_id = IDS[args.motor] if args.motor else args.id
+                    result.update(verify_isolated(bus, target_id, single_motor_connected=args.single_motor_connected))
+                result['motor'] = args.motor or f'ID {target_id}'
+            else:
+                bus = Bus(port)
+                result['writes'] = bus.writes
+            if args.command in ('assign-id', 'verify-id'):
+                pass
+            elif args.command == 'prepare':
                 result.update(prepare(bus, args.port, args.session)); result['result'] = 'PASS'
             elif args.command == 'prepare-turn':
                 result.update(prepare_turn(bus, args.port, args.session, args.motor,
@@ -333,7 +403,7 @@ def main():
         result['error'] = str(exc) or 'Interrupted by operator'
     result['recorded_unix'] = time.time()
     save(args.report, result)
-    save(args.report.parent/f'two-motor-{args.command}-{time.time_ns()}.json', result)
+    save(args.report.parent/f'three-motor-{args.command}-{time.time_ns()}.json', result)
     print(json.dumps(result, indent=2), flush=True)
     if args.command in ('step', 'turn'):
         print('Torque is not automatically released. Support the arm before disconnecting servo power.')

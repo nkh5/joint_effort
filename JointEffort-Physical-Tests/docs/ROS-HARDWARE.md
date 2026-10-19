@@ -1,7 +1,7 @@
 # Full-arm ROS hardware source
 
 This optional path is for the calibrated five-joint arm. It is not required for
-the two-motor tests in the main README. The source is included so the hardware
+the three-motor tests in the main README. The source is included so the hardware
 work can be continued from one folder. Full-arm physical acceptance is pending.
 
 ## Build on Ubuntu 24.04 and ROS 2 Jazzy
@@ -41,7 +41,7 @@ With only the identified base and shoulder connected:
 ```
 
 This sends no motor-setting or movement writes. Stop other serial owners first.
-The ROS entry point for the same two-motor test is `./scripts/run_motor_test.sh`.
+The ROS entry point for the same three-motor test is `./scripts/run_motor_test.sh`.
 
 ## Calibration before full-arm control
 
@@ -67,7 +67,7 @@ Check the file without opening a serial port:
 
 Verify the motor speed units and encoder settings on all five motors before
 full-arm activation. The full driver assumes the count-per-second settings
-already checked by the separate two-motor tool on the base and shoulder.
+already checked by the separate commissioning tool (now IDs 1, 2 and 3, with ID 1 held).
 Account for the observed motor voltage-sensor offset when configuring monitoring;
 the accepted sensor range does not increase the motor's supply rating.
 
