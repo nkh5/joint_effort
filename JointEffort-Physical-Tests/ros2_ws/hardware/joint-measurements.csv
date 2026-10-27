@@ -1,6 +1,0 @@
-joint,physical_location,motor_id,reported_model,motor_voltage_label,supply_voltage_v,zero_counts,direction,external_ratio,safe_min_counts,safe_max_counts,safe_min_degrees,safe_max_degrees,initial_speed_rad_s,tracking_error_rad,notes
-joint_1,base,1,777,,12.6,,,,,,,,0.02,0.02,"ID verified individually and on chain; code 777; multimeter supply 12.6 V; zero, direction, ratio and travel not calibrated"
-joint_2,shoulder,2,777,,12.6,,,,,,,,0.02,0.02,"ID verified individually and on chain; code 777; multimeter supply 12.6 V; zero, direction, ratio and travel not calibrated"
-joint_3,elbow,,,,12.6,,,,,,,,0.02,0.02,
-joint_4,wrist_1,,,,12.6,,,,,,,,0.02,0.02,
-joint_5,wrist_2,,,,12.6,,,,,,,,0.02,0.02,

@@ -1,1 +1,0 @@
-"""Iron-arm hardware configuration."""
