@@ -1,7 +1,0 @@
-build/
-install/
-log/
-work/
-__pycache__/
-*.pyc
-launch_params_*
