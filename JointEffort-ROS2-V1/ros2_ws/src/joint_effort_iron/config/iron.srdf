@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="joint_effort_iron">
+  <group name="iron_arm">
+    <chain base_link="base_link" tip_link="iron_tcp" />
+  </group>
+  <group_state name="park" group="iron_arm">
+    <joint name="joint_1" value="0" />
+    <joint name="joint_2" value="-0.5" />
+    <joint name="joint_3" value="1.2" />
+    <joint name="joint_4" value="0" />
+    <joint name="joint_5" value="1.5" />
+  </group_state>
+  <disable_collisions link1="base_link" link2="base_rotation_link" reason="Adjacent" />
+  <disable_collisions link1="base_rotation_link" link2="upper_arm_link" reason="Adjacent" />
+  <disable_collisions link1="upper_arm_link" link2="forearm_link" reason="Adjacent" />
+  <disable_collisions link1="forearm_link" link2="wrist_link" reason="Adjacent" />
+  <disable_collisions link1="wrist_link" link2="tool_link" reason="Adjacent" />
+  <disable_collisions link1="tool_link" link2="iron_tip" reason="Adjacent" />
+  <disable_collisions link1="world" link2="base_link" reason="Adjacent" />
+  <disable_collisions link1="iron_tip" link2="iron_tcp" reason="Adjacent" />
+  <disable_collisions link1="world" link2="table" reason="Adjacent" />
+  <disable_collisions link1="world" link2="pcb_fixture" reason="Adjacent" />
+  <disable_collisions link1="world" link2="pcb" reason="Adjacent" />
+  <disable_collisions link1="base_link" link2="table" reason="Fixed mounting or fixture contact" />
+  <disable_collisions link1="table" link2="pcb_fixture" reason="Fixed mounting or fixture contact" />
+  <disable_collisions link1="pcb_fixture" link2="pcb" reason="Fixed mounting or fixture contact" />
+  <disable_collisions link1="table" link2="pcb" reason="Fixed mounting or fixture contact" />
+</robot>

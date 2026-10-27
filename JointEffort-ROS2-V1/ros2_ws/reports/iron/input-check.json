@@ -1,0 +1,76 @@
+{
+  "scope": "Synthetic USB-HID-equivalent Joy; cold mock only",
+  "checks": {
+    "startup_held_after_invalid_blocked": true,
+    "translation_tip_delta_mm": [
+      -0.001639404750619633,
+      3.434721391332163e-05,
+      1.340352913074716
+    ],
+    "release_hold_drift_rad": 0.0,
+    "level_1_z_m_s": 0.00011739130629145584,
+    "level_10_z_m_s": 0.0011739130629145583,
+    "level_20_z_m_s": 0.0023478261258291166,
+    "rotation_joint_change_rad": [
+      -0.006618668089764542,
+      0.0028476861899178743,
+      -0.004660077261124069,
+      -0.012929528097082489,
+      -0.0018028644863824581
+    ],
+    "mode_change_held_stops": true,
+    "joy_loss_drift_rad": 0.0,
+    "joy_recovery_held_stays_disabled": true,
+    "nan_joy_stops": true,
+    "short_joy_stops": true,
+    "old_joy_stops": true,
+    "software_stop_latches": true,
+    "other_owner_and_no_auto_retry": true,
+    "demo_refuses_while_joystick_owns": true,
+    "feedback_loss_and_recovery_requires_release": true,
+    "collision_halt_no_auto_resume": true,
+    "nan_raw_command_stops": true,
+    "old_raw_command_stops": true,
+    "future_raw_command_stops": true,
+    "frame_raw_command_stops": true,
+    "replay_raw_command_stops": true,
+    "joy_teleop_loss_stops": true,
+    "teleop_restart_no_auto_resume": true,
+    "canonical_shape_and_final_collision_clear": true,
+    "planned_motion_with_idle_input_succeeds": true,
+    "documented_synthetic_demo_succeeds": true
+  },
+  "source_sha256": {
+    "src/joint_effort_input/config/input.yaml": "71818ff7f5539007852caf3925fe0aba786c96b11b2c42d737cbee51d985054e",
+    "src/joint_effort_input/config/teleop.yaml": "7d189cf1d305367b699be69366a0d1fcccd4cb6c994fa4bec160fb61c9619127",
+    "src/joint_effort_input/joint_effort_input/__init__.py": "abfeb1925aaecc2fcbb9633de0a6f57d2c3a2df658f53e89b99d0b2ef827ae68",
+    "src/joint_effort_input/joint_effort_input/core.py": "97653c4bbbdf855a27022093e6acdfdcdc01dd092d70310768bd8f7e0503a10b",
+    "src/joint_effort_input/joint_effort_input/display.py": "72c82fdc0cb9f653c8a9d2224549b6ee0daf356702c4ef93f93a0bb694023487",
+    "src/joint_effort_input/joint_effort_input/forwarder.py": "01551cb05ac013ddf940d3e376dd2aab345076bed0e52f72171180a9aad9ce17",
+    "src/joint_effort_input/joint_effort_input/lease.py": "03af554e6b2b4cac5159124563114d6198f1c485d48b7dc413bc98aa278e0def",
+    "src/joint_effort_input/joint_effort_input/synthetic.py": "02cf1698c1589ed030fb1024aafc4c127f35bbc5f4f3fb5fbd038f63b2f5b595",
+    "src/joint_effort_input/joint_effort_input/teleop.py": "359f9c1406d20b65615a7c086776047e9507a871f48d81c48830685f4016c1ed",
+    "src/joint_effort_input/launch/input.launch.py": "f2f8a9c94b9a50edab0756ced84bf10324ccde90bf8f97d6373d7859f21c9075",
+    "src/joint_effort_input/package.xml": "f86ad908ead706764de47a9dfc27a9f2658ffe2bfd9ac742c4eddaa26b637c62",
+    "src/joint_effort_input/resource/joint_effort_input": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/joint_effort_input/setup.cfg": "3a56ade55c1e64b9e24d7d9ac2e31d2096b2e19b9629f6e04f3e7ac7e4cb1cda",
+    "src/joint_effort_input/setup.py": "9a0c68d9719de757e2e556b0f1f31b5770e9ccf410f2bf8842a61f09849da439",
+    "tools/input_demo.py": "d56dbb7fe1fb0f8fade917d5ed19e07049be84e44733bdde556db5ecd40450b5",
+    "tools/input_probe.py": "87b949a23156e334f7d7f4553350c482c4041635fe7d096be7e9e1efaa0303da",
+    "tools/iron_demo.py": "7be1c3766767ba180cb7665cd2d6eb5925e28af8b0d77593013d09e7e114bac5",
+    "tools/iron_motion.py": "9c8d2f735593ee2f6bdff4bc2b7acc18229dec0591582b68a454a826a8d33bfa",
+    "tools/iron_stop.py": "2796eb003252052cb8767bd8c6b6d32811fbb781a5b4d2b10b52cd4bde78abcd",
+    "tools/check_input_live.py": "22b365768846466eb625663c2860c752d7c96ea5025abf8da5b842e37f7d91c0"
+  },
+  "result": "PASS",
+  "shutdown": {
+    "codes": [
+      0,
+      0,
+      0
+    ],
+    "children_clean": true,
+    "rviz_model_ok": true,
+    "tf_ok": true
+  }
+}

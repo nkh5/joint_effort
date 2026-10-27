@@ -1,0 +1,8 @@
+build/
+install/
+log/
+work/
+__pycache__/
+*.pyc
+launch_params_*
+src/sts_hardware_interface/

@@ -1,0 +1,68 @@
+# sts_calibration.yaml - real-arm settings for sts_hardware_interface (read by launch/real.launch.py,
+# tools/sts_preflight.py and tools/sts_calibration_monitor.py).
+#
+# WRITTEN BY tools/fit_calibration.py --write.  Edit only these by hand:
+#   serial_port, baud_rate, motor_id, datum_offset_rad, encoder_shift_counts, csv_angle_sign
+# then rerun the tool. Everything else is recomputed from calibration/Calibration.csv and urdf/iron.urdf.
+#
+#   csv_zero_counts       raw count at your 0 deg mark (ratio-1 fit of Calibration.csv)
+#   datum_offset_rad      URDF joint angle at which the link sits on your 0 deg mark (run_datum.sh)
+#   encoder_shift_counts  counts added by tools/sts_set_center.py --shift after the CSV was taken (normally 0)
+#   csv_angle_sign        1 normally; -1 if that joint's CSV angles turned out to use the opposite + direction
+#   center_steps          raw count at URDF angle 0 = csv_zero + shift + datum_offset * 4096/2pi
+#   min_rad / max_rad     driver hard limits = URDF <limit> -/+ 0.05 rad (clamps commands AND reported angle)
+#
+# Driver convention (fixed): angle = (center_steps - raw) * 2pi/4096, i.e. + angle = raw decreasing.
+# Direction is set by the URDF <axis> (0 0 1 or 0 0 -1); the tool checks it against the CSV.
+# Never run sts_set_center.py or /one_key_calibration without updating encoder_shift_counts:
+# they move every number in this file.
+
+serial_port: /dev/serial/by-id/usb-1a86_USB_Single_Serial_5B14028914-if00
+baud_rate: 1000000
+
+joints:
+  joint_1:   # base
+    motor_id: 1
+    csv_zero_counts: 2064
+    datum_offset_rad: null
+    encoder_shift_counts: 0
+    csv_angle_sign: 1
+    center_steps: null
+    min_rad: -0.5736
+    max_rad: 0.5736
+  joint_2:   # shoulder
+    motor_id: 2
+    csv_zero_counts: 2035
+    datum_offset_rad: null
+    encoder_shift_counts: 0
+    csv_angle_sign: 1
+    center_steps: null
+    min_rad: -1.55
+    max_rad: 1.55
+  joint_3:   # elbow
+    motor_id: 3
+    csv_zero_counts: 3338
+    datum_offset_rad: null
+    encoder_shift_counts: 0
+    csv_angle_sign: 1
+    center_steps: null
+    min_rad: 0.65
+    max_rad: 2.35
+  joint_4:   # wrist 1
+    motor_id: 4
+    csv_zero_counts: 2004
+    datum_offset_rad: null
+    encoder_shift_counts: 0
+    csv_angle_sign: 1
+    center_steps: null
+    min_rad: -0.5736
+    max_rad: 0.5736
+  joint_5:   # wrist 2
+    motor_id: 5
+    csv_zero_counts: 2041
+    datum_offset_rad: null
+    encoder_shift_counts: 0
+    csv_angle_sign: 1
+    center_steps: null
+    min_rad: -0.5736
+    max_rad: 0.5736

@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/ros-teleop/teleop_tools",
+  "tag": "2.0.0",
+  "commit": "d162759de377d0afd2e62420fa89c2d1127f2fee",
+  "reason": "Jazzy rosdistro release; missing locally; unchanged upstream source"
+}

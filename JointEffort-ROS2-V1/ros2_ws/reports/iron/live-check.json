@@ -1,0 +1,73 @@
+{
+  "scope": "CAD iron-only mock; provisional geometry and calibration",
+  "checks": {
+    "startup_collision": {
+      "valid": true,
+      "contacts": []
+    },
+    "startup_tf_error_m": 2.498001805406602e-16,
+    "startup_bridge_disabled": true,
+    "fixture_collision_endpoint": {
+      "valid": false,
+      "contacts": [
+        [
+          "tool_link",
+          "pcb_fixture"
+        ]
+      ]
+    },
+    "offline_live_collision_agreement_samples": 12,
+    "board_hover_candidates": {
+      "tested_targets": 27,
+      "geometric_solutions": 3,
+      "collision_free_endpoints": 3
+    },
+    "joint_jog_delta_rad": 0.04576326530612258,
+    "servo_timeout_settled_drift_rad": 0.0,
+    "clear_motion_servo_codes": [
+      0
+    ],
+    "world_obstacle_collision": {
+      "valid": false,
+      "contacts": [
+        [
+          "tool_link",
+          "iron_test_block"
+        ]
+      ]
+    },
+    "servo_obstacle_halt_seen": true,
+    "servo_obstacle_drift_rad": 0.0,
+    "planned_duration_s": 0.8934169270000001,
+    "planned_max_speed_rad_s": 0.06000000000000191,
+    "planned_max_acceleration_rad_s2": 0.15000000000171806,
+    "planned_path_collision_samples": 10,
+    "planned_points": 10,
+    "planned_mock_execution_error_rad": 9.495833581318891e-05,
+    "task_up_delta_mm": [
+      -0.0030716352105164546,
+      0.00014786551754894517,
+      3.6342477501185853
+    ],
+    "task_pointing_error_rad": 1.1047771557731799e-05,
+    "task_timeout_seen": true,
+    "task_timeout_drift_rad": 2.42861286636753e-17,
+    "feedback_loss_fault_seen": true,
+    "feedback_recovery_stays_disabled": true,
+    "final_collision_free": true
+  },
+  "hardware": "mock_components/GenericSystem",
+  "controllers": {
+    "iron_arm_controller": "active",
+    "joint_state_broadcaster": "active"
+  },
+  "feedback_age_p95_s": 0.0016561968999999998,
+  "result": "PASS",
+  "servo_codes_seen": [
+    0,
+    5
+  ],
+  "launch_exit_code": 0,
+  "shutdown_no_segfault": true,
+  "shutdown_children_clean": true
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "link": "base_link",
+    "visual_triangles": 39442,
+    "hull_triangles": 212,
+    "max_vertex_outside_hull_m": 1.3877787807814457e-17,
+    "collision_sha256": "20987e0f809c7f487238dd3da514507bf92a16829b07ffc9652dcbbd2370c763",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  },
+  {
+    "link": "base_rotation_link",
+    "visual_triangles": 74756,
+    "hull_triangles": 828,
+    "max_vertex_outside_hull_m": 1.3877787807814457e-17,
+    "collision_sha256": "f44545e51289b98237d2c7a72d48ec58453201e5858e64d1464ce92b05a8dd00",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  },
+  {
+    "link": "upper_arm_link",
+    "visual_triangles": 72026,
+    "hull_triangles": 526,
+    "max_vertex_outside_hull_m": 5.551115123125783e-17,
+    "collision_sha256": "f106341531e00b2614636442656bbfc56f2010a3289149a118d092fc780d5157",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  },
+  {
+    "link": "forearm_link",
+    "visual_triangles": 72026,
+    "hull_triangles": 616,
+    "max_vertex_outside_hull_m": 2.7755575615628914e-17,
+    "collision_sha256": "3ee818bce4490e9f0901d6c5d1295cf21ca0ccde6ec2a4241a49723eabfa25f4",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  },
+  {
+    "link": "wrist_link",
+    "visual_triangles": 72494,
+    "hull_triangles": 726,
+    "max_vertex_outside_hull_m": 1.3877787807814457e-17,
+    "collision_sha256": "163b5b54946626255104a8aa0326d33e544cb78f04249ead36dc293ea4c4bec8",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  },
+  {
+    "link": "tool_link",
+    "visual_triangles": 34392,
+    "hull_triangles": 648,
+    "max_vertex_outside_hull_m": 5.204170427930421e-17,
+    "collision_sha256": "5d15032729739b7507d0da78917f66a378d607f2621d5c0c8614a24bd8d2e2a8",
+    "policy": "Convex envelope of entire visual link; fills gaps conservatively. Adjacent-link collisions exempted; not physical clearance certification."
+  }
+]

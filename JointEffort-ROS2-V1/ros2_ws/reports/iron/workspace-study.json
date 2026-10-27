@@ -1,0 +1,505 @@
+{
+  "urdf_sha256": "053391c60023ae0cfb09a9e4265e239173b7ebb897ca4252c27b843938608bb0",
+  "scope": "Cold mock endpoint feasibility above provisional PCB. Software +/-30 deg travel with 0.04 rad margin; free shaft roll. No path or complete workspace proof.",
+  "target_tip_z_m": 0.172,
+  "pcb_top_z_m": 0.152,
+  "geometric_solution_count": 3,
+  "candidate_count": 27,
+  "position_tolerance_m": 0.001,
+  "pointing_tolerance_deg": 1,
+  "elapsed_s": 7.669664780000005,
+  "targets": [
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.017159109959505762,
+      "best_pointing_error_rad": 0.369665959559511,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.0065717929189167065,
+      "best_pointing_error_rad": 0.14419844384855732,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.1036071297986628,
+          0.1534246815057183,
+          0.10046414591702917,
+          0.11021693952806634,
+          0.8216180056866952
+        ],
+        "position_error_m": 1.6701285102072491e-07,
+        "pointing_error_rad": 1.7749903941379785e-06,
+        "score": 2.706762434798096e-07
+      },
+      "best_position_error_m": 1.6701285102072491e-07,
+      "best_pointing_error_rad": 1.7749903941379785e-06,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.016916573891172945,
+      "best_pointing_error_rad": 0.3740764791918267,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.00655599150580154,
+      "best_pointing_error_rad": 0.14610083931315462,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          -0.016485325810953723,
+          0.14204334015902512,
+          0.11708263968814996,
+          0.01943607064696718,
+          0.8165199647030035
+        ],
+        "position_error_m": 2.3769503780370634e-09,
+        "pointing_error_rad": 2.580956827951785e-08,
+        "score": 3.7249777208376803e-09
+      },
+      "best_position_error_m": 2.3769503780370634e-09,
+      "best_pointing_error_rad": 2.580956827951785e-08,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.016639532043576412,
+      "best_pointing_error_rad": 0.37501431178386574,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.006438515229617858,
+      "best_pointing_error_rad": 0.14539726975180856,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.39,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": {
+        "q_rad": [
+          0.07106067750668561,
+          0.1460642863648531,
+          0.11205274688392329,
+          -0.07096516017894496,
+          0.8173859865686711
+        ],
+        "position_error_m": 2.1872493916678098e-09,
+        "pointing_error_rad": 2.1073424255447017e-08,
+        "score": 3.347150157942861e-09
+      },
+      "best_position_error_m": 2.1872493916678098e-09,
+      "best_pointing_error_rad": 2.1073424255447017e-08,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.015538783908757842,
+      "best_pointing_error_rad": 0.35736657269230415,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.010824318352053872,
+      "best_pointing_error_rad": 0.11862753072772458,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.012606897395322763,
+      "best_pointing_error_rad": 0.1234446305733441,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.015505516359515439,
+      "best_pointing_error_rad": 0.3564646961022435,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.010818490350932868,
+      "best_pointing_error_rad": 0.11581907727232846,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.012703186313704025,
+      "best_pointing_error_rad": 0.12085118723964876,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.01627816867392877,
+      "best_pointing_error_rad": 0.35655056068766566,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.011976719152650271,
+      "best_pointing_error_rad": 0.11446695526965983,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.43,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.013356408872558503,
+      "best_pointing_error_rad": 0.12340409557229548,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.04900965947673555,
+      "best_pointing_error_rad": 0.3792945689246793,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.04769661343596638,
+      "best_pointing_error_rad": 0.154982205567876,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.02,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.04752167305109523,
+      "best_pointing_error_rad": 0.154751443381259,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.04981314990751759,
+      "best_pointing_error_rad": 0.3746805719028964,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.04856319410947838,
+      "best_pointing_error_rad": 0.14357435923840906,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.04,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.048451500235328536,
+      "best_pointing_error_rad": 0.14417136770630426,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 15,
+      "pointing_world": [
+        0.9659258262890683,
+        0.0,
+        -0.25881904510252074
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.05152739653263971,
+      "best_pointing_error_rad": 0.37156224328989795,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 30,
+      "pointing_world": [
+        0.8660254037844387,
+        0.0,
+        -0.49999999999999994
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.050359301790675166,
+      "best_pointing_error_rad": 0.13449839031361,
+      "collision_check": null
+    },
+    {
+      "target_m": [
+        0.47,
+        0.06,
+        0.172
+      ],
+      "downward_approach_deg": 45,
+      "pointing_world": [
+        0.7071067811865476,
+        0.0,
+        -0.7071067811865475
+      ],
+      "geometric_solution": null,
+      "best_position_error_m": 0.05029644474110123,
+      "best_pointing_error_rad": 0.13530095863124805,
+      "collision_check": null
+    }
+  ]
+}

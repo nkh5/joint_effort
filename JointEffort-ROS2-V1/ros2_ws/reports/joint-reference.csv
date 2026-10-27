@@ -1,0 +1,11 @@
+joint,parent,child,origin_xyz_m,origin_rpy_rad,axis_local,min_deg,max_deg,status
+iron_base_yaw,iron_base,iron_turret,0 0 0,0 0 0,0 0 1,-90.0000000002924,90.0000000002924,provisional software choice
+iron_shoulder_pitch,iron_turret,iron_upper_arm,0 0 0.155,0 0 0,0 -1 0,-60.00000000019494,100.0000000003249,provisional software choice
+iron_elbow_pitch,iron_upper_arm,iron_forearm,0.15 0 0,0 0 0,0 -1 0,-140.00000000045486,140.00000000045486,provisional software choice
+iron_wrist_pitch,iron_forearm,iron_wrist_bridge,0.15 0 0,0 0 0,0 -1 0,-110.00000000035739,110.00000000035739,provisional software choice
+iron_wrist_yaw,iron_wrist_bridge,iron_tool,0.06 0 0,0 0 0,0 0 1,-90.0000000002924,90.0000000002924,provisional software choice
+wire_base_yaw,wire_base,wire_turret,0 0 0,0 0 0,0 0 1,-90.0000000002924,90.0000000002924,provisional software choice
+wire_shoulder_pitch,wire_turret,wire_upper_arm,0 0 0.155,0 0 0,0 -1 0,-60.00000000019494,100.0000000003249,provisional software choice
+wire_elbow_pitch,wire_upper_arm,wire_forearm,0.15 0 0,0 0 0,0 -1 0,-140.00000000045486,140.00000000045486,provisional software choice
+wire_wrist_pitch,wire_forearm,wire_wrist_bridge,0.15 0 0,0 0 0,0 -1 0,-110.00000000035739,110.00000000035739,provisional software choice
+wire_wrist_yaw,wire_wrist_bridge,wire_tool,0.06 0 0,0 0 0,0 0 1,-90.0000000002924,90.0000000002924,provisional software choice
