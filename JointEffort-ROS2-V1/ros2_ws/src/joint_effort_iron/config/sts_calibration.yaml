@@ -66,11 +66,11 @@ joints:
     deadband: 0
   joint_4:   # wrist 1
     motor_id: 4
-    csv_zero_counts: 2025
+    csv_zero_counts: 2024
     datum_offset_rad: 0.0
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 2025
+    center_steps: 2024
     min_rad: -0.5736
     max_rad: 0.5736
     p_coefficient: 48
@@ -83,7 +83,7 @@ joints:
     datum_offset_rad: 1.547
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 3075
+    center_steps: 3076
     min_rad: 0.55
     max_rad: 2.45
     p_coefficient: 48
