@@ -27,46 +27,66 @@ baud_rate: 1000000
 joints:
   joint_1:   # base
     motor_id: 1
-    csv_zero_counts: 2064
+    csv_zero_counts: 2097
     datum_offset_rad: 0.0
     encoder_shift_counts: 0
     csv_angle_sign: -1
-    center_steps: 2064
+    center_steps: 2097
     min_rad: -0.5736
     max_rad: 0.5736
+    p_coefficient: 48
+    i_coefficient: 2
+    d_coefficient: 32
+    deadband: 0
   joint_2:   # shoulder
     motor_id: 2
-    csv_zero_counts: 2035
+    csv_zero_counts: 2014
     datum_offset_rad: -0.416
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 1763
+    center_steps: 1743
     min_rad: -1.55
     max_rad: 0.65
+    p_coefficient: 48
+    i_coefficient: 2
+    d_coefficient: 32
+    deadband: 0
   joint_3:   # elbow
     motor_id: 3
-    csv_zero_counts: 3338
+    csv_zero_counts: 3337
     datum_offset_rad: -0.8409
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 2790
+    center_steps: 2789
     min_rad: -0.05
     max_rad: 1.53
+    p_coefficient: 48
+    i_coefficient: 2
+    d_coefficient: 32
+    deadband: 0
   joint_4:   # wrist 1
     motor_id: 4
-    csv_zero_counts: 2004
+    csv_zero_counts: 2025
     datum_offset_rad: 0.0
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 2004
+    center_steps: 2025
     min_rad: -0.5736
     max_rad: 0.5736
+    p_coefficient: 48
+    i_coefficient: 2
+    d_coefficient: 32
+    deadband: 0
   joint_5:   # wrist 2
     motor_id: 5
-    csv_zero_counts: 2041
+    csv_zero_counts: 2067
     datum_offset_rad: 1.547
     encoder_shift_counts: 0
     csv_angle_sign: 1
-    center_steps: 3049
+    center_steps: 3075
     min_rad: 0.55
     max_rad: 2.45
+    p_coefficient: 48
+    i_coefficient: 2
+    d_coefficient: 32
+    deadband: 0

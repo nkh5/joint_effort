@@ -26,6 +26,13 @@ cd ros2_ws
 | MoveIt 2.12.4 Servo start-up race | on the real driver Servo sat in "Waiting to receive robot state update" forever | real launch: Servo is its own scene monitor and the joint-state broadcaster starts once Servo waits |
 | No check before torque on | a joint resting outside its range jumps to the limit at activation | `tools/sts_preflight.py`, run by `run_real.sh` |
 
+## Motor test bench (October 31, 2026)
+
+`ros2_ws/bench/run_bench.sh` tests the five motors off the arm in one command (settings audit, raw bus at
+50 Hz, step response, deadband, slow-ramp smoothness, and the real driver streaming goals at 50/100/200 Hz)
+and writes `bench/results/<date-time>/report.md`. See `ros2_ws/bench/README.md`.
+Bench angle calibration: `ros2_ws/calibration/bench-2026-10-31.{csv,md}`.
+
 ## Changes made during real-arm bring-up (October 26, 2026)
 
 Everything below is already in this folder. See `ros2_ws/REAL-ARM.md` "Current state" for the table.

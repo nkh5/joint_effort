@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 launch_params_*
 src/sts_hardware_interface/
+bench/results/
+*.bak-*
