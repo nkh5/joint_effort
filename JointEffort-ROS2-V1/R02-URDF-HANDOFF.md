@@ -28,7 +28,3 @@ joint-state publishers do not compete in the same ROS domain.
   and iron pointing down.
 
 ![R02 reference pose](ros2_ws/src/joint_effort_arm_calibration_description/zero-pose.png)
-
-The base correction is 30.3400722516624 degrees from the earlier captured pose.
-The URDF's base visual and collision origins preserve that alignment. Keep those
-origins when adapting the file. Source part coordinates were deliberately retained.
