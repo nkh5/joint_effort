@@ -249,6 +249,8 @@ def main(argv=None):
     fits = {name: fit(pts) for name, pts in read_csv(args.csv).items()}
     urdf = read_urdf(args.urdf)
     cal = yaml.safe_load(Path(args.cal).read_text()) or {}
+    if cal.get('model_revision') == 'R02':
+        raise SystemExit('R02 uses tools/fit_r02_calibration.py and R02-referenced measurements; legacy datums are not compatible.')
     for item in args.datum:
         name, _, value = item.partition('=')
         if name not in JOINTS:

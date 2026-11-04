@@ -5,13 +5,25 @@ import os
 import time
 import rclpy
 from rclpy.node import Node
+from controller_manager_msgs.srv import ListHardwareComponents
 from std_msgs.msg import String
 from joint_effort_input.forwarder import STATUS
 from rclpy.signals import SignalHandlerOptions
 from joint_effort_input.synthetic import Source
 
-if os.environ.get('ROS_DOMAIN_ID') != '88': raise SystemExit('Use JE_ROS_DOMAIN_ID=88 with scripts/with_ros.sh')
-rclpy.init(signal_handler_options=SignalHandlerOptions.NO); node = Node('amw_synthetic_demo'); source = Source('amw_demo_source'); state = {}
+if os.environ.get('ROS_DOMAIN_ID') != '88' and not (os.environ.get('ROS_DOMAIN_ID') == '188' and os.environ.get('JE_MOCK_TEST') == '1'): raise SystemExit('Use JE_ROS_DOMAIN_ID=88 with scripts/with_ros.sh')
+rclpy.init(signal_handler_options=SignalHandlerOptions.NO); node = Node('amw_synthetic_demo'); state = {}
+# The forwarding stack can serve real motors too; this demo must not.
+client = node.create_client(ListHardwareComponents, '/controller_manager/list_hardware_components')
+if not client.wait_for_service(timeout_sec=10): raise SystemExit('Start the mock arm first.')
+future = client.call_async(ListHardwareComponents.Request())
+rclpy.spin_until_future_complete(node, future, timeout_sec=10)
+if not future.done() or future.exception(): raise SystemExit('Cannot verify mock hardware.')
+hardware = future.result().component
+if len(hardware) != 1 or hardware[0].plugin_name != 'mock_components/GenericSystem':
+    raise SystemExit('Synthetic demo requires GenericSystem mock hardware; physical motors refused.')
+node.destroy_client(client)
+source = Source('amw_demo_source')
 def status(msg):
     global state
     state = json.loads(msg.data)

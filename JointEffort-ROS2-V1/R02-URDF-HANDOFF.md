@@ -1,4 +1,4 @@
-# R02 arm URDF handoff — aligned calibration reference
+# R02 arm geometry and zero reference
 
 The completed package is
 [`ros2_ws/src/joint_effort_arm_calibration_description`](ros2_ws/src/joint_effort_arm_calibration_description).
@@ -16,7 +16,8 @@ cd JointEffort-ROS2-V1/ros2_ws
 ```
 
 All joint sliders start at zero. This display launch has no motor driver.
-The current `run_real.sh` / MoveIt setup continues to use the existing model.
+The active `joint_effort_iron/urdf/iron.urdf` is generated from this geometry.
+See [R02-INTEGRATION.md](ros2_ws/R02-INTEGRATION.md) for controller integration and mock tests.
 Start the display independently of an existing arm launch so model and
 joint-state publishers do not compete in the same ROS domain.
 

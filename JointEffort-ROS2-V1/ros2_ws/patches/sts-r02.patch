@@ -1,0 +1,149 @@
+diff --git a/include/sts_hardware_interface/sts_conversions.hpp b/include/sts_hardware_interface/sts_conversions.hpp
+index 650d1d9..7478359 100644
+--- a/include/sts_hardware_interface/sts_conversions.hpp
++++ b/include/sts_hardware_interface/sts_conversions.hpp
+@@ -37,9 +37,9 @@ constexpr int    STS_MIDPOINT_RAW_POSITION = 2048;  // Encoder midpoint; one-key
+  * STS motors increment clockwise; ROS 2 uses counter-clockwise positive (REP-103).
+  * `center` is the raw encoder step that maps to 0 rad (default: STS_DEFAULT_CENTER = 4095).
+  */
+-inline double raw_position_to_radians(int raw_position, int center = STS_DEFAULT_CENTER)
++inline double raw_position_to_radians(int raw_position, int center = STS_DEFAULT_CENTER, int direction = -1)
+ {
+-  return static_cast<double>(center - raw_position) * STEPS_TO_RAD;
++  return static_cast<double>(direction * (raw_position - center)) * STEPS_TO_RAD;
+ }
+ 
+ /**
+@@ -50,9 +50,9 @@ inline double raw_position_to_radians(int raw_position, int center = STS_DEFAULT
+  * Clamping is intentional: the old fmod-based wrapping silently mapped negative
+  * angles to the wrong end of the encoder, causing full-revolution traversals.
+  */
+-inline int radians_to_raw_position(double position_rad, int center = STS_DEFAULT_CENTER)
++inline int radians_to_raw_position(double position_rad, int center = STS_DEFAULT_CENTER, int direction = -1)
+ {
+-  double steps = std::round(static_cast<double>(center) - position_rad * RAD_TO_STEPS);
++  double steps = std::round(static_cast<double>(center) + direction * position_rad * RAD_TO_STEPS);
+   return static_cast<int>(std::clamp(steps, 0.0, static_cast<double>(STS_MAX_POSITION)));
+ }
+ 
+@@ -61,9 +61,9 @@ inline int radians_to_raw_position(double position_rad, int center = STS_DEFAULT
+  *
+  * Motor positive direction is clockwise; ROS 2 uses counter-clockwise positive.
+  */
+-inline double raw_velocity_to_rad_s(int raw_velocity)
++inline double raw_velocity_to_rad_s(int raw_velocity, int direction = -1)
+ {
+-  return static_cast<double>(-raw_velocity) * STEPS_TO_RAD;
++  return static_cast<double>(direction * raw_velocity) * STEPS_TO_RAD;
+ }
+ 
+ /**
+diff --git a/include/sts_hardware_interface/sts_hardware_interface.hpp b/include/sts_hardware_interface/sts_hardware_interface.hpp
+index f62e737..2f18e56 100644
+--- a/include/sts_hardware_interface/sts_hardware_interface.hpp
++++ b/include/sts_hardware_interface/sts_hardware_interface.hpp
+@@ -304,6 +304,7 @@ private:
+   std::vector<bool> has_position_limits_;
+   std::vector<bool> has_velocity_limits_;
+   std::vector<bool> has_effort_limits_;
++  std::vector<int> encoder_direction_;  // q = direction * (raw - center) * 2*pi/4096
+   std::vector<int> position_center_;  // Raw step for 0 rad per joint (default: STS_DEFAULT_CENTER=4095)
+   std::vector<int> max_velocity_steps_;  // Per-joint motor max velocity in steps/s, model-dependent (default: DEFAULT_MAX_VELOCITY_STEPS)
+ 
+diff --git a/src/sts_hardware_interface.cpp b/src/sts_hardware_interface.cpp
+index de2bd21..9ba28eb 100644
+--- a/src/sts_hardware_interface.cpp
++++ b/src/sts_hardware_interface.cpp
+@@ -222,6 +222,7 @@ hardware_interface::CallbackReturn STSHardwareInterface::on_init(
+   has_position_limits_.resize(num_joints, false);
+   has_velocity_limits_.resize(num_joints, false);
+   has_effort_limits_.resize(num_joints, false);
++  encoder_direction_.resize(num_joints, -1);
+   position_center_.resize(num_joints, conversions::STS_DEFAULT_CENTER);  // 4095 = legacy default
+   is_readonly_.resize(num_joints, false);
+   p_coefficient_.resize(num_joints, std::nullopt);
+@@ -310,6 +311,15 @@ hardware_interface::CallbackReturn STSHardwareInterface::on_init(
+       return hardware_interface::CallbackReturn::ERROR;
+     }
+ 
++    if (joint.parameters.count("encoder_direction")) {
++      const auto & value = joint.parameters.at("encoder_direction");
++      if ((value != "-1" && value != "1") || operating_modes_[i] != MODE_SERVO) {
++        RCLCPP_ERROR(logger_, "encoder_direction requires position mode and exactly -1 or 1");
++        return hardware_interface::CallbackReturn::ERROR;
++      }
++      encoder_direction_[i] = value == "1" ? 1 : -1;
++    }
++
+     if (joint.parameters.count("position_center_steps")) {
+       if (operating_modes_[i] != MODE_SERVO) {
+         RCLCPP_WARN(logger_, "Joint '%s': position_center_steps is ignored in operating mode %d (only used in position mode %d)",
+@@ -1158,22 +1168,16 @@ hardware_interface::return_type STSHardwareInterface::read(
+       SMS_STS_PRESENT_POSITION_L - SMS_STS_PRESENT_POSITION_L,
+       SMS_STS_PRESENT_POSITION_H - SMS_STS_PRESENT_POSITION_L,
+       SMS_STS_DIRECTION_BIT_POS);
+-    put_state(ST_POSITION, i, conversions::raw_position_to_radians(raw_position, position_center_[i]));
++    put_state(ST_POSITION, i, conversions::raw_position_to_radians(raw_position, position_center_[i], encoder_direction_[i]));
+ 
+-    // Always clamp the reported position to URDF limits. A joint can drift past software limits
+-    // under gravity during estop, or be physically moved outside limits before startup. Clamping
+-    // here prevents JointSaturationLimiter from deactivating the controller; write() already
+-    // clamps commands, so the motor will be commanded to the nearest limit and return to range.
+-    if (has_position_limits_[i]) {
+-      put_state(ST_POSITION, i, std::clamp(state_val(ST_POSITION, i), position_min_[i], position_max_[i]));
+-    }
++    // Keep measured positions unchanged. Command limits still apply in write().
+ 
+     int raw_velocity = ServoUtils::readSignedWordFromBuffer(
+       feedback,
+       SMS_STS_PRESENT_SPEED_L - SMS_STS_PRESENT_POSITION_L,
+       SMS_STS_PRESENT_SPEED_H - SMS_STS_PRESENT_POSITION_L,
+       SMS_STS_DIRECTION_BIT_POS);
+-    put_state(ST_VELOCITY, i, conversions::raw_velocity_to_rad_s(raw_velocity));
++    put_state(ST_VELOCITY, i, conversions::raw_velocity_to_rad_s(raw_velocity, encoder_direction_[i]));
+ 
+     int raw_load = ServoUtils::readSignedWordFromBuffer(
+       feedback,
+@@ -1294,7 +1298,7 @@ hardware_interface::return_type STSHardwareInterface::write(
+       for (size_t j = 0; j < servo_motor_indices_.size(); ++j) {
+         size_t idx = servo_motor_indices_[j];
+         double target_position = conversions::apply_limit(cmd_val(CMD_POSITION, idx), position_min_[idx], position_max_[idx], has_position_limits_[idx]);
+-        servo_sync_positions_[j] = conversions::radians_to_raw_position(target_position, position_center_[idx]);
++        servo_sync_positions_[j] = conversions::radians_to_raw_position(target_position, position_center_[idx], encoder_direction_[idx]);
+         servo_sync_deltas_[j] = std::abs(target_position - state_val(ST_POSITION, idx));
+         max_delta_rad = std::max(max_delta_rad, servo_sync_deltas_[j]);
+         servo_sync_accelerations_[j] = static_cast<u8>(conversions::clamp_acceleration(cmd_val(CMD_ACCELERATION, idx)));
+@@ -1341,7 +1345,7 @@ hardware_interface::return_type STSHardwareInterface::write(
+         double target_position = conversions::apply_limit(cmd_val(CMD_POSITION, idx), position_min_[idx], position_max_[idx], has_position_limits_[idx]);
+         double max_speed = conversions::apply_limit(cmd_val(CMD_VELOCITY, idx), 0.0, velocity_max_[idx], has_velocity_limits_[idx]);
+ 
+-        int raw_position = conversions::radians_to_raw_position(target_position, position_center_[idx]);
++        int raw_position = conversions::radians_to_raw_position(target_position, position_center_[idx], encoder_direction_[idx]);
+         // rad_s_to_raw_speed: unsigned magnitude conversion for position mode — no sign inversion.
+         // velocity command == 0.0 (not declared / not written) → raw 0 = STS protocol max speed.
+         int raw_max_speed = conversions::rad_s_to_raw_speed(
+@@ -1693,7 +1697,7 @@ void STSHardwareInterface::process_pending_one_key_calibration_mock()
+     // Simulate CalibrationOfs: the motor's current physical position becomes
+     // raw step 2048 (the Feetech STS encoder midpoint) without actually moving.
+     put_state(ST_POSITION, idx, conversions::raw_position_to_radians(
+-        conversions::STS_MIDPOINT_RAW_POSITION, position_center_[idx]));
++        conversions::STS_MIDPOINT_RAW_POSITION, position_center_[idx], encoder_direction_[idx]));
+     put_cmd(CMD_POSITION, idx, state_val(ST_POSITION, idx));  // Hold at the new calibrated position
+ 
+     RCLCPP_INFO(logger_, "One-key calibration (mock): motor %d (joint '%s') position set to raw step %d",
+@@ -1795,9 +1799,13 @@ bool STSHardwareInterface::seed_servo_commands_from_feedback()
+       return false;
+     }
+ 
+-    double position = conversions::raw_position_to_radians(raw_position, position_center_[idx]);
++    double position = conversions::raw_position_to_radians(raw_position, position_center_[idx], encoder_direction_[idx]);
+     if (has_position_limits_[idx]) {
+-      position = std::clamp(position, position_min_[idx], position_max_[idx]);
++      if (position < position_min_[idx] || position > position_max_[idx]) {
++        RCLCPP_ERROR(logger_, "Joint '%s' is outside its calibrated range; activation refused",
++          joint_names_[idx].c_str());
++        return false;
++      }
+     }
+     put_cmd(CMD_POSITION, idx, position);
+   }

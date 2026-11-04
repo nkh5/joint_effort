@@ -10,7 +10,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
- if os.environ.get('ROS_DOMAIN_ID')!='88':raise RuntimeError('Use scripts/run_iron.sh: isolated iron prototype requires ROS domain 88.')
+ if os.environ.get('ROS_DOMAIN_ID')!='88' and not (os.environ.get('ROS_DOMAIN_ID')=='188' and os.environ.get('JE_MOCK_TEST')=='1'):raise RuntimeError('Use scripts/run_iron.sh: isolated iron prototype requires ROS domain 88.')
  p=Path(get_package_share_directory('joint_effort_iron'));rviz_home=Path(os.environ['ROS_HOME']).parent/'iron_rviz_home';(rviz_home/'.rviz2').mkdir(parents=True,exist_ok=True)
  description=(p/'urdf/iron.urdf').read_text()
  common=[{'robot_description':description,'robot_description_semantic':(p/'config/iron.srdf').read_text(),'robot_description_kinematics':json.loads((p/'config/kinematics.yaml').read_text()),'robot_description_planning':json.loads((p/'config/joint_limits.yaml').read_text())}]

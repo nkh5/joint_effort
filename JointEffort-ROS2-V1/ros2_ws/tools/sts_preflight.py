@@ -96,7 +96,8 @@ def check(bus, cal, limits, readonly):
             continue
         raw = signed15(raw)
         center, kind = center_for(j)
-        q = None if center is None else (center - raw) / K
+        direction = j.get('encoder_direction', -1)
+        q = None if center is None or direction not in (-1, 1) else direction * (raw - center) / K
         lo, hi = limits[name]
         rows.append((name, mid, dict(model=model, raw=raw, q=q, kind=kind, torque=torque, mode=mode,
                                      volt=None if volt is None else volt / 10, temp=temp, lo=lo, hi=hi)))
@@ -153,6 +154,13 @@ def main(argv=None):
     ap.add_argument('--gains', action='store_true', help='also print each servo P/I/D, deadband and ACC registers')
     args = ap.parse_args(argv)
     cal = yaml.safe_load(Path(args.cal).read_text())
+    if not args.readonly and cal.get('model_revision') == 'R02':
+        sys.path.insert(0, str(WS / 'src/joint_effort_iron'))
+        from joint_effort_iron.calibration import problems
+        errors = problems(cal, Path(args.urdf).read_text(), require_tcp=False)
+        if errors:
+            print('DO NOT LAUNCH: ' + '; '.join(errors))
+            return 1
     bus = Bus(args.port or cal['serial_port'], int(cal.get('baud_rate', 1000000)))
     if args.gains:
         show_gains(bus, cal)

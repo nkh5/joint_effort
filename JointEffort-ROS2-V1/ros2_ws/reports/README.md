@@ -1,3 +1,6 @@
+R02 results are in `r02/`. Other reports in this folder describe earlier models and must
+not be used to claim R02 validation.
+
 # Model data and test results
 
 The bundle keeps the workspace-study data needed by the hover tools, collision data, the proposed motor map, and a small set of test results.

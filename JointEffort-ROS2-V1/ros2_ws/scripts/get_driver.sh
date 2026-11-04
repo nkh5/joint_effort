@@ -9,4 +9,11 @@ if [ ! -d "$dest/.git" ]; then
 fi
 git -C "$dest" fetch --quiet origin
 git -C "$dest" checkout --quiet "$commit"
+patch_file="$workspace_dir/patches/sts-r02.patch"
+if git -C "$dest" apply --reverse --check "$patch_file" 2>/dev/null; then
+  echo "R02 driver patch already applied"
+else
+  git -C "$dest" apply --check "$patch_file"
+  git -C "$dest" apply "$patch_file"
+fi
 echo "sts_hardware_interface at $(git -C "$dest" log --oneline -1)"

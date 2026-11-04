@@ -16,6 +16,6 @@ joy_teleop:
       topic_name: /amw/cmd_raw
       deadman_buttons: [1]
       axis_mappings:
-        twist-angular-z: {axis: 0, scale: 0.1, offset: 0.0}
+        twist-angular-x: {axis: 0, scale: 0.1, offset: 0.0}
         twist-angular-y: {axis: 1, scale: 0.1, offset: 0.0}
         header-frame_id: {value: world}

@@ -28,7 +28,7 @@ INPUT = QoSProfile(depth=1, reliability=ReliabilityPolicy.BEST_EFFORT)
 
 class Forwarder(Node):
     def __init__(self):
-        if os.environ.get('ROS_DOMAIN_ID') != '88':
+        if os.environ.get('ROS_DOMAIN_ID') != '88' and not (os.environ.get('ROS_DOMAIN_ID') == '188' and os.environ.get('JE_MOCK_TEST') == '1'):
             raise RuntimeError('Iron input is restricted to the cold mock on ROS domain 88')
         super().__init__('amw_forwarder')
         def parameter(name, default): return self.declare_parameter(name, default).value

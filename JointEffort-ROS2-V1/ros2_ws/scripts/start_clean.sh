@@ -8,5 +8,5 @@ export XDG_CACHE_HOME="$workspace_dir/work/cache"
 export XDG_CONFIG_HOME="$workspace_dir/work/config"
 export ROS_HOME="$workspace_dir/work/ros_home"
 export ROS_LOG_DIR="$workspace_dir/work/ros_logs"
-if [ -f "$workspace_dir/install/setup.bash" ]; then source "$workspace_dir/install/setup.bash"; fi
+if [ -f "$workspace_dir/install/local_setup.bash" ]; then source "$workspace_dir/install/local_setup.bash"; fi
 exec "$@"

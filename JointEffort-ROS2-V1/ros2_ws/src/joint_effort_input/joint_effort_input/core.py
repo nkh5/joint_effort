@@ -26,10 +26,10 @@ def capped(vector, limit):
 
 def velocity(axes, mode, factor=1.0):
     # Canonical order is X,Y,twist. Twist is Z translation in translation mode.
-    # Rotation uses two world pointing components; the five-joint bridge frees shaft roll.
+    # Rotation tilts about world X/Y. World Z is shaft roll when R02 points down.
     if mode == 'translation':
         return capped([v*0.01*factor for v in axes], 0.02)+[0., 0., 0.]
-    return [0., 0., 0.]+capped([0., axes[1]*0.1*factor, axes[0]*0.1*factor], 0.2)
+    return [0., 0., 0.]+capped([axes[0]*0.1*factor, axes[1]*0.1*factor, 0.], 0.2)
 
 
 class InputState:

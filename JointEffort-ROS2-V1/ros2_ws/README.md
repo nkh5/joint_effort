@@ -1,31 +1,31 @@
-# ROS workspace (V1)
+# Joint Effort ROS workspace — R02
 
-Start with [the V1 README](../README.md), then [REAL-ARM.md](REAL-ARM.md) for the real arm.
+The iron arm now uses the R02 CAD geometry. Start with [R02-INTEGRATION.md](R02-INTEGRATION.md)
+for the changes, file map, test results and mock demo commands.
 
-- `src`: ROS packages, robot descriptions, meshes, and settings. `src/sts_hardware_interface` is
-  fetched by `scripts/get_driver.sh` (not committed).
-- `scripts`: startup commands and the Jazzy environment (`with_ros.sh`).
-- `tools`: calibration, preflight, demos, planning and integration checks.
-- `calibration`: measurements (`Calibration.csv`) and the bring-up log.
+The software has been tested with mock motors. The assembled arm still needs R02 encoder
+measurements, direction checks, travel checks and a measured tip offset before powered use.
+Old V1 calibration settings are saved in `calibration/sts_calibration_legacy_v1.yaml`.
+They are not the calibration for this model.
+
+- `src`: ROS packages, geometry, motor driver interfaces and settings.
+- `scripts`: startup commands and the clean Jazzy environment.
+- `tools`: calibration, model generation, motion tools and software checks.
+- `calibration`: measurement sheets and earlier measurements kept for reference.
+- `patches`: the changes applied to the pinned STS driver.
 - `tests`: unit tests and the software servo emulator.
-- `reports`: model data and test results.
+- `reports/r02`: results for this model. Older reports describe earlier models.
+
+Requires Ubuntu 24.04, ROS 2 Jazzy, MoveIt 2, ros2_control, RViz, joy, colcon,
+and the Python dependencies listed in the packages.
+
+Build from this folder:
 
 ```bash
 ./scripts/get_driver.sh
-./scripts/with_ros.sh colcon build --symlink-install --base-paths src
-./scripts/with_ros.sh python3 -m pytest -q tests
+mkdir -p work/tmp
+./scripts/with_ros.sh env CMAKE_BUILD_PARALLEL_LEVEL=2 colcon build --base-paths src --parallel-workers 1
+./scripts/with_ros.sh env TMPDIR="$PWD/work/tmp" python3 -m unittest discover -s tests -v
 ```
 
-| command | what |
-| --- | --- |
-| `./scripts/run_iron.sh` | mock arm (RViz) |
-| `./scripts/run_input.sh mapping_confirmed:=true` | Pico input (works with mock or real) |
-| `./scripts/run_datum.sh` | RViz sliders to measure your 0° marks |
-| `./scripts/run_preflight.sh [--readonly]` | read-only servo check, no ROS |
-| `./scripts/run_real.sh readonly:=true` | real arm, torque off |
-| `./scripts/run_calibration_monitor.sh` | live angles while read-only |
-| `./scripts/run_real.sh teleop:=false` + `./scripts/run_jog.sh joint_2 +3` | powered, single-joint jogs |
-| `./scripts/run_real.sh` | powered, full stack for the joystick |
-
-Do not run `tools/generate_iron.py`: it rebuilds `iron.urdf` and would undo the V1 axis flips,
-elbow limit and home pose.
+See [REAL-ARM.md](REAL-ARM.md) before connecting this version to the assembled arm.

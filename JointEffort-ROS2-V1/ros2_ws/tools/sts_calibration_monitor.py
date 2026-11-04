@@ -7,8 +7,8 @@ Ctrl-C prints a summary you can copy into sts_calibration.yaml.
 
 The raw step is recomputed from /joint_states with the same center the launch used:
 center_steps, else csv_zero_counts + encoder_shift_counts (angle then reads 0 at your physical
-0 deg mark), else 2048. That is only exact in readonly mode, where the driver does not clamp
-positions to limits.
+0 deg mark), else 2048. Use the same calibration file as the launch. The R02 driver reports unclipped feedback.
+This is a count reconstruction, not an independent serial measurement.
 """
 import math
 import sys
@@ -27,10 +27,12 @@ STEPS_PER_RAD = 4096 / (2 * math.pi)
 class Monitor(Node):
     def __init__(self, cal):
         super().__init__('sts_calibration_monitor')
-        self.ids, self.centers, self.kind = {}, {}, {}
+        self.ids, self.centers, self.kind, self.directions = {}, {}, {}, {}
         for name in JOINTS:
             j = cal['joints'][name]
             self.ids[name] = j.get('motor_id')
+            direction = j.get('encoder_direction', -1)
+            self.directions[name] = direction if direction in (-1, 1) else -1
             c = j.get('center_steps')
             z = j.get('csv_zero_counts')
             if isinstance(c, int):
@@ -39,7 +41,7 @@ class Monitor(Node):
                 self.centers[name] = z + int(j.get('encoder_shift_counts') or 0)
             else:
                 self.centers[name] = DEFAULT_CENTER
-            self.kind[name] = 'URDF angle' if isinstance(c, int) else 'from your 0 mark'
+            self.kind[name] = 'URDF angle' if isinstance(c, int) and direction in (-1, 1) else 'provisional / uncalibrated'
         self.q = {}
         self.seen = {}                      # name -> [min_rad, max_rad]
         self.create_subscription(JointState, '/joint_states', self.on_state, 10)
@@ -53,7 +55,7 @@ class Monitor(Node):
                 lo_hi[0], lo_hi[1] = min(lo_hi[0], pos), max(lo_hi[1], pos)
 
     def raw(self, name, q):
-        return round(self.centers[name] - q * STEPS_PER_RAD)
+        return round(self.centers[name] + self.directions[name] * q * STEPS_PER_RAD)
 
     def table(self):
         rows = [f'{"joint":8} {"id":>3} {"angle deg":>10} {"angle rad":>10} {"raw step":>9}   '
@@ -70,7 +72,7 @@ class Monitor(Node):
 
     def show(self):
         print('\033[2J\033[H' + self.table()
-              + '\n\nPositive angle = raw step DEcreasing.  Ctrl-C for a summary.', flush=True)
+              + '\n\nPositive direction comes from encoder_direction; unknown directions use provisional -1.  Ctrl-C for a summary.', flush=True)
 
     def summary(self):
         print('\nLast reading and the range seen per joint:')

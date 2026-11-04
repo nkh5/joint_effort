@@ -15,7 +15,7 @@ from moveit_msgs.srv import ServoCommandType,GetStateValidity
 from tf2_ros import Buffer,TransformListener
 P=argparse.ArgumentParser(description=__doc__);P.add_argument('motion',choices=['joint','up','down','forward','sequence']);P.add_argument('--joint',choices=[f'joint_{i}' for i in range(1,6)],default='joint_1');P.add_argument('--seconds',type=float,default=3);P.add_argument('--speed',type=float,default=.05);a=P.parse_args()
 if not math.isfinite(a.seconds) or not 0<a.seconds<=10 or not math.isfinite(a.speed) or abs(a.speed)>.1:P.error('Use duration 0–10 seconds and joint speed within +/-0.1 rad/s.')
-if os.environ.get('ROS_DOMAIN_ID')!='88':raise SystemExit('Use JE_ROS_DOMAIN_ID=88 with scripts/with_ros.sh')
+if os.environ.get('ROS_DOMAIN_ID')!='88' and not (os.environ.get('ROS_DOMAIN_ID')=='188' and os.environ.get('JE_MOCK_TEST')=='1'):raise SystemExit('Use JE_ROS_DOMAIN_ID=88 with scripts/with_ros.sh')
 lease=Lease(Path(__file__).resolve().parents[1]/'work/iron-motion.lock')
 if not lease.acquire():raise SystemExit('Another motion tool owns the mock; release joystick enable or stop that tool first.')
 rclpy.init(signal_handler_options=SignalHandlerOptions.NO);n=Node('iron_prototype_demo');names=[f'joint_{i}' for i in range(1,6)];state={};received=-math.inf;stamp=-1;buf=Buffer();listener=TransformListener(buf,n);stop_requested=False

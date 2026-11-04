@@ -1,0 +1,8 @@
+{
+  "scope": "R02 mock RViz smoke check",
+  "model_ok": true,
+  "tf_ok": true,
+  "exit_code": 0,
+  "clean_shutdown": true,
+  "result": "PASS"
+}

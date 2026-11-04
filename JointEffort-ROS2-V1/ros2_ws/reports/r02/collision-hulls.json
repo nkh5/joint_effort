@@ -1,0 +1,44 @@
+[
+  {
+    "link": "base_link",
+    "visual_triangles": 41224,
+    "hull_triangles": 216,
+    "max_vertex_outside_hull_m": 4.85722573273506e-17,
+    "collision_sha256": "883b79c5f7163c5b2a9a9d1bc3fc2d97b0cdfc34c9330b382c5af51f7c8a8a99"
+  },
+  {
+    "link": "base_rotation_link",
+    "visual_triangles": 74824,
+    "hull_triangles": 898,
+    "max_vertex_outside_hull_m": 1.3877787807814457e-17,
+    "collision_sha256": "b11483f245486bbc434b8ff2301314409b2def32f9fd04ec3e9296a7b59677bf"
+  },
+  {
+    "link": "upper_arm_link",
+    "visual_triangles": 107480,
+    "hull_triangles": 582,
+    "max_vertex_outside_hull_m": 2.7755575615628914e-17,
+    "collision_sha256": "3d4bf4767cf0ab8848a2d516add114950ea4c98860e767848bd1d52a42bc2c9f"
+  },
+  {
+    "link": "forearm_link",
+    "visual_triangles": 64516,
+    "hull_triangles": 592,
+    "max_vertex_outside_hull_m": 2.7755575615628914e-17,
+    "collision_sha256": "46b93a1ccff87121f26324ba0e6d4f6aeb191d0715c8ce95c74b1e2c0a53388e"
+  },
+  {
+    "link": "wrist_link",
+    "visual_triangles": 73092,
+    "hull_triangles": 536,
+    "max_vertex_outside_hull_m": 1.3877787807814457e-17,
+    "collision_sha256": "e6425b872605965ec0f8f38d983dc9d6e07ab5b745ee732c4ee67ff659eb5b6f"
+  },
+  {
+    "link": "tool_link",
+    "visual_triangles": 35576,
+    "hull_triangles": 722,
+    "max_vertex_outside_hull_m": 2.636779683484747e-16,
+    "collision_sha256": "4937419583811f8be31ca427cd09dc63d4b1a4dc7383f0ba883fbcdf93ddc8af"
+  }
+]

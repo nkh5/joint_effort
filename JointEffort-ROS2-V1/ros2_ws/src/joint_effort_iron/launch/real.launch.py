@@ -6,14 +6,14 @@ swapped for sts_hardware_interface (Feetech STS servos on the Waveshare adapter)
                    csv_zero_counts + encoder_shift_counts, so it reads 0 at your physical 0 deg mark
                    (2048 if even that is missing). RViz is then off by the datum for that joint.
   readonly:=false  (default) servos hold their current position on start. Needs a complete
-                   calibration (tools/fit_calibration.py says COMPLETE).
+                   R02 calibration with verified directions and travel (see REAL-ARM.md).
   teleop:=true     (default) also start move_group, Servo and the task bridge (joystick driving).
   teleop:=false    controllers only - for scripts/run_jog.sh single-joint tests.
   servo_acc:=N     servo acceleration 1-254 for every joint (default: the driver's 100). Lower = the
                    servo eases into each new goal instead of snapping to it (smoother, slightly laggier).
                    Applied by a forward_command_controller on the 'acceleration' interface.
 Optional per-joint keys in the calibration file, written to servo EEPROM at start-up and kept after:
-  p_coefficient, i_coefficient, d_coefficient (position PID, 0-255), deadband (0-255 counts).
+  p_coefficient, i_coefficient, d_coefficient (position PID, 0-254), deadband (0-16 counts).
   calibration:=/path/to/sts_calibration.yaml   (default: the installed config/sts_calibration.yaml)
   port:=/dev/serial/by-id/...                  overrides serial_port from the calibration file
   rviz:=true|false
@@ -67,33 +67,6 @@ def load_calibration(path):
     return data
 
 
-def calibration_problems(data, limits):
-    """List of reasons the calibration is not complete enough to drive the motors."""
-    problems = []
-    ids = []
-    for name in JOINTS:
-        j = data['joints'][name]
-        ids.append(j.get('motor_id'))
-        c, lo, hi = j.get('center_steps'), j.get('min_rad'), j.get('max_rad')
-        if not isinstance(c, int) or not 0 <= c <= 4095:
-            problems.append(f'{name}: center_steps must be an integer 0-4095 (is {c!r})')
-        if not all(isinstance(v, (int, float)) for v in (lo, hi)):
-            problems.append(f'{name}: min_rad/max_rad not set')
-        elif not -math.pi < lo < hi < math.pi:
-            problems.append(f'{name}: need -pi < min_rad < max_rad < pi (is {lo}, {hi})')
-        elif isinstance(c, int):
-            u_lo, u_hi = limits[name]
-            if not lo < u_lo < u_hi < hi:
-                problems.append(f'{name}: driver limits {lo}..{hi} must enclose the URDF limit {u_lo}..{u_hi} '
-                                '(rerun tools/fit_calibration.py --write after editing the URDF)')
-            raw_lo, raw_hi = c - hi * STEPS_PER_RAD, c - lo * STEPS_PER_RAD
-            if raw_lo < 0 or raw_hi > 4095:
-                problems.append(f'{name}: travel {raw_lo:.0f}..{raw_hi:.0f} counts crosses the encoder wrap')
-    if sorted(ids) != sorted(set(ids)) or not all(isinstance(i, int) and 1 <= i <= 253 for i in ids):
-        problems.append(f'motor_id values must be distinct integers 1-253 (are {ids})')
-    return problems
-
-
 def control_block(data, port, readonly, acc=None):
     """The <ros2_control> element for the STS driver."""
     hw = [
@@ -112,7 +85,8 @@ def control_block(data, port, readonly, acc=None):
         lines += [f'    <joint name="{name}">',
                   f'      <param name="motor_id">{int(j["motor_id"])}</param>',
                   '      <param name="operating_mode">0</param>',
-                  f'      <param name="position_center_steps">{center}</param>']
+                  f'      <param name="position_center_steps">{center}</param>',
+                  f'      <param name="encoder_direction">{j.get("encoder_direction") if j.get("encoder_direction") in (-1, 1) else -1}</param>']
         if not readonly:
             # limits clamp both commands and the reported position, so leave them out while calibrating
             lines += [f'      <param name="min_position">{float(j["min_rad"])!r}</param>',
@@ -123,8 +97,8 @@ def control_block(data, port, readonly, acc=None):
             for key in SERVO_EEPROM_KEYS:
                 value = j.get(key)
                 if value is not None:
-                    if not isinstance(value, int) or not 0 <= value <= 255:
-                        raise RuntimeError(f'{name}: {key} must be an integer 0-255 (is {value!r})')
+                    if not isinstance(value, int) or not 0 <= value <= (16 if key == 'deadband' else 254):
+                        raise RuntimeError(f'{name}: {key} is outside the supported register range (is {value!r})')
                     lines.append(f'      <param name="{key}">{value}</param>')
         # no command interface = read-only joint: the driver keeps torque disabled
         lines += ['      <state_interface name="position"/>',
@@ -155,10 +129,11 @@ def setup(context):
     if cfg['servo_acc'].strip() and not readonly:
         acc = int(cfg['servo_acc'])
         if not 1 <= acc <= 254:
-            raise RuntimeError('servo_acc must be 1-254 (0 makes STS servos creep and ignore speed)')
+            raise RuntimeError('servo_acc must be 1-254 (0 selects maximum acceleration)')
     urdf_text = (p / 'urdf/iron.urdf').read_text()
     if not readonly:
-        problems = calibration_problems(data, urdf_limits(urdf_text))
+        from joint_effort_iron.calibration import problems as r02_problems
+        problems = r02_problems(data, urdf_text, require_tcp=teleop)
         if problems:
             raise RuntimeError('Calibration incomplete; use readonly:=true until it is filled in:\n  '
                                + '\n  '.join(problems))

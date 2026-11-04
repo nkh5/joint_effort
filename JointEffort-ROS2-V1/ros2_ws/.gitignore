@@ -8,3 +8,12 @@ launch_params_*
 src/sts_hardware_interface/
 bench/results/
 *.bak-*
+
+# Local test logs; publish the compact R02 results instead.
+reports/r02/*.log
+reports/r02/*-command.txt
+reports/r02/*-tests.txt
+reports/r02/build-summary.txt
+reports/r02/blank-calibration-check.txt
+reports/r02/driver-direction-tests.txt
+reports/iron/demo-last.json

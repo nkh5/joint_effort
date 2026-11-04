@@ -10,7 +10,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    if os.environ.get('ROS_DOMAIN_ID') != '88': raise RuntimeError('Use scripts/run_input.sh (cold mock domain 88)')
+    if os.environ.get('ROS_DOMAIN_ID') != '88' and not (os.environ.get('ROS_DOMAIN_ID') == '188' and os.environ.get('JE_MOCK_TEST') == '1'): raise RuntimeError('Use scripts/run_input.sh (cold mock domain 88)')
     p = Path(get_package_share_directory('joint_effort_input'))
     return LaunchDescription([
         DeclareLaunchArgument('joystick', default_value='true'),

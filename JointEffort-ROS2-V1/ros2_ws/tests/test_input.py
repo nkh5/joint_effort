@@ -70,7 +70,7 @@ class InputTests(unittest.TestCase):
         self.assertAlmostEqual(math.sqrt(sum(v*v for v in velocity([1., 1., 1.], 'translation', 2.)[:3])), 0.02)
         angular = velocity([1., 1., 1.], 'rotation', 2.)[3:]
         self.assertAlmostEqual(math.sqrt(sum(v*v for v in angular)), 0.2)
-        self.assertEqual(angular[0], 0.)
+        self.assertEqual(angular[2], 0.)
 
     def test_shared_ownership(self):
         with tempfile.TemporaryDirectory() as directory:

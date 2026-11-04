@@ -5,15 +5,15 @@ from joint_effort_robot.kinematics import Robot,origin,rotation,differential_ste
 W=Path(__file__).resolve().parents[1];P=W/'src/joint_effort_iron';R=Robot(P/'urdf/iron.urdf');M=json.loads((P/'config/model.json').read_text())
 class IronTests(unittest.TestCase):
  def test_preserves_cad_origins_and_visual_meshes(self):
-  source=ET.parse(W/'src/joint_effort_arm_draft_description/urdf/joint_effort_arm_draft.urdf').getroot()
+  source=ET.parse(W/'src/joint_effort_arm_calibration_description/urdf/joint_effort_arm_calibration.urdf').getroot()
   for j in source.findall('joint'):
-   new=next(v for v in R.joints if v.get('name')==j.get('name'));np.testing.assert_allclose(origin(new.find('origin')),origin(j.find('origin')),atol=1e-14)
+   name={v:k for k,v in M['joint_name_map'].items()}.get(j.get('name'),j.get('name'));new=next(v for v in R.joints if v.get('name')==name);np.testing.assert_allclose(origin(new.find('origin')),origin(j.find('origin')),atol=1e-14)
   for link in source.findall('link'):
    mesh=link.find('visual/geometry/mesh')
    if mesh is not None:self.assertEqual(mesh.attrib,R.links[link.get('name')].find('visual/geometry/mesh').attrib)
  def test_nominal_tip_and_pointing_convention(self):
-  t=R.fk('iron',np.zeros(5));np.testing.assert_allclose(t[:3,3],[.394285284139,.043978599593,.381178433023],atol=1e-10)
-  frames=R.frames({});np.testing.assert_allclose(t[:3,0],frames['iron_tip'][:3,1],atol=1e-12)
+  t=R.fk('iron',np.zeros(5));np.testing.assert_allclose(t[:3,3],[.205898894447,.041155347311,.183861087631],atol=1e-10)
+  frames=R.frames({});np.testing.assert_allclose(t[:3,0],frames['iron_tip'][:3,2],atol=1e-12)
  def test_geometric_jacobian_at_varied_poses(self):
   rng=np.random.default_rng(88)
   for q in rng.uniform(-.5,.5,(12,5)):

@@ -7,13 +7,15 @@
 set -e
 workspace_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cal="$workspace_dir/src/joint_effort_iron/config/sts_calibration.yaml"
-preflight_args=(--cal "$cal" --urdf "$workspace_dir/src/joint_effort_iron/urdf/iron.urdf")
+preflight_args=(--urdf "$workspace_dir/src/joint_effort_iron/urdf/iron.urdf")
 for arg in "$@"; do
   case "$arg" in
     readonly:=true|readonly:=True|readonly:=1) preflight_args+=(--readonly) ;;
+    calibration:=*) cal="${arg#calibration:=}" ;;
     port:=*) preflight_args+=(--port "${arg#port:=}") ;;
   esac
 done
+preflight_args+=(--cal "$cal")
 echo "== preflight (read-only serial check) =="
 if ! python3 "$workspace_dir/tools/sts_preflight.py" "${preflight_args[@]}"; then
   echo "Preflight failed - NOT launching. Fix the problem above and run again."

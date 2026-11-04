@@ -38,22 +38,19 @@ It does not connect to motors. Keep the entire package, including its six meshes
 
 ## Hardware calibration and integration
 
-Read [the R02 handoff](../../../R02-URDF-HANDOFF.md) and
-[CALIBRATION-ACCURACY.md](CALIBRATION-ACCURACY.md) before integrating with the
-existing controller stack. This additive package does not replace `iron.urdf`,
-the MoveIt configuration, or the existing calibrated driver settings.
+The controller stack now uses this geometry through the generated
+`joint_effort_iron/urdf/iron.urdf`. See [R02-INTEGRATION.md](../../R02-INTEGRATION.md)
+for the name mapping, collision model and mock tests, and
+[REAL-ARM.md](../../REAL-ARM.md) for physical calibration.
 
-The R02 names are `base_rotation_joint`, `shoulder_joint`, `elbow_joint`,
-`wrist_yaw_joint`, and `wrist_pitch_joint`. The existing stack uses `joint_1`
-through `joint_5`; joint names, axes, physical motor IDs, direction signs,
-encoder zeros, SRDF and controller mappings need reconciliation together.
+This source package retains the descriptive names `base_rotation_joint`, `shoulder_joint`,
+`elbow_joint`, `wrist_yaw_joint` and `wrist_pitch_joint`. The running controller model maps them
+in that order to `joint_1` through `joint_5`.
 
-Use the existing bench measurements as raw motor data. Their housing-based
-reference and the existing YAML's older arm datums do not automatically equal
-the R02 assembled zero. Place the assembled arm in this pose, record each zero
-count, confirm direction with a small controlled move, and verify additional
-measured poses. Fill `config/calibration.template.json`; fields remain null until
-measured. Its nominal direct-drive formula uses 4096 encoder counts/revolution.
+The active motor map is `joint_effort_iron/config/sts_calibration.yaml`. The JSON template in
+this source package is a reference; it is not read by the real-arm launch. Earlier bench
+measurements use a different zero reference. Measure the assembled arm against R02 and fit
+`calibration/r02-measurements.csv` with `tools/fit_r02_calibration.py`.
 
 The +/-30-degree limits, 0.1 Nm effort and 0.25 rad/s velocity in this URDF are
 **display placeholders**. Establish real travel and cable clearances before
@@ -81,4 +78,5 @@ contacts and dynamic motion clearance are outside that static check.
 See `evidence/calibration-checks.json`, `evidence/provenance.json`,
 `evidence/zero-convention.json`, and `evidence/zero-datums.csv` for the numerical
 records. These establish CAD/software consistency, not physical calibration
-accuracy. ROS2 runtime and real motor motion have not been tested for R02.
+accuracy. The integrated runtime has passed mock tests recorded in `../../reports/r02/`.
+Physical R02 motor motion and calibration remain unverified.
