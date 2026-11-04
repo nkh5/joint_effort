@@ -1,0 +1,132 @@
+{
+  "success": true,
+  "urdf_sha256": "95ba400047c3dbfd9ef9786524157219d7010e599e652b4a28236690d3266070",
+  "native_result_sha256": "69f67c8763919082bf1b3f0e15fcbc8a6a2cd1300676def8494cde9d2bb3d63f",
+  "source_instances": 104,
+  "links": 7,
+  "moving_joints": 5,
+  "fk_configurations": 31,
+  "max_fk_position_error_m": 1.5785983631388945e-15,
+  "max_fk_rotation_matrix_error": 7.335380553985985e-15,
+  "native_datum_alignment_degrees": {
+    "upper_link_from_vertical_deg": 1.1394454168660802e-13,
+    "forearm_from_forward_deg": 1.145728070740916e-13,
+    "shoulder_axis_from_horizontal_deg": 2.6715432559256924e-13,
+    "elbow_axis_from_horizontal_deg": 3.8126195429445133e-13,
+    "shaft_parallel_error_deg": 1.8756233796134456e-13,
+    "iron_from_down_deg": 1.110758209209428e-10
+  },
+  "exported_mesh_edge_alignment_degrees": {
+    "upper_link_from_vertical_deg": 4.202283995692276e-07,
+    "forearm_from_forward_deg": 8.960769386851305e-07
+  },
+  "base_brackets_alignment_degrees": 4.359492855899814e-13,
+  "base_forward_alignment_degrees": 9.684929390004776e-14,
+  "base_clocking_correction_deg": 30.340072251662402,
+  "max_urdf_visual_collision_vs_saved_cad_transform_error": 3.3996204894244508e-15,
+  "all_104_source_instance_reclocking_and_coordinate_compositions_verified": true,
+  "visual_mesh_extreme_gap_tolerance_m": 5e-05,
+  "meshes": [
+    {
+      "link": "base_link",
+      "triangles": 41224,
+      "sha256": "84f307c0212c6241dffc464f2ebac69ed50c4e625e20ddcc576e8a493f53e99f",
+      "max_extent_difference_from_old_display_mesh_m": 3.4373878691984494e-05,
+      "exact_cad_bounds_m": [
+        -0.14772364544574607,
+        -0.12598379137733212,
+        -3.768484716533931e-15,
+        0.06214840891842548,
+        0.0773804651834376,
+        0.05999999999999617
+      ],
+      "max_mesh_extreme_gap_m": 3.455626670706424e-05,
+      "max_outside_exact_cad_bounds_m": 4.152447910485002e-16
+    },
+    {
+      "link": "base_rotation_link",
+      "triangles": 74824,
+      "sha256": "aabdb2969a8d1e5dd6d22aa38e22e5a6d9ef2ce9fe71c458efd866dfd09972e1",
+      "max_extent_difference_from_old_display_mesh_m": 2.360375139787152e-08,
+      "exact_cad_bounds_m": [
+        -0.04749999999999353,
+        -0.047499999999996746,
+        -0.028650000000009168,
+        0.04750000000000663,
+        0.04750000000000341,
+        0.0926820664514707
+      ],
+      "max_mesh_extreme_gap_m": 2.8719113753794545e-09,
+      "max_outside_exact_cad_bounds_m": 6.914047112616117e-10
+    },
+    {
+      "link": "upper_arm_link",
+      "triangles": 107480,
+      "sha256": "895d0e381307bd36cefab3b2c3935a3f04f37bce82fbb05fc5bd7a7db7f02b7d",
+      "max_extent_difference_from_old_display_mesh_m": 1.8741885530193514e-05,
+      "exact_cad_bounds_m": [
+        -0.15105106936963028,
+        -0.07648027457056328,
+        -0.022600000000002732,
+        0.010500000000002008,
+        0.010499999999999066,
+        0.028649999999997327
+      ],
+      "max_mesh_extreme_gap_m": 2.4100907148938422e-05,
+      "max_outside_exact_cad_bounds_m": 2.312085189970503e-09
+    },
+    {
+      "link": "forearm_link",
+      "triangles": 64516,
+      "sha256": "bd3457e03c577042c0eccae9ac8b1c8ed43ce2ccd7d240b030d6938de8edd9ad",
+      "max_extent_difference_from_old_display_mesh_m": 2.6196010462831154e-05,
+      "exact_cad_bounds_m": [
+        -0.11553023653775682,
+        -0.13178175920630275,
+        -0.02259999999999886,
+        0.010499999999997955,
+        0.010499999999997012,
+        0.028650000000001306
+      ],
+      "max_mesh_extreme_gap_m": 3.2175473866802307e-05,
+      "max_outside_exact_cad_bounds_m": 7.241975734373352e-10
+    },
+    {
+      "link": "wrist_link",
+      "triangles": 73092,
+      "sha256": "861f1cbca1a646197f39bb1bf488b8b8e513d858382ff4d42316ce2e2e3f734b",
+      "max_extent_difference_from_old_display_mesh_m": 3.291698003060617e-08,
+      "exact_cad_bounds_m": [
+        -0.07278889632145313,
+        -0.01775000000000093,
+        -0.028432066451461267,
+        0.010500000000001286,
+        0.018225000000263673,
+        0.028650000000000064
+      ],
+      "max_mesh_extreme_gap_m": 4.479116946587425e-05,
+      "max_outside_exact_cad_bounds_m": 6.914138150904137e-10
+    },
+    {
+      "link": "tool_link",
+      "triangles": 35576,
+      "sha256": "4d7087b7251ba107d08c7b1d182b8cd49b56bda313c6c56b4ff1b166b1046877",
+      "max_extent_difference_from_old_display_mesh_m": 5.364426181042603e-09,
+      "exact_cad_bounds_m": [
+        -0.02199999812688067,
+        -0.07249999999998914,
+        -0.05280000000000051,
+        0.022000001873120654,
+        0.14850000000001073,
+        0.02448500106612772
+      ],
+      "max_mesh_extreme_gap_m": 4.529963737454068e-09,
+      "max_outside_exact_cad_bounds_m": 2.743807403504661e-10
+    }
+  ],
+  "mesh_units": "meters",
+  "ros2_runtime_tested": false,
+  "hardware_calibration_verified": false,
+  "physical_pocket_fit_verified": false,
+  "tcp_physically_measured": false
+}

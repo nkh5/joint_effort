@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="joint_effort_arm_calibration">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 -0.52953415608447851" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="base_link_color">
+        <color rgba="0.45882352941176469 0.50980392156862742 0.58431372549019611 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 -0.52953415608447851" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="base_rotation_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_rotation_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="base_rotation_link_color">
+        <color rgba="0.18823529411764706 0.53333333333333333 0.75686274509803919 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_rotation_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_arm_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/upper_arm_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="upper_arm_link_color">
+        <color rgba="0.13725490196078433 0.61960784313725492 0.5490196078431373 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/upper_arm_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="forearm_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/forearm_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="forearm_link_color">
+        <color rgba="0.49411764705882355 0.42352941176470588 0.72549019607843135 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/forearm_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="wrist_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/wrist_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="wrist_link_color">
+        <color rgba="0.88627450980392153 0.60392156862745094 0.2196078431372549 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/wrist_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="tool_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/tool_link.stl" scale="1 1 1" />
+      </geometry>
+      <material name="tool_link_color">
+        <color rgba="0.83921568627450982 0.3843137254901961 0.38823529411764707 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <geometry>
+        <mesh filename="package://joint_effort_arm_calibration_description/meshes/tool_link.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_rotation_joint" type="revolute">
+    <parent link="base_link" />
+    <child link="base_rotation_link" />
+    <origin xyz="-1.2794816170777926e-34 0 0.045899999999999386" rpy="3.6040820355865639e-48 1.4092530967131051e-31 -5.6447586236593125e-17" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort="0.1" velocity="0.25" />
+  </joint>
+  <joint name="shoulder_joint" type="revolute">
+    <parent link="base_rotation_link" />
+    <child link="upper_arm_link" />
+    <origin xyz="-2.7822209200754439e-13 -0.0036156782988054914 0.082570362543754494" rpy="-1.5707963267949014 1.1539631013168834 -1.8777063666987526e-16" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort="0.1" velocity="0.25" />
+  </joint>
+  <joint name="elbow_joint" type="revolute">
+    <parent link="upper_arm_link" />
+    <child link="forearm_link" />
+    <origin xyz="-0.1380436226470787 -0.061122897616729982 -0.00074067829881465253" rpy="2.2253458712417082e-15 2.400867356254006e-15 1.1239252234041799" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort="0.1" velocity="0.25" />
+  </joint>
+  <joint name="wrist_yaw_joint" type="revolute">
+    <parent link="forearm_link" />
+    <child link="wrist_link" />
+    <origin xyz="-0.10090185466707993 -0.1125433597541136 0.0023867039077369902" rpy="1.570796326796827 -3.9210550307884641e-16 0.8637043288687295" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort="0.1" velocity="0.25" />
+  </joint>
+  <joint name="wrist_pitch_joint" type="revolute">
+    <parent link="wrist_link" />
+    <child link="tool_link" />
+    <origin xyz="-0.054788896321058128 0.0045250000003961427 -0.018320362543672364" rpy="1.5707963267949037 -1.4968465368524863e-14 -3.8283864210089953e-11" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort="0.1" velocity="0.25" />
+  </joint>
+  <link name="iron_tip" />
+  <joint name="iron_tip_fixed" type="fixed">
+    <parent link="tool_link" />
+    <child link="iron_tip" />
+    <origin xyz="1.8731232120927643e-09 0.14850000000000807 -0.038599999999999635" rpy="-1.5707963267948988 -3.2429262894635913e-29 -1.5111655409527521e-14" />
+  </joint>
+</robot>

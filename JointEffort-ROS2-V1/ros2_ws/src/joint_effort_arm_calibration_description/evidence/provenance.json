@@ -1,0 +1,61 @@
+{
+  "revision": "R02",
+  "base_clocking_correction_deg": 30.340072251662402,
+  "cad_assembly": "JE-Arm-Calibration-Zero-R02.SLDASM",
+  "source_instances": 104,
+  "native_solids": 119,
+  "native_saved_assembly_poses_verified": true,
+  "native_result_sha256": "69f67c8763919082bf1b3f0e15fcbc8a6a2cd1300676def8494cde9d2bb3d63f",
+  "native_plan_sha256": "c59fec68ac8864cf97f1ed35afea464abed519d1c2a13da0ad81cd22174daa10",
+  "base_clocking_clearance": {
+    "stationary_external_components": 5,
+    "moving_external_components": 24,
+    "pairs": 120,
+    "native_candidate_pairs": 5,
+    "checks": [
+      {
+        "a": "MR-44-1/MR-00-1/MR-01-1/MR-04-1",
+        "b": "MR-44-1/MR-46-1",
+        "overlap_mm3": 0
+      },
+      {
+        "a": "MR-44-1/MR-00-1/MR-01-1/MR-22-1",
+        "b": "MR-44-1/MR-46-1",
+        "overlap_mm3": 0
+      },
+      {
+        "a": "MR-44-1/MR-00-1/MR-01-1/MR-37-1",
+        "b": "MR-44-1/MR-46-1",
+        "overlap_mm3": 0
+      },
+      {
+        "a": "MR-44-1/MR-45-1",
+        "b": "MR-44-1/MR-46-1",
+        "overlap_mm3": 0
+      },
+      {
+        "a": "MR-44-1/MR-47-1",
+        "b": "MR-44-1/MR-46-1",
+        "overlap_mm3": 0
+      }
+    ],
+    "collisions": [],
+    "unrelieved_source_brackets_checked_conservatively": true,
+    "servo_internal_rotor_case_geometry_excluded": true,
+    "dynamic_motion_checked": false
+  },
+  "moving_to_moving_geometry_unchanged_from_R01": true,
+  "source_cad_files_unchanged": true,
+  "urdf_sha256": "95ba400047c3dbfd9ef9786524157219d7010e599e652b4a28236690d3266070",
+  "repository_snapshot_review": {
+    "main_reviewed_commit": "57207ad0c166828677740fb55b89349d5669f499",
+    "working_v1_base_commit": "fb22444e27d3008f0a07777e3f279e5354b7c04d",
+    "new_main_cad_changes_incorporated": false,
+    "export_source_linkage_l1_sha256": "7fbab60e35d9244915d29dc878be37e5222ef52ebcfa55660615a2381fe07b2e",
+    "reviewed_main_linkage_l1_sha256": "d41bf27dec77041576b971fad1039e9a3f0da0f023a3cd09e16f4ec3a048a04a"
+  },
+  "ros2_runtime_tested": false,
+  "hardware_calibration_verified": false,
+  "controller_stack_integrated": false,
+  "scope": "Public runtime handoff. Raw native execution reports and workstation paths are retained in the local CAD evidence archive."
+}

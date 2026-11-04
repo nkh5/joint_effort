@@ -1,5 +1,12 @@
 # Joint Effort ROS 2 - V1 (mock + real iron arm)
 
+## R02 aligned arm description
+
+The completed R02 URDF, revised holder/iron meshes, zero-pose image and calibration
+handoff are available in [R02-URDF-HANDOFF.md](R02-URDF-HANDOFF.md). This is a
+separate Jazzy visualization/calibration package; integrating its new joint names
+and zero convention into the real-arm controller stack is the next step.
+
 One workspace for both the mock arm and the real STS3215 arm. It is `JointEffort-ROS2-V0` (the
 stack that passed the Pico + mock tests) plus the real-arm path on
 [adityakamath/sts_hardware_interface](https://github.com/adityakamath/sts_hardware_interface),

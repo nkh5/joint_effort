@@ -1,0 +1,42 @@
+{
+  "schema": "calibration-zero-convention/1",
+  "base_axes": {
+    "x": "forward",
+    "y": "left",
+    "z": "up"
+  },
+  "nominal_zero": {
+    "base": "Upper and fixed motor brackets aligned; arm faces fixed-base forward",
+    "upper": "vertical",
+    "forearm": "horizontal forward",
+    "iron": "vertical down"
+  },
+  "base_clocking_correction_deg": 30.340072251662402,
+  "base_zero_datum": {
+    "fixed_component": "MR-44-1/MR-45-1",
+    "fixed_face": 9,
+    "moving_component": "MR-48-1/MR-52-1",
+    "moving_face": 10,
+    "target_parallel_error_deg": 0,
+    "forward": "Fixed motor bracket front-face normal; +Z up, +Y left."
+  },
+  "geometry_origins": "Native part coordinates retained; base mesh has a required rotation relative to base_link",
+  "wrist_4_axis": "vertical at zero (yaw); not a forearm-axis roll joint",
+  "native_plan_sha256": "c59fec68ac8864cf97f1ed35afea464abed519d1c2a13da0ad81cd22174daa10",
+  "native_result_sha256": "69f67c8763919082bf1b3f0e15fcbc8a6a2cd1300676def8494cde9d2bb3d63f",
+  "native_mesh_index_sha256": "9644afc8422ddfc16beea6183f23f4e8c679c61d6c45c98524beb41c9ddee2f0",
+  "selected_mesh_index_sha256": "9644afc8422ddfc16beea6183f23f4e8c679c61d6c45c98524beb41c9ddee2f0",
+  "source_instances": 104,
+  "moving_joints": 5,
+  "physical_fit_verified": false,
+  "encoder_zeros_confirmed": false,
+  "tcp_physically_measured": false,
+  "display_limits_only": {
+    "lower_rad": -0.5235987755982988,
+    "upper_rad": 0.5235987755982988,
+    "effort_nm": 0.1,
+    "velocity_rad_s": 0.25
+  },
+  "cad_assembly_type": "Static six-link reference; original mated CAD is preserved",
+  "no_dynamics_inertial_parameters": true
+}

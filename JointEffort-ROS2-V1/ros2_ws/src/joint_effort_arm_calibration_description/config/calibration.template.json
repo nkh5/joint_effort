@@ -1,0 +1,52 @@
+{
+  "schema": "joint-effort-calibration-template/1",
+  "encoder_counts_per_turn": 4096,
+  "hardware_ready": false,
+  "supply_voltage_v": null,
+  "travel_limits_confirmed": false,
+  "formula": "q_ros_rad = direction * (unwrapped_raw_count - zero_count) * 2*pi/4096",
+  "joints": [
+    {
+      "joint_name": "base_rotation_joint",
+      "servo_id": null,
+      "zero_count": null,
+      "direction": null,
+      "lower_rad": null,
+      "upper_rad": null
+    },
+    {
+      "joint_name": "shoulder_joint",
+      "servo_id": null,
+      "zero_count": null,
+      "direction": null,
+      "lower_rad": null,
+      "upper_rad": null
+    },
+    {
+      "joint_name": "elbow_joint",
+      "servo_id": null,
+      "zero_count": null,
+      "direction": null,
+      "lower_rad": null,
+      "upper_rad": null
+    },
+    {
+      "joint_name": "wrist_yaw_joint",
+      "servo_id": null,
+      "zero_count": null,
+      "direction": null,
+      "lower_rad": null,
+      "upper_rad": null
+    },
+    {
+      "joint_name": "wrist_pitch_joint",
+      "servo_id": null,
+      "zero_count": null,
+      "direction": null,
+      "lower_rad": null,
+      "upper_rad": null
+    }
+  ],
+  "tcp_physically_measured": false,
+  "nominal_tcp_photo_reference_m": 0.221
+}

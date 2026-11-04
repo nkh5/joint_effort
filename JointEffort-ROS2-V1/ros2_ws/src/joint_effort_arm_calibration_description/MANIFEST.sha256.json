@@ -1,0 +1,21 @@
+{
+  "CALIBRATION-ACCURACY.md": "c32eb9793b1426fa7e2eed818ad9505b4080fa8ce31b4ba7c248adb4e52003a0",
+  "CMakeLists.txt": "4fe59e791f75e21a9b602733372ad5e3bfee7c8b4726928d81d8b16da9dd4029",
+  "config/calibration.template.json": "b4542a80d0f0638789153f2d84ee6f66d62232705063ec7d9318f299d67cf426",
+  "evidence/calibration-checks.json": "911912dd81b86e84441ffb394feb464d6d625834b68373b8fd0935aec93885c6",
+  "evidence/provenance.json": "0ec58501a871ad26407560530ce26544ceb54041707620a9781bf32306c91a67",
+  "evidence/zero-convention.json": "1c6af027b10efa6fa75597d818bcbc2c847305199915603015fe9c018b463510",
+  "evidence/zero-datums.csv": "70aafc796337b5ad5e6a01c88016b34b1558079d5fa0bd13d5f757e96fa70d56",
+  "launch/display.launch.py": "8ac2cc7dcf096902635886b2c11275c5be735b3d1aa20bff487c8edf1c85cd89",
+  "meshes/base_link.stl": "84f307c0212c6241dffc464f2ebac69ed50c4e625e20ddcc576e8a493f53e99f",
+  "meshes/base_rotation_link.stl": "aabdb2969a8d1e5dd6d22aa38e22e5a6d9ef2ce9fe71c458efd866dfd09972e1",
+  "meshes/forearm_link.stl": "bd3457e03c577042c0eccae9ac8b1c8ed43ce2ccd7d240b030d6938de8edd9ad",
+  "meshes/tool_link.stl": "4d7087b7251ba107d08c7b1d182b8cd49b56bda313c6c56b4ff1b166b1046877",
+  "meshes/upper_arm_link.stl": "895d0e381307bd36cefab3b2c3935a3f04f37bce82fbb05fc5bd7a7db7f02b7d",
+  "meshes/wrist_link.stl": "861f1cbca1a646197f39bb1bf488b8b8e513d858382ff4d42316ce2e2e3f734b",
+  "package.xml": "3512db200c499dfec4fb0b247a86c20a7cd0b82948c30099accf2ce9126e7cbf",
+  "README.md": "063be43cf493aa4b071db0d0982bff8a12280f80acf844864c7195d9cd77795d",
+  "rviz/calibration.rviz": "5ad7d868af7124e740f4c0c76e90b03ad1dd6e20541acf6477c4969c298cbbef",
+  "urdf/joint_effort_arm_calibration.urdf": "95ba400047c3dbfd9ef9786524157219d7010e599e652b4a28236690d3266070",
+  "zero-pose.png": "60d6430ba8cdeb4f42ebe3e328f4ec8e2cf4e16a81dc1171a60b121edefd9bc0"
+}
