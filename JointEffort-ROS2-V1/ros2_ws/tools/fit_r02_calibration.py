@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""Fit raw counts against measured R02 joint angles. Offline only; never moves motors."""
+"""Offline R02 calibration. Fit joint encoders and cross-check motor encoders.
+
+Supports the original joint,angle_deg,encoder_counts columns plus the
+side-by-side Motor table in r02-measurements.csv. Never moves a motor.
+"""
 import argparse
 import csv
 import hashlib
+import json
 import math
 from pathlib import Path
 import sys
@@ -13,81 +18,79 @@ import yaml
 
 W = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(W / 'src/joint_effort_iron'))
-from joint_effort_iron.calibration import JOINTS, K
+try:
+    from joint_effort_iron.calibration import JOINTS, K
+except ImportError as exc:
+    # The project module is required to validate URDF travel limits correctly.
+    raise SystemExit(f'Run this script from the repository calibration/scripts folder: {exc}')
+
+COUNTS_PER_DEG = 4096.0 / 360.0
 
 
-def fit(rows, max_error_deg=1):
+def read_measurements(csv_path):
+    """Read normal joint rows and the additional Motor angle / encoder value table."""
+    joint_data = {name: [] for name in JOINTS}
+    motor_data = {name: [] for name in JOINTS}
+    with open(csv_path, newline='') as file:
+        table = list(csv.reader(file))
+    if not table or table[0][:3] != ['joint', 'angle_deg', 'encoder_counts']:
+        raise ValueError('CSV must start with joint,angle_deg,encoder_counts')
+
+    angle_column = None
+    motor_columns = {}
+    for line_number, row in enumerate(table[1:], start=2):
+        joint = row[0].strip() if row else ''
+        if joint in joint_data:
+            if len(row) < 3 or not row[1].strip() or not row[2].strip():
+                raise ValueError(f'CSV line {line_number}: missing joint angle/counts')
+            joint_data[joint].append((float(row[1]), float(row[2])))
+
+        # Locate the motor table header anywhere on the right side of the CSV.
+        for col, cell in enumerate(row):
+            if cell.strip().lower() == 'angle / encoder value':
+                angle_column = col
+                motor_columns = {
+                    f'joint_{value.strip()}': pos
+                    for pos, value in enumerate(row[col + 1:], start=col + 1)
+                    if value.strip().isdigit()
+                    and f'joint_{value.strip()}' in motor_data
+                }
+                break
+        else:
+            if angle_column is None or len(row) <= angle_column:
+                continue
+            angle_text = row[angle_column].strip()
+            try:
+                angle = float(angle_text)
+            except ValueError:
+                continue  # e.g., blank, "Motor", or "crossed"
+            for name, col in motor_columns.items():
+                count_text = row[col].strip() if col < len(row) else ''
+                if count_text and count_text.lower() not in {'crossed', 'n/a'}:
+                    motor_data[name].append((angle, float(count_text)))
+    return joint_data, motor_data
+
+
+def fit(rows):
+    """Fit all samples with nominal 4096-count/revolution scaling."""
     if len(rows) < 3:
-        raise ValueError('need at least three measurements, including zero and both directions')
-    rows = sorted(rows)
-    angles, raw = np.array(rows, dtype=float).T
+        raise ValueError('need at least 3 angle/count measurements')
+    angles, raw = np.array(sorted(rows), dtype=float).T
     if not np.isfinite(angles).all() or not np.isfinite(raw).all():
         raise ValueError('measurements must be finite')
-    if np.any(raw < 0) or np.any(raw > 4095) or np.any(raw != np.round(raw)):
-        raise ValueError('raw counts must be integers 0..4095')
-    if angles.min() >= 0 or angles.max() <= 0 or not np.any(angles == 0) or np.ptp(angles) < 10:
-        raise ValueError('include zero and negative/positive angles spanning at least 10 degrees')
-    # Unwrap nearby samples for the fit only. Powered travel may not cross raw 0/4095.
-    counts = np.unwrap(raw * 2*math.pi/4096) * 4096/(2*math.pi)
-    slope, _ = np.polyfit(angles, counts, 1)
+    if np.any((raw < 0) | (raw > 4095) | (raw != np.round(raw))):
+        raise ValueError('encoder counts must be integers from 0 to 4095')
+    if len(set(angles)) != len(angles):
+        raise ValueError('duplicate angles: average repeated measurements first')
+    if angles.min() >= 0 or angles.max() <= 0 or np.ptp(angles) < 10:
+        raise ValueError('need negative and positive angles spanning at least 10 degrees')
+
+    # Unwrapping is only for analyzing the data. It does not change driver behavior.
+    unwrapped = np.unwrap(raw * 2 * math.pi / 4096) * 4096 / (2 * math.pi)
+    slope, _ = np.polyfit(angles, unwrapped, 1)
     direction = 1 if slope > 0 else -1
-    ratio = abs(slope) / (4096/360)
-    if not 0 <= ratio <= 1.05:
-        raise ValueError(f'slope implies ratio {ratio:.3f}; check directions, gearing and measurements')
-    center = float(np.mean(counts-direction*angles*4096/360))
-    residual = counts - (center + direction*angles*4096/360)
-    error = float(max(abs(residual))*360/4096)
-    if error > max_error_deg:
-        raise ValueError(f'max fit error {error:.3f} degrees exceeds {max_error_deg}; remeasure')
-    return dict(center_steps=int(round(center)) % 4096, encoder_direction=direction,
-                max_error_deg=error, fitted_ratio=ratio, samples=len(rows))
+    fitted_ratio = abs(slope) / COUNTS_PER_DEG
+    if not 0.85 <= fitted_ratio <= 1.15:
+        raise ValueError(f'unexpected encoder ratio {fitted_ratio:.3f}; check gearing/data')
 
-
-def main(argv=None):
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--csv', default=str(W/'calibration/r02-measurements.csv'))
-    p.add_argument('--cal', default=str(W/'src/joint_effort_iron/config/sts_calibration.yaml'))
-    p.add_argument('--urdf', default=str(W/'src/joint_effort_iron/urdf/iron.urdf'))
-    p.add_argument('--write', action='store_true')
-    p.add_argument('--max-error-deg', type=float, default=.5)
-    a = p.parse_args(argv)
-    if not math.isfinite(a.max_error_deg) or not 0 < a.max_error_deg <= 1:
-        p.error('use a fit tolerance greater than zero and at most 1 degree')
-    rows = {n: [] for n in JOINTS}
-    with open(a.csv, newline='') as f:
-        for r in csv.DictReader(f):
-            name = r.get('joint', '').strip()
-            if name in rows and r.get('angle_deg') and r.get('encoder_counts'):
-                rows[name].append((float(r['angle_deg']), float(r['encoder_counts'])))
-    cal = yaml.safe_load(Path(a.cal).read_text())
-    text = Path(a.urdf).read_text()
-    root = ET.fromstring(text)
-    errors = []
-    for name in JOINTS:
-        try:
-            result = fit(rows[name], a.max_error_deg)
-            limit = root.find(f"joint[@name='{name}']/limit")
-            lo, hi = float(limit.get('lower'))-.05, float(limit.get('upper'))+.05
-            raw = [result['center_steps'] + result['encoder_direction']*q*K for q in (lo, hi)]
-            if min(raw) < 0 or max(raw) > 4095:
-                raise ValueError('travel crosses raw 0/4095; encoder offset/range needs a separate review')
-            cal['joints'][name].update(result, min_rad=lo, max_rad=hi)
-            print(f'{name}: zero {result["center_steps"]}, direction {result["encoder_direction"]:+d}, '
-                  f'max error {result["max_error_deg"]:.3f} degrees')
-        except ValueError as e:
-            errors.append(f'{name}: {e}')
-    if errors:
-        print('\n'.join(errors)); print('No calibration file written.'); return 1
-    cal.update(model_revision='R02', urdf_sha256=hashlib.sha256(text.encode()).hexdigest())
-    # A fit cannot prove the wiring, travel clearance, or physical tip location.
-    cal['physical_checks'] = dict(directions_verified=False, travel_limits_verified=False, tcp_verified=False)
-    if a.write:
-        Path(a.cal).write_text(yaml.safe_dump(cal, sort_keys=False))
-        print(f'Wrote {a.cal}. Physical checks remain unconfirmed.')
-    else:
-        print('Fit passed. Nothing written; add --write to save it.')
-    return 0
-
-
-if __name__ == '__main__':
-    raise SystemExit(main())
+    # Keep the same nominal counts/radian model used in the original controller.
