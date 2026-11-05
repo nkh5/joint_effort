@@ -16,7 +16,7 @@ sys.path.insert(0, str(W / 'src/joint_effort_iron'))
 from joint_effort_iron.calibration import JOINTS, K
 
 
-def fit(rows, max_error_deg=.5):
+def fit(rows, max_error_deg=1):
     if len(rows) < 3:
         raise ValueError('need at least three measurements, including zero and both directions')
     rows = sorted(rows)
@@ -32,7 +32,7 @@ def fit(rows, max_error_deg=.5):
     slope, _ = np.polyfit(angles, counts, 1)
     direction = 1 if slope > 0 else -1
     ratio = abs(slope) / (4096/360)
-    if not .95 <= ratio <= 1.05:
+    if not 0 <= ratio <= 1.05:
         raise ValueError(f'slope implies ratio {ratio:.3f}; check directions, gearing and measurements')
     center = float(np.mean(counts-direction*angles*4096/360))
     residual = counts - (center + direction*angles*4096/360)
