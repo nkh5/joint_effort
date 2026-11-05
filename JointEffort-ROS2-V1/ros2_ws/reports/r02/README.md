@@ -27,3 +27,11 @@ Earlier reports outside this folder are for earlier models.
 
 Raw test logs and machine-specific build output stay local and are ignored by Git.
 `verification.json` records the tested revision, package/test counts and source fingerprints.
+
+## Physical measurement fit
+
+`calibration-fit.json` records the measurements pulled at `6616549`. All five joint fits
+exceed the default 0.5-degree maximum error, so the active calibration was left unchanged.
+The separate Motor table is retained as reference data and is not used for R02 zeros.
+The calibration CLI repair passed 59 project tests, including accepted/rejected file-write
+checks. No physical motor commands were sent.

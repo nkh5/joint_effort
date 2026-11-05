@@ -12,7 +12,7 @@ Use at least three points per joint: zero and a negative/positive angle, spannin
 R02 link references, not the motor case. Use the column names already in the worksheet.
 
 ```bash
-python3 tools/fit_r02_calibration.py
+python3 tools/fit_r02_calibration.py --report work/calibration-fit.json
 python3 tools/fit_r02_calibration.py --write
 ```
 
@@ -26,3 +26,7 @@ See [REAL-ARM.md](../REAL-ARM.md) for the physical checks.
 `sts_calibration_legacy_v1.yaml` record earlier measurements and settings. Their zero references
 are different from R02. Keep them as records; they are not the active R02 calibration.
 The older `fit_calibration.py` tool is retained for those data and rejects the R02 settings.
+
+The fitter reports every joint, even when it rejects the data. Its default maximum error is
+0.5 degrees. Rejected fits return exit code 1 and never overwrite the active settings. The
+optional Motor table in the CSV is analyzed separately; its reference does not set R02 zeros.

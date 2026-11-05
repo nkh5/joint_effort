@@ -1,0 +1,502 @@
+{
+  "result": "FAIL",
+  "max_error_allowed_deg": 0.5,
+  "joints": {
+    "joint_1": {
+      "center_steps": 2064,
+      "encoder_direction": 1,
+      "fitted_zero_count": 2063.9244444444444,
+      "fitted_ratio": 0.9002952895648877,
+      "max_error_deg": 3.1417968749999936,
+      "rms_error_deg": 2.4673581915304683,
+      "free_slope_max_error_deg": 2.7187048641518254,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -26.0,
+          "encoder_counts": 1776,
+          "model_angle_deg": -25.30585937499999,
+          "error_deg": 0.69414062500001
+        },
+        {
+          "angle_deg": -13.0,
+          "encoder_counts": 1946,
+          "model_angle_deg": -10.364453124999992,
+          "error_deg": 2.635546875000008
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 2092,
+          "model_angle_deg": 2.4675781250000073,
+          "error_deg": 2.4675781250000073
+        },
+        {
+          "angle_deg": 14.0,
+          "encoder_counts": 2193,
+          "model_angle_deg": 11.344531250000006,
+          "error_deg": -2.6554687499999936
+        },
+        {
+          "angle_deg": 26.0,
+          "encoder_counts": 2324,
+          "model_angle_deg": 22.858203125000006,
+          "error_deg": -3.1417968749999936
+        }
+      ],
+      "min_rad": -0.5735987755982989,
+      "max_rad": 0.5735987755982989,
+      "raw_travel_counts": [
+        1690.0717343214465,
+        2437.9282656785535
+      ],
+      "accepted": false,
+      "problems": [
+        "max angle error 3.142 degrees exceeds 0.500; remeasure"
+      ]
+    },
+    "joint_2": {
+      "center_steps": 2035,
+      "encoder_direction": -1,
+      "fitted_zero_count": 2034.573333333333,
+      "fitted_ratio": 1.0319196737675425,
+      "max_error_deg": 0.8804687499999737,
+      "rms_error_deg": 0.5109479523969084,
+      "free_slope_max_error_deg": 0.24831338753557305,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -21.0,
+          "encoder_counts": 2278,
+          "model_angle_deg": -21.394921875000026,
+          "error_deg": -0.3949218750000263
+        },
+        {
+          "angle_deg": -12.0,
+          "encoder_counts": 2177,
+          "model_angle_deg": -12.517968750000025,
+          "error_deg": -0.5179687500000245
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 2037,
+          "model_angle_deg": -0.21328125000002585,
+          "error_deg": -0.21328125000002585
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 1918,
+          "model_angle_deg": 10.245703124999974,
+          "error_deg": 0.2457031249999737
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 1797,
+          "model_angle_deg": 20.880468749999974,
+          "error_deg": 0.8804687499999737
+        }
+      ],
+      "min_rad": -0.5735987755982989,
+      "max_rad": 0.5735987755982989,
+      "raw_travel_counts": [
+        1661.0717343214465,
+        2408.9282656785535
+      ],
+      "accepted": false,
+      "problems": [
+        "max angle error 0.880 degrees exceeds 0.500; remeasure"
+      ]
+    },
+    "joint_3": {
+      "center_steps": 3338,
+      "encoder_direction": -1,
+      "fitted_zero_count": 3338.0044444444443,
+      "fitted_ratio": 1.0401663528327232,
+      "max_error_deg": 1.5863281249999837,
+      "rms_error_deg": 0.8589722067407786,
+      "free_slope_max_error_deg": 0.47362014163289956,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -25.0,
+          "encoder_counts": 3629,
+          "model_angle_deg": -25.575781250000013,
+          "error_deg": -0.5757812500000128
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 3462,
+          "model_angle_deg": -10.898046875000013,
+          "error_deg": -0.8980468750000128
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 3340,
+          "model_angle_deg": -0.17539062500001368,
+          "error_deg": -0.17539062500001368
+        },
+        {
+          "angle_deg": 14.0,
+          "encoder_counts": 3178,
+          "model_angle_deg": 14.062890624999985,
+          "error_deg": 0.06289062499998543
+        },
+        {
+          "angle_deg": 29.0,
+          "encoder_counts": 2990,
+          "model_angle_deg": 30.586328124999984,
+          "error_deg": 1.5863281249999837
+        }
+      ],
+      "min_rad": -0.5735987755982989,
+      "max_rad": 0.5735987755982989,
+      "raw_travel_counts": [
+        2964.0717343214465,
+        3711.9282656785535
+      ],
+      "accepted": false,
+      "problems": [
+        "max angle error 1.586 degrees exceeds 0.500; remeasure"
+      ]
+    },
+    "joint_4": {
+      "center_steps": 2004,
+      "encoder_direction": 1,
+      "fitted_zero_count": 2003.7422222222224,
+      "fitted_ratio": 0.9849522176277921,
+      "max_error_deg": 2.538281249999966,
+      "rms_error_deg": 1.4462056995092192,
+      "free_slope_max_error_deg": 2.5495604728705663,
+      "samples": 5,
+      "zero_sample_present": false,
+      "readings": [
+        {
+          "angle_deg": -27.0,
+          "encoder_counts": 1695,
+          "model_angle_deg": -27.135546875000014,
+          "error_deg": -0.1355468750000135
+        },
+        {
+          "angle_deg": -14.0,
+          "encoder_counts": 1834,
+          "model_angle_deg": -14.918750000000014,
+          "error_deg": -0.9187500000000135
+        },
+        {
+          "angle_deg": 1.0,
+          "encoder_counts": 2044,
+          "model_angle_deg": 3.538281249999966,
+          "error_deg": 2.538281249999966
+        },
+        {
+          "angle_deg": 19.0,
+          "encoder_counts": 2223,
+          "model_angle_deg": 19.270703124999986,
+          "error_deg": 0.2707031249999865
+        },
+        {
+          "angle_deg": 35.0,
+          "encoder_counts": 2382,
+          "model_angle_deg": 33.24531249999998,
+          "error_deg": -1.754687500000017
+        }
+      ],
+      "min_rad": -0.5735987755982989,
+      "max_rad": 0.5735987755982989,
+      "raw_travel_counts": [
+        1630.0717343214465,
+        2377.9282656785535
+      ],
+      "accepted": false,
+      "problems": [
+        "max angle error 2.538 degrees exceeds 0.500; remeasure"
+      ]
+    },
+    "joint_5": {
+      "center_steps": 2041,
+      "encoder_direction": 1,
+      "fitted_zero_count": 2040.8755555555558,
+      "fitted_ratio": 0.8538272597928636,
+      "max_error_deg": 4.506640625000023,
+      "rms_error_deg": 3.3725639537405834,
+      "free_slope_max_error_deg": 4.267476390863212,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -26.0,
+          "encoder_counts": 1773,
+          "model_angle_deg": -23.54375000000002,
+          "error_deg": 2.4562499999999794
+        },
+        {
+          "angle_deg": -9.0,
+          "encoder_counts": 1962,
+          "model_angle_deg": -6.932421875000023,
+          "error_deg": 2.0675781249999767
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 2082,
+          "model_angle_deg": 3.6144531249999767,
+          "error_deg": 3.6144531249999767
+        },
+        {
+          "angle_deg": 9.0,
+          "encoder_counts": 2092,
+          "model_angle_deg": 4.493359374999977,
+          "error_deg": -4.506640625000023
+        },
+        {
+          "angle_deg": 25.0,
+          "encoder_counts": 2284,
+          "model_angle_deg": 21.368359374999976,
+          "error_deg": -3.631640625000024
+        }
+      ],
+      "min_rad": -0.5735987755982989,
+      "max_rad": 0.5735987755982989,
+      "raw_travel_counts": [
+        1667.0717343214465,
+        2414.9282656785535
+      ],
+      "accepted": false,
+      "problems": [
+        "max angle error 4.507 degrees exceeds 0.500; remeasure"
+      ]
+    }
+  },
+  "motor_reference": {
+    "joint_1": {
+      "center_steps": 3260,
+      "encoder_direction": 1,
+      "fitted_zero_count": 3259.8,
+      "fitted_ratio": 0.9606445312499983,
+      "max_error_deg": 47.83007812499998,
+      "rms_error_deg": 23.9320347376091,
+      "free_slope_max_error_deg": 49.78956999085103,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -20.0,
+          "encoder_counts": 2909,
+          "model_angle_deg": -30.832031250000014,
+          "error_deg": -10.832031250000014
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 3014,
+          "model_angle_deg": -21.603515624999975,
+          "error_deg": -11.603515624999975
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 3804,
+          "model_angle_deg": 47.83007812499998,
+          "error_deg": 47.83007812499998
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 3219,
+          "model_angle_deg": -3.585937500000016,
+          "error_deg": -13.585937500000016
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 3353,
+          "model_angle_deg": 8.191406249999984,
+          "error_deg": -11.808593750000016
+        }
+      ]
+    },
+    "joint_2": {
+      "center_steps": 3487,
+      "encoder_direction": -1,
+      "fitted_zero_count": 3487.2,
+      "fitted_ratio": 0.8806640625000004,
+      "max_error_deg": 5.919921875000016,
+      "rms_error_deg": 3.0196436852449735,
+      "free_slope_max_error_deg": 4.0119760479042625,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -20.0,
+          "encoder_counts": 3707,
+          "model_angle_deg": -19.318359375000014,
+          "error_deg": 0.6816406249999858
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 3590,
+          "model_angle_deg": -9.035156250000016,
+          "error_deg": 0.964843749999984
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 3464,
+          "model_angle_deg": 2.039062499999984,
+          "error_deg": 2.039062499999984
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 3348,
+          "model_angle_deg": 12.234374999999984,
+          "error_deg": 2.234374999999984
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 3327,
+          "model_angle_deg": 14.080078124999984,
+          "error_deg": -5.919921875000016
+        }
+      ]
+    },
+    "joint_3": {
+      "center_steps": 101,
+      "encoder_direction": -1,
+      "fitted_zero_count": 100.99999999999994,
+      "fitted_ratio": 1.0098632812500004,
+      "max_error_deg": 1.4257812500000089,
+      "rms_error_deg": 1.1808090436470227,
+      "free_slope_max_error_deg": 1.549173194081812,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -20.0,
+          "encoder_counts": 338,
+          "model_angle_deg": -20.830078125000004,
+          "error_deg": -0.8300781250000036
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 222,
+          "model_angle_deg": -10.634765625000005,
+          "error_deg": -0.6347656250000053
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 85,
+          "model_angle_deg": 1.406249999999995,
+          "error_deg": 1.406249999999995
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 4067,
+          "model_angle_deg": 11.425781250000009,
+          "error_deg": 1.4257812500000089
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 3985,
+          "model_angle_deg": 18.632812500000004,
+          "error_deg": -1.3671874999999964
+        }
+      ]
+    },
+    "joint_4": {
+      "center_steps": 111,
+      "encoder_direction": -1,
+      "fitted_zero_count": 110.80000000000004,
+      "fitted_ratio": 1.0019531249999998,
+      "max_error_deg": 0.32031249999999645,
+      "rms_error_deg": 0.23351077644264032,
+      "free_slope_max_error_deg": 0.2807017543859727,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -20.0,
+          "encoder_counts": 342,
+          "model_angle_deg": -20.320312499999996,
+          "error_deg": -0.32031249999999645
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 223,
+          "model_angle_deg": -9.861328124999996,
+          "error_deg": 0.13867187500000355
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 108,
+          "model_angle_deg": 0.2460937500000035,
+          "error_deg": 0.2460937500000035
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 4091,
+          "model_angle_deg": 10.177734374999998,
+          "error_deg": 0.17773437499999822
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 3982,
+          "model_angle_deg": 19.75781249999999,
+          "error_deg": -0.24218750000001066
+        }
+      ]
+    },
+    "joint_5": {
+      "center_steps": 2678,
+      "encoder_direction": 1,
+      "fitted_zero_count": 2678.2,
+      "fitted_ratio": 1.0186523437499988,
+      "max_error_deg": 1.6718749999999751,
+      "rms_error_deg": 0.8518939291963145,
+      "free_slope_max_error_deg": 1.4581535806730037,
+      "samples": 5,
+      "zero_sample_present": true,
+      "readings": [
+        {
+          "angle_deg": -20.0,
+          "encoder_counts": 2448,
+          "model_angle_deg": -20.232421874999982,
+          "error_deg": -0.23242187499998224
+        },
+        {
+          "angle_deg": -10.0,
+          "encoder_counts": 2560,
+          "model_angle_deg": -10.388671874999984,
+          "error_deg": -0.388671874999984
+        },
+        {
+          "angle_deg": 0.0,
+          "encoder_counts": 2670,
+          "model_angle_deg": -0.720703124999984,
+          "error_deg": -0.720703124999984
+        },
+        {
+          "angle_deg": 10.0,
+          "encoder_counts": 2811,
+          "model_angle_deg": 11.671874999999975,
+          "error_deg": 1.6718749999999751
+        },
+        {
+          "angle_deg": 20.0,
+          "encoder_counts": 2902,
+          "model_angle_deg": 19.669921875000014,
+          "error_deg": -0.3300781249999858
+        }
+      ]
+    }
+  },
+  "problems": [
+    "joint_1: max angle error 3.142 degrees exceeds 0.500; remeasure",
+    "joint_2: max angle error 0.880 degrees exceeds 0.500; remeasure",
+    "joint_3: max angle error 1.586 degrees exceeds 0.500; remeasure",
+    "joint_4: max angle error 2.538 degrees exceeds 0.500; remeasure",
+    "joint_5: max angle error 4.507 degrees exceeds 0.500; remeasure"
+  ],
+  "calibration_written": false,
+  "physical_checks_confirmed": false,
+  "measurements_sha256": "0cd9dd0d2dc0d79790d9d6863a49122fcdab35d02c0bb921be1e6eac0164962a",
+  "urdf_sha256": "0eed2004f3a8e6662d6b5cbb2ad6842d6c93ff9d0051789fbbbcf8ef13b744b3",
+  "fit_tool_sha256": "18df3afbb6722b8af0323c0bdbaafd57f6392d9b0c4a5af562cb103213f5b312",
+  "measurement_commit": "66165497ad58adc90c13e27161d80795f4b6adf7",
+  "project_regression_tests_passed": 59
+}
