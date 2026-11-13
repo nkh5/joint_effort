@@ -21,7 +21,7 @@ Date: ________   Who: ________   Laptop/Pi: ________   Supply voltage (multimete
 | check_iron_live.py: three PASS lines | |
 | RViz home pose correct (elbow bent, iron above PCB) | |
 | stick +X / +Y / twist+ direction | / / |
-| mode pause, panel 2 resume, rotation yaw/pitch, panel 1 OFF | |
+| mode change + re-centre, rotation yaw/pitch, panel 1 OFF | |
 | joy device name (if changed) / stick_signs (if changed) | |
 
 ## 2. Datum
@@ -84,7 +84,7 @@ Axis flips / csv_angle_sign changes made: ____________________
 | --- | --- |
 | speed level used | |
 | stick +X / +Y / twist+ (vs RViz world axes) | / / |
-| mode pause / resume / rotation yaw / pitch | |
+| mode change + re-centre / rotation yaw / pitch | |
 | panel 1 OFF stops | |
 | anything odd (noise, jerk, stalls, heat) | |
 

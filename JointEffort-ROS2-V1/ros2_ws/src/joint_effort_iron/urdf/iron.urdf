@@ -2,16 +2,16 @@
 <robot name="joint_effort_iron">
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 -0.52953415608447851" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/base_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="base_link_color">
-        <color rgba="0.45882352941176469 0.50980392156862742 0.58431372549019611 1" />
+      <material name="cad_color_0">
+        <color rgba=".3 .4 .5 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 -0.52953415608447851" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/base_link_hull.stl" scale="1 1 1" />
       </geometry>
@@ -19,16 +19,16 @@
   </link>
   <link name="base_rotation_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/base_rotation_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/base_rotation_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="base_rotation_link_color">
-        <color rgba="0.18823529411764706 0.53333333333333333 0.75686274509803919 1" />
+      <material name="cad_color_1">
+        <color rgba=".4 .5 .6 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/base_rotation_link_hull.stl" scale="1 1 1" />
       </geometry>
@@ -36,16 +36,16 @@
   </link>
   <link name="upper_arm_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/upper_arm_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/upper_arm_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="upper_arm_link_color">
-        <color rgba="0.13725490196078433 0.61960784313725492 0.5490196078431373 1" />
+      <material name="cad_color_2">
+        <color rgba=".85 .65 .3 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/upper_arm_link_hull.stl" scale="1 1 1" />
       </geometry>
@@ -53,16 +53,16 @@
   </link>
   <link name="forearm_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/forearm_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/forearm_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="forearm_link_color">
-        <color rgba="0.49411764705882355 0.42352941176470588 0.72549019607843135 1" />
+      <material name="cad_color_3">
+        <color rgba=".3 .65 .55 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/forearm_link_hull.stl" scale="1 1 1" />
       </geometry>
@@ -70,16 +70,16 @@
   </link>
   <link name="wrist_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/wrist_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/wrist_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="wrist_link_color">
-        <color rgba="0.88627450980392153 0.60392156862745094 0.2196078431372549 1" />
+      <material name="cad_color_4">
+        <color rgba=".6 .4 .75 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/wrist_link_hull.stl" scale="1 1 1" />
       </geometry>
@@ -87,63 +87,74 @@
   </link>
   <link name="tool_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://joint_effort_arm_calibration_description/meshes/tool_link.stl" scale="1 1 1" />
+        <mesh filename="package://joint_effort_arm_draft_description/meshes/tool_link.stl" scale="1 1 1" />
       </geometry>
-      <material name="tool_link_color">
-        <color rgba="0.83921568627450982 0.3843137254901961 0.38823529411764707 1" />
+      <material name="cad_color_5">
+        <color rgba=".75 .45 .55 1" />
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 -0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://joint_effort_iron/meshes/tool_link_hull.stl" scale="1 1 1" />
       </geometry>
     </collision>
   </link>
+  <link name="iron_tip" />
   <joint name="joint_1" type="revolute">
     <parent link="base_link" />
     <child link="base_rotation_link" />
-    <origin xyz="-1.2794816170777926e-34 0 0.045899999999999386" rpy="3.6040820355865639e-48 1.4092530967131051e-31 -5.6447586236593125e-17" />
+    <origin xyz="0 0 0" rpy="0 -1.1580739072182018E-56 -6.3216048540840731E-49" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort=".49" velocity=".15" />
+    <limit lower="-0.52359877559829882" upper="0.52359877559829882" effort=".49" velocity=".15" />
   </joint>
   <joint name="joint_2" type="revolute">
     <parent link="base_rotation_link" />
     <child link="upper_arm_link" />
-    <origin xyz="-2.7822209200754439e-13 -0.0036156782988054914 0.082570362543754494" rpy="-1.5707963267949014 1.1539631013168834 -1.8777063666987526e-16" />
-    <axis xyz="0 0 1" />
-    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort=".49" velocity=".15" />
+    <origin xyz="9.902063466515898E-05 0.0017906764257100694 0.089519671278713742" rpy="3.14159265358979 1.5568336927789361 1.5703386760676088" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-0.6" upper="1.5" effort=".49" velocity=".15" />
   </joint>
   <joint name="joint_3" type="revolute">
     <parent link="upper_arm_link" />
     <child link="forearm_link" />
-    <origin xyz="-0.1380436226470787 -0.061122897616729982 -0.00074067829881465253" rpy="2.2253458712417082e-15 2.400867356254006e-15 1.1239252234041799" />
-    <axis xyz="0 0 1" />
-    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort=".49" velocity=".15" />
+    <origin xyz="-0.13818731498709236 -0.061032131246577692 -0.00117002602324634" rpy="-0.0055511493273427042 -0.013962418913384145 0.41691073122802685" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-1.48" upper="0.0" effort=".49" velocity=".15" />
   </joint>
   <joint name="joint_4" type="revolute">
     <parent link="forearm_link" />
     <child link="wrist_link" />
-    <origin xyz="-0.10090185466707993 -0.1125433597541136 0.0023867039077369902" rpy="1.570796326796827 -3.9210550307884641e-16 0.8637043288687295" />
-    <axis xyz="0 0 1" />
-    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort=".49" velocity=".15" />
+    <origin xyz="-0.10090185466707857 -0.11254335975409219 0.0023867039077365426" rpy="1.5707963267968268 -6.7003694259604174E-17 0.86370432886872928" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-0.52359877559829882" upper="0.52359877559829882" effort=".49" velocity=".15" />
   </joint>
   <joint name="joint_5" type="revolute">
     <parent link="wrist_link" />
     <child link="tool_link" />
-    <origin xyz="-0.054788896321058128 0.0045250000003961427 -0.018320362543672364" rpy="1.5707963267949037 -1.4968465368524863e-14 -3.8283864210089953e-11" />
-    <axis xyz="0 0 1" />
-    <limit lower="-0.5235987755982988" upper="0.5235987755982988" effort=".49" velocity=".15" />
+    <origin xyz="-0.054788896321058322 0.004525000000396906 -0.018320362543672419" rpy="0 -1.5707963267948966 1.5707963267566107" />
+    <axis xyz="0 0 -1" />
+    <limit lower="0.6" upper="2.4" effort=".49" velocity=".15" />
   </joint>
-  <link name="iron_tip" />
   <joint name="iron_tip_fixed" type="fixed">
     <parent link="tool_link" />
     <child link="iron_tip" />
-    <origin xyz="1.8731232120927643e-09 0.14850000000000807 -0.038599999999999635" rpy="-1.5707963267948988 -3.2429262894635913e-29 -1.5111655409527521e-14" />
+    <origin xyz="6.7168492989821971E-14 0.14849999812694059 -0.03860000000000019" rpy="-3.1415926535897931 1.1720225484568303E-16 3.1415926535897354" />
   </joint>
   <link name="world" />
+  <joint name="iron_mount" type="fixed">
+    <parent link="world" />
+    <child link="base_link" />
+    <origin xyz="0 0 .031" rpy="0 0 3.141592653589793" />
+  </joint>
+  <link name="iron_tcp" />
+  <joint name="iron_tcp_axis" type="fixed">
+    <parent link="iron_tip" />
+    <child link="iron_tcp" />
+    <origin xyz="0 0 0" rpy="0 0 1.5707963267948966" />
+  </joint>
   <link name="table">
     <visual>
       <geometry>
@@ -159,6 +170,11 @@
       </geometry>
     </collision>
   </link>
+  <joint name="table_fixed" type="fixed">
+    <parent link="world" />
+    <child link="table" />
+    <origin xyz="0.25 0 -0.025" rpy="0 0 0" />
+  </joint>
   <link name="pcb_fixture">
     <visual>
       <geometry>
@@ -174,6 +190,11 @@
       </geometry>
     </collision>
   </link>
+  <joint name="pcb_fixture_fixed" type="fixed">
+    <parent link="world" />
+    <child link="pcb_fixture" />
+    <origin xyz="0.43 0.04 0.075" rpy="0 0 0" />
+  </joint>
   <link name="pcb">
     <visual>
       <geometry>
@@ -189,68 +210,47 @@
       </geometry>
     </collision>
   </link>
-  <joint name="iron_mount" type="fixed">
-    <parent link="world" />
-    <child link="base_link" />
-    <origin xyz="0 0 .031" rpy="0 0 0" />
-  </joint>
-  <joint name="table_fixed" type="fixed">
-    <parent link="world" />
-    <child link="table" />
-    <origin xyz="0.25 0 -0.025" rpy="0 0 0" />
-  </joint>
-  <joint name="pcb_fixture_fixed" type="fixed">
-    <parent link="world" />
-    <child link="pcb_fixture" />
-    <origin xyz="0.43 0.04 0.075" rpy="0 0 0" />
-  </joint>
   <joint name="pcb_fixed" type="fixed">
     <parent link="world" />
     <child link="pcb" />
     <origin xyz="0.43 0.04 0.151" rpy="0 0 0" />
   </joint>
-  <link name="iron_tcp" />
-  <joint name="iron_tcp_axis" type="fixed">
-    <parent link="iron_tip" />
-    <child link="iron_tcp" />
-    <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
-  </joint>
-  <ros2_control name="IronR02Mock" type="system">
+  <ros2_control name="IronCADMock" type="system">
     <hardware>
       <plugin>mock_components/GenericSystem</plugin>
     </hardware>
     <joint name="joint_1">
       <command_interface name="position" />
       <state_interface name="position">
-        <param name="initial_value">0.0</param>
+        <param name="initial_value">0</param>
       </state_interface>
       <state_interface name="velocity" />
     </joint>
     <joint name="joint_2">
       <command_interface name="position" />
       <state_interface name="position">
-        <param name="initial_value">-0.2</param>
+        <param name="initial_value">0.5</param>
       </state_interface>
       <state_interface name="velocity" />
     </joint>
     <joint name="joint_3">
       <command_interface name="position" />
       <state_interface name="position">
-        <param name="initial_value">0.2</param>
+        <param name="initial_value">-1.2</param>
       </state_interface>
       <state_interface name="velocity" />
     </joint>
     <joint name="joint_4">
       <command_interface name="position" />
       <state_interface name="position">
-        <param name="initial_value">0.0</param>
+        <param name="initial_value">0</param>
       </state_interface>
       <state_interface name="velocity" />
     </joint>
     <joint name="joint_5">
       <command_interface name="position" />
       <state_interface name="position">
-        <param name="initial_value">0.15</param>
+        <param name="initial_value">1.5</param>
       </state_interface>
       <state_interface name="velocity" />
     </joint>

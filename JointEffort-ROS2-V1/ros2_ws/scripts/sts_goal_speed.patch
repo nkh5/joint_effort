@@ -1,0 +1,91 @@
+diff --git a/include/sts_hardware_interface/sts_hardware_interface.hpp b/include/sts_hardware_interface/sts_hardware_interface.hpp
+index f62e737..2a139cc 100644
+--- a/include/sts_hardware_interface/sts_hardware_interface.hpp
++++ b/include/sts_hardware_interface/sts_hardware_interface.hpp
+@@ -5,6 +5,8 @@
+ #include <memory>
+ #include <optional>
+ #include <string>
++#include <cmath>
++#include <algorithm>
+ #include <vector>
+ #include <chrono>
+ #include <map>
+@@ -210,6 +212,11 @@ private:
+                               // proportionally so all joints finish moving at the same time.
+                               // Set to 0 to disable (each joint uses its commanded velocity). (default: 0)
+   double proportional_vel_deadband_rad_;  // Min Δpos below which all joints revert to commanded velocity
++  // JointEffort patch: per-goal speed from the velocity command (servo mode).
++  // goal_speed_scale > 0: speed = max(|velocity cmd| * scale, goal_speed_min) instead of the raw (signed,
++  // clamped-to-0 = max speed) value; 0 (default) keeps the original behaviour.
++  double goal_speed_scale_ = 0.0;
++  double goal_speed_min_rad_s_ = 0.0;
+                                           // (steady-state hold — avoids noise-driven re-scaling). (default: 0.01 rad)
+ 
+   // Lifecycle parameter
+@@ -289,6 +296,17 @@ private:
+   void put_state(StateKind kind, size_t i, double value);
+   /** @brief Read a joint command (cmd_default() if the interface is not declared) */
+   double cmd_val(CmdKind kind, size_t i) const;
++  /** @brief JointEffort patch: STS goal speed (rad/s) from a velocity command; 0 = servo max speed */
++  double goal_speed(double velocity_cmd) const
++  {
++    if (goal_speed_scale_ <= 0.0) {
++      return velocity_cmd;                       // original behaviour
++    }
++    if (!std::isfinite(velocity_cmd) || velocity_cmd == 0.0) {
++      return 0.0;                                // hold / no command: max speed for corrections
++    }
++    return std::max(std::abs(velocity_cmd) * goal_speed_scale_, goal_speed_min_rad_s_);
++  }
+   /** @brief Write a joint command (no-op if the interface is not declared) */
+   void put_cmd(CmdKind kind, size_t i, double value);
+ 
+diff --git a/src/sts_hardware_interface.cpp b/src/sts_hardware_interface.cpp
+index de2bd21..f2d02eb 100644
+--- a/src/sts_hardware_interface.cpp
++++ b/src/sts_hardware_interface.cpp
+@@ -169,6 +169,25 @@ hardware_interface::CallbackReturn STSHardwareInterface::on_init(
+     RCLCPP_WARN(logger_, "proportional_vel_deadband is 0.0; division by zero will be avoided but proportional scaling will be disabled at zero delta.");
+   }
+ 
++  // JointEffort patch: goal speed from |velocity command| (servo mode). See header.
++  try {
++    goal_speed_scale_ = std::stod(info_.hardware_parameters.count("goal_speed_scale") ?
++      info_.hardware_parameters.at("goal_speed_scale") : "0.0");
++    goal_speed_min_rad_s_ = std::stod(info_.hardware_parameters.count("goal_speed_min") ?
++      info_.hardware_parameters.at("goal_speed_min") : "0.0");
++  } catch (const std::exception &) {
++    RCLCPP_ERROR(logger_, "Invalid goal_speed_scale / goal_speed_min (must be numbers)");
++    return hardware_interface::CallbackReturn::ERROR;
++  }
++  if (goal_speed_scale_ < 0.0 || goal_speed_min_rad_s_ < 0.0) {
++    RCLCPP_ERROR(logger_, "goal_speed_scale and goal_speed_min must be >= 0");
++    return hardware_interface::CallbackReturn::ERROR;
++  }
++  if (goal_speed_scale_ > 0.0) {
++    RCLCPP_INFO(logger_, "Goal speed from velocity command: scale %.2f, minimum %.3f rad/s (0 velocity = max speed)",
++      goal_speed_scale_, goal_speed_min_rad_s_);
++  }
++
+   // Parse proportional velocity parameter (servo/position mode path)
+   try {
+     proportional_vel_max_ = std::stoi(
+@@ -1309,7 +1328,7 @@ hardware_interface::return_type STSHardwareInterface::write(
+         if (proportional_vel_max_ == 0 || max_delta_rad < proportional_vel_deadband_rad_ || max_delta_rad == 0.0) {
+           // Proportional velocity disabled, below deadband, or all joints at target: use each joint's commanded max speed.
+           double max_speed = std::max(0.0,
+-            conversions::apply_limit(cmd_val(CMD_VELOCITY, idx), 0.0, velocity_max_[idx], has_velocity_limits_[idx]));
++            conversions::apply_limit(goal_speed(cmd_val(CMD_VELOCITY, idx)), 0.0, velocity_max_[idx], has_velocity_limits_[idx]));
+           servo_sync_speeds_[j] = static_cast<u16>(
+             conversions::rad_s_to_raw_speed(max_speed, max_velocity_steps_[idx]));
+         } else if (servo_sync_deltas_[j] == 0.0) {
+@@ -1339,7 +1358,7 @@ hardware_interface::return_type STSHardwareInterface::write(
+       // Individual writes for single servo motor or when SyncWrite disabled
+       for (size_t idx : servo_motor_indices_) {
+         double target_position = conversions::apply_limit(cmd_val(CMD_POSITION, idx), position_min_[idx], position_max_[idx], has_position_limits_[idx]);
+-        double max_speed = conversions::apply_limit(cmd_val(CMD_VELOCITY, idx), 0.0, velocity_max_[idx], has_velocity_limits_[idx]);
++        double max_speed = conversions::apply_limit(goal_speed(cmd_val(CMD_VELOCITY, idx)), 0.0, velocity_max_[idx], has_velocity_limits_[idx]);
+ 
+         int raw_position = conversions::radians_to_raw_position(target_position, position_center_[idx]);
+         // rad_s_to_raw_speed: unsigned magnitude conversion for position mode — no sign inversion.

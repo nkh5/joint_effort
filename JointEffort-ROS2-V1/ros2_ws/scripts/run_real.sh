@@ -24,4 +24,4 @@ fi
 export JE_ROS_DOMAIN_ID=88
 # Reads the calibration straight from the source tree, so edits need no rebuild (override with calibration:=...)
 exec "$workspace_dir/scripts/with_ros.sh" ros2 launch joint_effort_iron real.launch.py \
-  calibration:="$cal" "$@"
+  calibration:="$cal" rviz:=false "$@"

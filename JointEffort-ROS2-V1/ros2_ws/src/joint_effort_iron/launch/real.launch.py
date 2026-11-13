@@ -6,14 +6,19 @@ swapped for sts_hardware_interface (Feetech STS servos on the Waveshare adapter)
                    csv_zero_counts + encoder_shift_counts, so it reads 0 at your physical 0 deg mark
                    (2048 if even that is missing). RViz is then off by the datum for that joint.
   readonly:=false  (default) servos hold their current position on start. Needs a complete
-                   R02 calibration with verified directions and travel (see REAL-ARM.md).
+                   calibration (tools/fit_calibration.py says COMPLETE).
   teleop:=true     (default) also start move_group, Servo and the task bridge (joystick driving).
   teleop:=false    controllers only - for scripts/run_jog.sh single-joint tests.
-  servo_acc:=N     servo acceleration 1-254 for every joint (default: the driver's 100). Lower = the
-                   servo eases into each new goal instead of snapping to it (smoother, slightly laggier).
+  servo_acc:=N     servo acceleration 1-254 for every joint (default: none, i.e. ACC 0 = the servo's own
+                   maximum). Lower = the servo eases into each new goal instead of snapping to it.
                    Applied by a forward_command_controller on the 'acceleration' interface.
+  servo_speed:=S   send each goal with a speed instead of the servo's maximum: speed = S x the trajectory's
+                   joint velocity (S 1.0-3.0, e.g. 1.5), at least servo_speed_min rad/s (default 0.02);
+                   zero velocity (holding) still uses max speed for corrections. Adds a 'velocity' command
+                   interface that iron_arm_controller fills from the trajectory. Needs the patched driver
+                   (scripts/get_driver.sh applies scripts/sts_goal_speed.patch, then rebuild).
 Optional per-joint keys in the calibration file, written to servo EEPROM at start-up and kept after:
-  p_coefficient, i_coefficient, d_coefficient (position PID, 0-254), deadband (0-16 counts).
+  p_coefficient, i_coefficient, d_coefficient (position PID, 0-255), deadband (0-255 counts).
   calibration:=/path/to/sts_calibration.yaml   (default: the installed config/sts_calibration.yaml)
   port:=/dev/serial/by-id/...                  overrides serial_port from the calibration file
   rviz:=true|false
@@ -24,10 +29,11 @@ import json
 import math
 import os
 import re
+import tempfile
 from pathlib import Path
 
 import yaml
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_prefix, get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, EmitEvent, ExecuteProcess, OpaqueFunction,
                             RegisterEventHandler)
@@ -67,7 +73,34 @@ def load_calibration(path):
     return data
 
 
-def control_block(data, port, readonly, acc=None):
+def calibration_problems(data, limits):
+    """List of reasons the calibration is not complete enough to drive the motors."""
+    problems = []
+    ids = []
+    for name in JOINTS:
+        j = data['joints'][name]
+        ids.append(j.get('motor_id'))
+        c, lo, hi = j.get('center_steps'), j.get('min_rad'), j.get('max_rad')
+        if not isinstance(c, int) or not 0 <= c <= 4095:
+            problems.append(f'{name}: center_steps must be an integer 0-4095 (is {c!r})')
+        if not all(isinstance(v, (int, float)) for v in (lo, hi)):
+            problems.append(f'{name}: min_rad/max_rad not set')
+        elif not -math.pi < lo < hi < math.pi:
+            problems.append(f'{name}: need -pi < min_rad < max_rad < pi (is {lo}, {hi})')
+        elif isinstance(c, int):
+            u_lo, u_hi = limits[name]
+            if not lo < u_lo < u_hi < hi:
+                problems.append(f'{name}: driver limits {lo}..{hi} must enclose the URDF limit {u_lo}..{u_hi} '
+                                '(rerun tools/fit_calibration.py --write after editing the URDF)')
+            raw_lo, raw_hi = c - hi * STEPS_PER_RAD, c - lo * STEPS_PER_RAD
+            if raw_lo < 0 or raw_hi > 4095:
+                problems.append(f'{name}: travel {raw_lo:.0f}..{raw_hi:.0f} counts crosses the encoder wrap')
+    if sorted(ids) != sorted(set(ids)) or not all(isinstance(i, int) and 1 <= i <= 253 for i in ids):
+        problems.append(f'motor_id values must be distinct integers 1-253 (are {ids})')
+    return problems
+
+
+def control_block(data, port, readonly, acc=None, speed=None):
     """The <ros2_control> element for the STS driver."""
     hw = [
         f'      <plugin>{PLUGIN}</plugin>',
@@ -78,6 +111,9 @@ def control_block(data, port, readonly, acc=None):
         # seed each servo's goal from where it actually is, so torque-on does not jump
         '      <param name="hold_position_on_activate">true</param>',
     ]
+    if speed is not None:
+        hw += [f'      <param name="goal_speed_scale">{speed[0]!r}</param>',
+               f'      <param name="goal_speed_min">{speed[1]!r}</param>']
     lines = ['  <ros2_control name="IronSTS" type="system">', '    <hardware>', *hw, '    </hardware>']
     for name in JOINTS:
         j = data['joints'][name]
@@ -85,20 +121,21 @@ def control_block(data, port, readonly, acc=None):
         lines += [f'    <joint name="{name}">',
                   f'      <param name="motor_id">{int(j["motor_id"])}</param>',
                   '      <param name="operating_mode">0</param>',
-                  f'      <param name="position_center_steps">{center}</param>',
-                  f'      <param name="encoder_direction">{j.get("encoder_direction") if j.get("encoder_direction") in (-1, 1) else -1}</param>']
+                  f'      <param name="position_center_steps">{center}</param>']
         if not readonly:
             # limits clamp both commands and the reported position, so leave them out while calibrating
             lines += [f'      <param name="min_position">{float(j["min_rad"])!r}</param>',
                       f'      <param name="max_position">{float(j["max_rad"])!r}</param>',
                       '      <command_interface name="position"/>']
+            if speed is not None:
+                lines.append('      <command_interface name="velocity"/>')
             if acc is not None:
                 lines.append('      <command_interface name="acceleration"/>')
             for key in SERVO_EEPROM_KEYS:
                 value = j.get(key)
                 if value is not None:
-                    if not isinstance(value, int) or not 0 <= value <= (16 if key == 'deadband' else 254):
-                        raise RuntimeError(f'{name}: {key} is outside the supported register range (is {value!r})')
+                    if not isinstance(value, int) or not 0 <= value <= 255:
+                        raise RuntimeError(f'{name}: {key} must be an integer 0-255 (is {value!r})')
                     lines.append(f'      <param name="{key}">{value}</param>')
         # no command interface = read-only joint: the driver keeps torque disabled
         lines += ['      <state_interface name="position"/>',
@@ -109,12 +146,21 @@ def control_block(data, port, readonly, acc=None):
     return '\n'.join(lines)
 
 
-def real_description(urdf_text, data, port, readonly, acc=None):
+def real_description(urdf_text, data, port, readonly, acc=None, speed=None):
     """iron.urdf with its mock <ros2_control> block replaced by the STS one."""
     pattern = re.compile(r'[ \t]*<ros2_control\b.*?</ros2_control>', re.S)
     if len(pattern.findall(urdf_text)) != 1:
         raise RuntimeError('iron.urdf must contain exactly one <ros2_control> block')
-    return pattern.sub(lambda _: control_block(data, port, readonly, acc), urdf_text)
+    return pattern.sub(lambda _: control_block(data, port, readonly, acc, speed), urdf_text)
+
+
+def driver_has_goal_speed():
+    """True if the built sts_hardware_interface contains the JointEffort goal-speed patch."""
+    try:
+        lib = Path(get_package_prefix('sts_hardware_interface')) / 'lib'
+        return any(b'goal_speed_scale' in f.read_bytes() for f in lib.glob('*.so*') if f.is_file())
+    except Exception:
+        return False
 
 
 def setup(context):
@@ -129,21 +175,36 @@ def setup(context):
     if cfg['servo_acc'].strip() and not readonly:
         acc = int(cfg['servo_acc'])
         if not 1 <= acc <= 254:
-            raise RuntimeError('servo_acc must be 1-254 (0 selects maximum acceleration)')
+            raise RuntimeError('servo_acc must be 1-254 (0 makes STS servos creep and ignore speed)')
+    speed = None
+    if cfg['servo_speed'].strip() and not readonly:
+        speed = (float(cfg['servo_speed']), float(cfg['servo_speed_min']))
+        if not 0.5 <= speed[0] <= 5.0 or not 0.0 <= speed[1] <= 1.0:
+            raise RuntimeError('servo_speed must be 0.5-5 (try 1.5), servo_speed_min 0-1 rad/s')
+        if not driver_has_goal_speed():
+            raise RuntimeError('servo_speed needs the patched driver: run ./scripts/get_driver.sh, then rebuild '
+                               '(./scripts/with_ros.sh colcon build --symlink-install --base-paths src)')
     urdf_text = (p / 'urdf/iron.urdf').read_text()
     if not readonly:
-        from joint_effort_iron.calibration import problems as r02_problems
-        problems = r02_problems(data, urdf_text, require_tcp=teleop)
+        problems = calibration_problems(data, urdf_limits(urdf_text))
         if problems:
             raise RuntimeError('Calibration incomplete; use readonly:=true until it is filled in:\n  '
                                + '\n  '.join(problems))
-    description = real_description(urdf_text, data, port, readonly, acc)
+    description = real_description(urdf_text, data, port, readonly, acc, speed)
     centers = {n: (data['joints'][n]['center_steps'] if not readonly else readonly_center(data['joints'][n]))
                for n in JOINTS}
     print(f'[real.launch] {"READ-ONLY (torque off)" if readonly else "DRIVING MOTORS"}'
           f'{"" if readonly or teleop else " (controllers only, teleop:=false)"} '
           f'on {port}, calibration {cal_path}, centers {centers}'
-          f'{"" if acc is None else f", servo_acc {acc}"}')
+          f'{"" if acc is None else f", servo_acc {acc}"}'
+          f'{"" if speed is None else f", servo_speed {speed[0]:g} (min {speed[1]:g} rad/s)"}')
+    controllers_file = str(p / 'config/controllers.yaml')
+    if speed is not None:
+        ctrl = json.loads(Path(controllers_file).read_text())
+        ctrl['iron_arm_controller']['ros__parameters']['command_interfaces'] = ['position', 'velocity']
+        fd, controllers_file = tempfile.mkstemp(prefix='iron_controllers_speed_', suffix='.yaml')
+        os.write(fd, json.dumps(ctrl, indent=2).encode())
+        os.close(fd)
 
     rviz_home = Path(os.environ['ROS_HOME']).parent / 'iron_rviz_home'
     (rviz_home / '.rviz2').mkdir(parents=True, exist_ok=True)
@@ -162,7 +223,7 @@ def setup(context):
              parameters=[{'robot_description': description}], output='screen'),
         # gets the (STS) robot_description from robot_state_publisher's topic, as in mock.launch.py
         Node(package='controller_manager', executable='ros2_control_node',
-             parameters=[str(p / 'config/controllers.yaml')], output='screen'),
+             parameters=[controllers_file], output='screen'),
         RegisterEventHandler(OnProcessExit(
             target_action=js,
             on_exit=lambda event, context: ([] if readonly else [controller]) if event.returncode == 0 else
@@ -241,5 +302,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true'),
         DeclareLaunchArgument('teleop', default_value='true'),
         DeclareLaunchArgument('servo_acc', default_value=''),
+        DeclareLaunchArgument('servo_speed', default_value=''),
+        DeclareLaunchArgument('servo_speed_min', default_value='0.02'),
         OpaqueFunction(function=setup),
     ])

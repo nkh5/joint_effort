@@ -1,11 +1,11 @@
 {
-  "scope": "R02 geometry; mock tested separately from physical calibration.",
+  "scope": "CAD iron-only cold mock. Provisional workspace, travel, calibration and collision hulls. No physical driver.",
   "base_xyz_m": [
     0,
     0,
     0.031
   ],
-  "base_yaw_rad": 0.0,
+  "base_yaw_rad": 3.141592653589793,
   "joint_limits_deg": [
     -30,
     30
@@ -88,25 +88,14 @@
   ],
   "initial_positions_rad": [
     0.0,
-    -0.2,
-    0.2,
+    0.5,
+    -1.2,
     0.0,
-    0.15
+    1.5
   ],
   "proposed_future_mechanical_stop_deg": [
     -35,
     35
   ],
-  "mechanical_stops_status": "Concept only, not modeled hardware or fabrication approval; validate +/-35 deg against the physical assembly before installing stops",
-  "model_revision": "R02",
-  "source_urdf_sha256": "95ba400047c3dbfd9ef9786524157219d7010e599e652b4a28236690d3266070",
-  "joint_name_map": {
-    "joint_1": "base_rotation_joint",
-    "joint_2": "shoulder_joint",
-    "joint_3": "elbow_joint",
-    "joint_4": "wrist_yaw_joint",
-    "joint_5": "wrist_pitch_joint"
-  },
-  "tcp_physically_measured": false,
-  "travel_limits_confirmed": false
+  "mechanical_stops_status": "Concept only, not modeled hardware or fabrication approval; validate +/-35 deg against the physical assembly before installing stops"
 }
