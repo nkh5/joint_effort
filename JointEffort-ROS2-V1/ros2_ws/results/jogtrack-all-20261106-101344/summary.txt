@@ -1,0 +1,41 @@
+all  moves +3,-3,+1,-1 deg  2 s each, hold 1.5 s  (849 samples, start pose +0.00, +0.14, -0.47, +0.00, +1.50 rad)
+P/I/D/db per joint  1: 20/10/5/0   2: 100/10/70/0   3: 100/10/70/0   4: 20/10/5/0   5: 20/10/5/0  |  acc 20
+
+joint_1
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +2.99      0.079      0.256      0.044     0.176         0   -0.01      0.000  - (all moving)                50
+  -3 deg   -2.99      0.213      0.535      0.122     0.352         7   +0.00      0.088  - (all moving)                50
+  +1 deg   +0.97      0.110      0.295      0.038     0.176         1   -0.03      0.527  - (all moving)                50
+  -1 deg   -1.05      0.197      0.561      0.077     0.264        14   +0.00      0.000  - (all moving)                50
+
+joint_2
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +2.90      0.132      0.303      0.044     0.176         0   -0.01      0.000  - (all moving)                50
+  -3 deg   -2.99      0.222      0.440      0.078     0.264         7   -0.00      0.000  - (all moving)                50
+  +1 deg   +0.97      0.127      0.251      0.027     0.176         0   -0.03      0.000  - (all moving)                50
+  -1 deg   -0.97      0.162      0.340      0.035     0.176         1   -0.00      0.000  - (all moving)                50
+
+joint_3
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +3.08      0.114      0.403      0.052     0.264         0   -0.01      0.000  - (all moving)                50
+  -3 deg   -3.08      0.216      0.396      0.054     0.264         0   -0.09      0.000  - (all moving)                50
+  +1 deg   +1.14      0.079      0.207      0.028     0.088         0   +0.05      0.000  - (all moving)                50
+  -1 deg   -1.05      0.079      0.228      0.037     0.176         0   +0.00      0.000  - (all moving)                50
+
+joint_4
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +2.90      0.170      0.342      0.075     0.176         5   -0.10      0.000  - (all moving)                50
+  -3 deg   -2.81      0.195      0.486      0.095     0.264         6   +0.09      0.176  - (all moving)                50
+  +1 deg   +0.62      0.144      0.275      0.047     0.176         0   -0.30      0.439  - (all moving)                50
+  -1 deg   -0.62      0.140      0.337      0.055     0.264         6   +0.09      0.439  - (all moving)                50
+
+joint_5
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +2.99      0.126      0.341      0.064     0.176         0   -0.01      0.000  - (all moving)                50
+  -3 deg   -3.08      0.267      0.612      0.061     0.176         0   -0.09      0.000  - (all moving)                50
+  +1 deg   +1.05      0.095      0.217      0.027     0.176         0   -0.03      0.264  - (all moving)                50
+  -1 deg   -0.88      0.108      0.222      0.034     0.176         0   +0.09      0.176  - (all moving)                50
+
+
+All angles in degrees; 1 encoder count = 0.088 deg. Smooth: shake rms < ~0.05, reversals 0, max jump ~1-2 counts per sample;
+shaking: shake rms and max jump grow, reversals > 0, others pk-pk well above 0.1.

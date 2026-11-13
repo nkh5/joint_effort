@@ -1,0 +1,10 @@
+joint_3  moves +3,-3,+1,-1 deg  2 s each, hold 1.5 s  (758 samples)
+
+    move     got  track rms  track max  shake rms  max jump reversals  settle hold pk-pk  others (worst pk-pk deg)      Hz
+  +3 deg   +2.99      0.084      0.167      0.054     0.176         0   -0.02      0.000  joint_2 0.70                  50
+  -3 deg   -2.90      0.147      0.317      0.053     0.264         1   +0.08      0.000  joint_2 0.62                  52
+  +1 deg   +0.88      0.110      0.231      0.039     0.264         1   -0.04      0.000  joint_2 0.70                  53
+  -1 deg   -0.88      0.112      0.245      0.042     0.264         0   +0.08      0.000  joint_2 0.79                  51
+
+All angles in degrees; 1 encoder count = 0.088 deg. Smooth: shake rms < ~0.05, reversals 0, max jump ~1-2 counts per sample;
+shaking: shake rms and max jump grow, reversals > 0, others pk-pk well above 0.1.
