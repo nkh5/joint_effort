@@ -48,6 +48,54 @@ class InputTests(unittest.TestCase):
         self.assertTrue(s.allowed(.52)); self.update(s, .53, hold=1, mode=1)
         self.assertEqual(s.mode, 'translation'); self.assertFalse(s.allowed(.53))
 
+    def test_mode_change_while_enabled_rearms_by_centering_only(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1); self.assertTrue(s.allowed(.22))
+        self.update(s, .25, hold=1, mode=1); self.assertEqual(s.mode, 'rotation')
+        self.assertFalse(s.allowed(.25))
+        self.update(s, .30, hold=1); self.update(s, .40, hold=1); self.assertFalse(s.allowed(.40))
+        self.update(s, .51, hold=1); self.assertTrue(s.allowed(.51))      # 0.21 s centred, enable never released
+
+    def test_mode_rearm_waits_for_centered_stick(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        self.update(s, .25, hold=1, mode=1)
+        for t in (.3, .4, .5, .6): self.update(s, t, [.5, 0., 0., 0.], hold=1)
+        self.assertFalse(s.allowed(.6))
+        self.update(s, .7, hold=1); self.update(s, .8, hold=1); self.assertFalse(s.allowed(.8))
+        self.update(s, .91, hold=1); self.assertTrue(s.allowed(.91))
+
+    def test_double_mode_press_still_rearms(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        self.update(s, .25, hold=1, mode=1); self.update(s, .28, hold=1)
+        self.update(s, .31, hold=1, mode=1); self.assertEqual(s.mode, 'translation')
+        self.update(s, .34, hold=1); self.update(s, .45, hold=1); self.update(s, .56, hold=1)
+        self.assertTrue(s.allowed(.56))
+
+    def test_mode_press_after_other_fault_still_needs_release(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        s.fault('Servo halted; center and release required')            # e.g. forwarder.fail()
+        self.update(s, .25, hold=1, mode=1)
+        for t in (.3, .4, .5, .6, .7): self.update(s, t, hold=1)
+        self.assertFalse(s.allowed(.7))
+        self.prepare(s, .8); self.update(s, 1.02, hold=1); self.assertTrue(s.allowed(1.02))
+
+    def test_fault_during_mode_rearm_cancels_it(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        self.update(s, .25, hold=1, mode=1); s.fault('Software stop requested')
+        for t in (.3, .4, .5, .6): self.update(s, t, hold=1)
+        self.assertFalse(s.allowed(.6))
+
+    def test_input_loss_during_mode_rearm_cancels_it(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        self.update(s, .25, hold=1, mode=1); self.update(s, .30, hold=1)
+        for t in (.6, .7, .8, .9): self.update(s, t, hold=1)               # 0.3 s gap > 0.15 s timeout
+        self.assertFalse(s.allowed(.9))
+
+    def test_old_pausing_firmware_still_resumes_with_release(self):
+        s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
+        self.update(s, .25, hold=0, mode=1)                                 # old Pico drops bit 7 on mode press
+        self.update(s, .30); self.update(s, .40); self.update(s, .51)
+        self.update(s, .52, hold=1); self.assertTrue(s.allowed(.52))
+
     def test_input_loss_never_auto_resumes_held(self):
         s = InputState(); self.prepare(s); self.update(s, .22, hold=1)
         self.assertFalse(s.allowed(.5)); self.update(s, .51, hold=1)

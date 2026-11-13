@@ -121,10 +121,14 @@ try:
     before = q.copy(); moving(axes=(.8, 0., 0.), seconds=1.)
     emit(.5); assert np.max(np.abs(q-before)) > .002
     report['checks']['rotation_joint_change_rad'] = (q-before).tolist()
-    # Mode switch while held must stop and cannot resume until release/center.
+    # Mode switch while held must stop and cannot resume while the stick is off-centre.
     moving(axes=(.8, 0., 0.)); emit(.1, axes=(.8, 0., 0.), hold=1, toggle=1)
     emit(.4, axes=(.8, 0., 0.), hold=1); assert not state['enabled']; settled()
     report['checks']['mode_change_held_stops'] = True
+    # ...but once the stick is centred (enable still held, as the latched Pico does), it re-arms.
+    emit(.8, hold=1); assert state['enabled'], state
+    report['checks']['mode_change_recentre_rearms'] = True
+    emit(.4); settled()
     moving(); source.spec = None; pump(.45); report['checks']['joy_loss_drift_rad'] = settled()
     emit(.4, hold=1); assert not state['enabled']; report['checks']['joy_recovery_held_stays_disabled'] = True
     for bad in ['nan', 'short', 'old']:

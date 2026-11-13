@@ -5,8 +5,8 @@ amw_forwarder:
     stick_signs: [1.0, 1.0, 1.0]
     slider_axis: 3
     slider_low_axis: 1.0
-    enable_button: 7     # Pico_Controller.ino virtual bit: 1 while ON and not paused (latched in the Pico)
-    mode_button: 0       # stick button: mode toggle (the Pico also pauses; panel 2 resumes)
+    enable_button: 7     # Pico_Controller.ino virtual bit: 1 while ON (latched in the Pico; panel 1)
+    mode_button: 0       # stick button: mode toggle; re-arms once the stick is centred 0.2 s (core.py)
     stick_deadzone: 0.08
     input_timeout: 0.15
     command_timeout: 0.12

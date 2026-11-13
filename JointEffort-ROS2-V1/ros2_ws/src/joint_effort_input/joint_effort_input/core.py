@@ -47,10 +47,13 @@ class InputState:
         self.mode = 'translation'; self.axes = [0., 0., 0.]; self.level = 10
         self.held = self.previous_hold = self.previous_toggle = self.prepared = False
         self.receipt = -math.inf; self.last_stamp = -1; self.neutral_since = None
+        # Set only by a mode press that interrupted a ready, enabled session. While set, the stick
+        # alone (centred 0.2 s) re-arms without releasing enable. Every other fault clears it.
+        self.mode_rearm = False
         self.reason = 'Waiting for joystick; center and release to prepare'
 
     def fault(self, reason):
-        self.prepared = False; self.neutral_since = None; self.reason = reason
+        self.prepared = False; self.neutral_since = None; self.reason = reason; self.mode_rearm = False
 
     def fresh(self, now):
         return 0 <= now-self.receipt <= self.timeout
@@ -68,8 +71,14 @@ class InputState:
         self.receipt, self.last_stamp = now, stamp
         held, toggle = bool(buttons[self.hold_index]), bool(buttons[self.toggle_index])
         if toggle and not self.previous_toggle:
+            # A mode press during a ready+enabled session (or while still re-arming from the
+            # previous mode press) only needs the stick re-centred. After any other fault the
+            # mode press grants nothing: enable must still be released and re-applied.
+            rearm = held and (self.prepared or self.mode_rearm)
             self.mode = 'rotation' if self.mode == 'translation' else 'translation'
-            self.fault('Mode changed; center and release required')
+            self.fault('Mode changed; center the stick to continue' if rearm
+                       else 'Mode changed; center and release required')
+            self.mode_rearm = rearm
         self.axes = [deadzone(max(-1., min(1., raw_axes[i]))*s, self.width)
                      for i, s in zip(self.indices, self.signs)]
         self.level = speed_level(raw_axes[self.slider], self.low_axis)
@@ -78,10 +87,12 @@ class InputState:
             self.fault('Hold enable while centered, then move the stick')
         if self.previous_hold and not held:
             self.fault('Enable released; center and release to prepare again')
-        if not held and not toggle and not any(self.axes):
+        if (not held or self.mode_rearm) and not toggle and not any(self.axes):
             if self.neutral_since is None: self.neutral_since = now
             if now-self.neutral_since >= .2:
-                self.prepared = True; self.reason = 'Ready: hold enable button to move'
+                self.reason = ('Ready: move the stick' if self.mode_rearm
+                               else 'Ready: hold enable button to move')
+                self.prepared = True; self.mode_rearm = False
         else:
             self.neutral_since = None
         if held and not self.previous_hold and not self.prepared:
