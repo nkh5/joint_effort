@@ -7,4 +7,5 @@ setup(name='joint_effort_input', version='0.1.0', packages=['joint_effort_input'
       install_requires=['setuptools'], zip_safe=True,
       entry_points={'console_scripts': ['pico_forwarder = joint_effort_input.forwarder:main',
                                        'display_preview = joint_effort_input.display:main',
+                                       'amw_lcd = joint_effort_input.lcd:main',
                                        'joy_teleop_clean = joint_effort_input.teleop:main']})
