@@ -1,6 +1,0 @@
-joint,role,proposed_bus_ID,proposed_zero_count,proposed_encoder_sign,assumed_external_ratio,software_min_deg,software_max_deg,concept_stop_min_deg,concept_stop_max_deg,confirmation_status
-joint_1,base rotation,1,2048,1,1,-30,30,-35,35,"PROVISIONAL: physical zero, sign, ratio, travel and voltage variant unconfirmed"
-joint_2,shoulder,2,2048,1,1,-30,30,-35,35,"PROVISIONAL: physical zero, sign, ratio, travel and voltage variant unconfirmed"
-joint_3,elbow,3,2048,1,1,-30,30,-35,35,"PROVISIONAL: physical zero, sign, ratio, travel and voltage variant unconfirmed"
-joint_4,first wrist axis,4,2048,1,1,-30,30,-35,35,"PROVISIONAL: physical zero, sign, ratio, travel and voltage variant unconfirmed"
-joint_5,second wrist axis,5,2048,1,1,-30,30,-35,35,"PROVISIONAL: physical zero, sign, ratio, travel and voltage variant unconfirmed"

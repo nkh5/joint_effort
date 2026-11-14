@@ -15,7 +15,7 @@ class IronBridgeTests(unittest.TestCase):
  def command(self):
   m=TwistStamped();m.header.stamp=self.node.get_clock().now().to_msg();m.header.frame_id='world';m.twist.linear.z=.002;return m
  def feedback(self):
-  m=JointState();m.header.stamp=self.node.get_clock().now().to_msg();m.name=self.node.names;m.position=[0.,-.2,.2,0.,.15];return m  # R02 mock start
+  m=JointState();m.header.stamp=self.node.get_clock().now().to_msg();m.name=self.node.names;m.position=self.node.model['initial_positions_rad'];return m
  def test_disabled_and_unverified_hardware_reject(self):
   self.node.receive(self.command());self.assertIsNone(self.node.command);self.node.feedback(self.feedback());req=SetBool.Request();req.data=True;res=self.node.enable(req,SetBool.Response());self.assertFalse(res.success);self.assertFalse(self.node.enabled)
  def test_stale_future_frame_nan_and_replay_rejected(self):

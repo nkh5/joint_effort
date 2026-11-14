@@ -1,32 +1,30 @@
 # Calibration data
 
-## Current model: R02
+## Current physical arm
 
-- `r02-measurements.csv`: fill in measured R02 angles and raw encoder counts for each joint.
-- `../src/joint_effort_iron/config/sts_calibration.yaml`: active R02 motor map. Empty values
-  and false verification flags are intentional until the assembled arm is measured.
-- `../tools/fit_r02_calibration.py`: checks the measurements; `--write` saves the fitted map.
+The current launch reads `../src/joint_effort_iron/config/sts_calibration.yaml`.
+It contains populated V1-style centers, datum offsets and motor tuning. The
+current fitting workflow uses `Calibration.csv` and `../tools/fit_calibration.py`.
+Follow [REAL-ARM.md](../REAL-ARM.md) to check the selected model, direction and
+usable travel. A populated file alone does not establish physical verification.
 
-Use at least three points per joint: zero and a negative/positive angle, spanning at least
-10 degrees. Five or more points give a better consistency check. Angles are relative to the
-R02 link references, not the motor case. Use the column names already in the worksheet.
+`bench-2026-10-31.*` and `bringup-log.md` retain measurement context.
+`sts_calibration_legacy_v1.yaml` is a separate historical snapshot, not a duplicate
+of the current settings. Frozen test fixtures remain under `../tests/fixtures`
+so regression tests do not depend on changing physical measurements.
 
-```bash
-python3 tools/fit_r02_calibration.py --report work/calibration-fit.json
-python3 tools/fit_r02_calibration.py --write
-```
+## R02 reference and migration
 
-Run these from `ros2_ws`. The tool does not connect to motors. Each write resets the physical
-verification flags. Confirm direction, usable travel and tip position separately.
-See [REAL-ARM.md](../REAL-ARM.md) for the physical checks.
+`r02-measurements.csv` and `original-r02-measurements.csv` retain R02 inputs.
+They differ: the later sheet includes a separate Motor reference table.
+`../tools/fit_r02_calibration.py` fits R02 angles and encoder counts. Use it only
+with the matching R02 model and calibration workflow. The saved fit and software
+results in `../reports/r02` refer to an earlier integration revision.
 
-## Earlier measurements
+R02 angles use the R02 link references, which differ from the current physical
+setup. A model migration requires new direction, travel and tip checks. See
+[R02-INTEGRATION.md](../R02-INTEGRATION.md) for the reference procedure.
 
-`Calibration.csv`, `bench-2026-10-31.*`, the bring-up notes and
-`sts_calibration_legacy_v1.yaml` record earlier measurements and settings. Their zero references
-are different from R02. Keep them as records; they are not the active R02 calibration.
-The older `fit_calibration.py` tool is retained for those data and rejects the R02 settings.
-
-The fitter reports every joint, even when it rejects the data. Its default maximum error is
-0.5 degrees. Rejected fits return exit code 1 and never overwrite the active settings. The
-optional Motor table in the CSV is analyzed separately; its reference does not set R02 zeros.
+The R02 fitter reports every joint, including rejected data. Its default maximum
+error is 0.5 degrees. Rejected fits return exit code 1 and do not overwrite settings.
+The optional Motor table is analyzed separately and does not set R02 zeros.

@@ -9,4 +9,4 @@ The source keeps the upstream BSD license notice. Our change keeps the capabilit
 
 System ROS files are unchanged. Check this local fix again when changing the MoveIt version.
 
-`servo_lifetime.cpp` uses the installed Servo library. It stops and destroys Servo before closing the ROS context. This avoids a shutdown race in the collision thread seen with MoveIt 2.12.4. Both mock launches use this runner.
+`servo_lifetime.cpp` uses the installed Servo library. It stops and destroys Servo before closing the ROS context. This avoids a shutdown race in the collision thread seen with MoveIt 2.12.4. The iron arm's mock and real launches use this runner.

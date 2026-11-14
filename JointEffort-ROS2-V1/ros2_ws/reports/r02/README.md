@@ -1,4 +1,9 @@
-# R02 software checks
+# Saved R02 software checks
+
+These are historical results for the fingerprints in `verification.json`.
+The current `src/joint_effort_iron/urdf/iron.urdf` was changed later and does not
+match that tested fingerprint. Counts and pass results below belong to the saved
+R02 integration; they are not a fresh verification of the current checkout.
 
 These results describe the R02 integration on Ubuntu 24.04 with ROS 2 Jazzy. No physical motor commands
 were sent. Test traffic used isolated ROS domain 188 and GenericSystem mock hardware.

@@ -38,13 +38,14 @@ It does not connect to motors. Keep the entire package, including its six meshes
 
 ## Hardware calibration and integration
 
-The controller stack now uses this geometry through the generated
-`joint_effort_iron/urdf/iron.urdf`. See [R02-INTEGRATION.md](../../R02-INTEGRATION.md)
+The R02 integration generated `joint_effort_iron/urdf/iron.urdf` from this
+geometry. Later physical-arm changes restored draft visual geometry in the current
+runtime. This package remains the R02 source reference. See [R02-INTEGRATION.md](../../R02-INTEGRATION.md)
 for the name mapping, collision model and mock tests, and
 [REAL-ARM.md](../../REAL-ARM.md) for physical calibration.
 
 This source package retains the descriptive names `base_rotation_joint`, `shoulder_joint`,
-`elbow_joint`, `wrist_yaw_joint` and `wrist_pitch_joint`. The running controller model maps them
+`elbow_joint`, `wrist_yaw_joint` and `wrist_pitch_joint`. The R02 generator maps them
 in that order to `joint_1` through `joint_5`.
 
 The active motor map is `joint_effort_iron/config/sts_calibration.yaml`. The JSON template in
@@ -78,5 +79,6 @@ contacts and dynamic motion clearance are outside that static check.
 See `evidence/calibration-checks.json`, `evidence/provenance.json`,
 `evidence/zero-convention.json`, and `evidence/zero-datums.csv` for the numerical
 records. These establish CAD/software consistency, not physical calibration
-accuracy. The integrated runtime has passed mock tests recorded in `../../reports/r02/`.
+accuracy. The saved R02 integration passed mock tests recorded in `../../reports/r02/`;
+those results do not validate the later current runtime.
 Physical R02 motor motion and calibration remain unverified.

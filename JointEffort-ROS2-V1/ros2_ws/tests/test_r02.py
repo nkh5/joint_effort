@@ -16,14 +16,19 @@ R=Robot(W/'src/joint_effort_iron/urdf/iron.urdf')
 def calibration():
  return dict(model_revision='R02',urdf_sha256=hashlib.sha256(TEXT.encode()).hexdigest(),
  physical_checks=dict(directions_verified=True,travel_limits_verified=True,tcp_verified=True),
- joints={f'joint_{i}':dict(motor_id=i,center_steps=2048,encoder_direction=(-1)**i,min_rad=-.58,max_rad=.58) for i in range(1,6)})
+ joints={name:dict(motor_id=i,center_steps=2048,encoder_direction=(-1)**i,min_rad=float(lo)-.05,max_rad=float(hi)+.05) for i,(name,(lo,hi)) in enumerate(zip(R.names('iron'),R.limits('iron')),1)})
 class R02Tests(unittest.TestCase):
  def test_reference_axes_and_shaft(self):
-  frames=R.frames({})
-  for i,axis in enumerate([[0,0,1],[0,1,0],[0,1,0],[0,0,-1],[0,-1,0]],1):
-   j=R.active[f'joint_{i}'];t=frames[j.find('parent').get('link')]@origin(j.find('origin'));np.testing.assert_allclose(t[:3,2],axis,atol=1e-9)
-  np.testing.assert_allclose(frames['iron_tcp'][:3,0],[0,0,-1],atol=1e-9)
-  link=R.links['base_link'];np.testing.assert_allclose(origin(link.find('visual/origin')),origin(link.find('collision/origin')))
+  # R02 is a retained reference model; the installed iron model uses draft CAD.
+  source=Robot(W/'src/joint_effort_arm_calibration_description/urdf/joint_effort_arm_calibration.urdf')
+  frames={'base_link':np.eye(4)}
+  for j in source.joints:
+   frames[j.find('child').get('link')]=frames[j.find('parent').get('link')]@origin(j.find('origin'))
+  names=['base_rotation_joint','shoulder_joint','elbow_joint','wrist_yaw_joint','wrist_pitch_joint']
+  for name,axis in zip(names,[[0,0,1],[0,1,0],[0,1,0],[0,0,-1],[0,-1,0]]):
+   j=source.active[name];t=frames[j.find('child').get('link')];np.testing.assert_allclose(t[:3,2],axis,atol=1e-9)
+  np.testing.assert_allclose(frames['iron_tip'][:3,2],[0,0,-1],atol=1e-9)
+  link=source.links['base_link'];np.testing.assert_allclose(origin(link.find('visual/origin')),origin(link.find('collision/origin')))
   self.assertAlmostEqual(float(link.find('visual/origin').get('rpy').split()[2]),-.5295341560844785)
  def test_model_binding_and_physical_flags(self):
   cal=calibration();self.assertEqual(problems(cal,TEXT),[]);self.assertTrue(problems(cal,TEXT+'\n'))

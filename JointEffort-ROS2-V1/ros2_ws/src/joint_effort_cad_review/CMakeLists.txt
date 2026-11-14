@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(joint_effort_cad_review)
 find_package(ament_cmake REQUIRED)
-install(DIRECTORY launch urdf config DESTINATION share/${PROJECT_NAME})
-install(PROGRAMS scripts/review_pose.py scripts/review_sliders.py DESTINATION lib/${PROJECT_NAME})
 find_package(rviz_common REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(rclcpp REQUIRED)

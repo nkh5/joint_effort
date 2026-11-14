@@ -1,4 +1,12 @@
-# R02 model and software integration
+# R02 model and software integration reference
+
+**Revision status:** these notes describe the saved R02 integration. Later
+physical-arm changes restored draft visual geometry and a populated V1-style
+calibration in the current runtime. The current `iron.urdf` does not match the
+fingerprint in `reports/r02/verification.json`. Treat the integration claims and
+commands below as an R02 reference. Follow [README.md](README.md) and
+[REAL-ARM.md](REAL-ARM.md) for the current setup. Regenerating R02 would replace
+the current geometry and require calibration review.
 
 ## What is complete
 

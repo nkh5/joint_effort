@@ -16,7 +16,9 @@ cd JointEffort-ROS2-V1/ros2_ws
 ```
 
 All joint sliders start at zero. This display launch has no motor driver.
-The active `joint_effort_iron/urdf/iron.urdf` is generated from this geometry.
+The R02 generator can build `joint_effort_iron/urdf/iron.urdf` from this geometry.
+The current runtime was changed later for the physical arm and uses draft visual
+meshes; this handoff remains a separate R02 reference.
 See [R02-INTEGRATION.md](ros2_ws/R02-INTEGRATION.md) for controller integration and mock tests.
 Start the display independently of an existing arm launch so model and
 joint-state publishers do not compete in the same ROS domain.
