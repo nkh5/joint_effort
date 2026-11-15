@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<package format="3"><name>joint_effort_cad_review</name><version>0.1.0</version>
-<description>Project RViz launcher with clean display teardown; no motor control.</description>
-<maintainer email="team@example.invalid">Joint Effort team</maintainer><license>LicenseRef-Unlicensed</license>
-<buildtool_depend>ament_cmake</buildtool_depend>
-<exec_depend>rviz2</exec_depend>
-<export><build_type>ament_cmake</build_type></export><depend>rviz_common</depend><depend>rclcpp</depend><build_depend>qtbase5-dev</build_depend></package>

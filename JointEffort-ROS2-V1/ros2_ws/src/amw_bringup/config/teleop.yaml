@@ -1,0 +1,44 @@
+# Teleop settings: the Pico joystick (joy_node) and the amw_teleop node.
+# Edit and restart `amw start` (no rebuild needed).
+
+amw_teleop:
+  ros__parameters:
+    # --- Pico controller mapping (raw Joy indices; see Pico_Controller.ino) ---
+    stick_axes: [0, 1, 2]          # X, Y, twist (twist = Z in translate mode)
+    stick_signs: [1.0, 1.0, 1.0]   # flip an entry to reverse that stick axis
+    slider_axis: 3                 # encoder speed level 1-20
+    slider_low_axis: 1.0
+    on_button: 1                   # panel 1: ON/OFF (toggles on each press)
+    mode_button: 0                 # stick button: translate <-> rotate
+    stick_deadzone: 0.08
+    centre_time_s: 0.2             # stick centred this long before the arm moves (after ON or a mode change)
+    input_timeout_s: 0.15          # no joystick report this long -> arm turns OFF
+
+    # --- speed (full stick at speed level 10; level 1 = 0.1x, level 20 = 2x) ---
+    linear_speed_m_s: 0.01
+    angular_speed_rad_s: 0.1
+    task_max_linear_speed_m_s: 0.02      # hard cap on tip speed
+    task_max_angular_speed_rad_s: 0.2    # hard cap on pointing rate
+
+    # --- five-joint solve (tip XYZ + iron pointing; roll about the iron is free) ---
+    task_orientation_length_m: 0.12      # weights pointing vs. position
+    task_damping_m: 0.002                # damped inverse: limits joint speed near awkward poses
+    task_min_singular_value_m: 0.003     # below this the arm slows (warning SINGULARITY)
+    joint_limit_margin_rad: 0.05         # joints this close to a limit stop pushing into it
+                                         # (keep above Servo's joint_limit_margins, 0.04)
+
+    # --- safety checks ---
+    feedback_timeout_s: 0.3              # joint states older than this -> OFF
+    limit_tolerance_deg: 2.0             # a joint may sag/overshoot this far past a limit before -> OFF
+    motor_warm_c: 55.0                   # warning
+    motor_hot_c: 65.0                    # -> OFF
+    motor_volt_min: 9.5                  # motor supply outside this range -> OFF
+    motor_volt_max: 14.0
+
+joy_node:
+  ros__parameters:
+    device_name: AMW Controller    # Pico_Controller.ino: manufacturer "AMW" + product "Controller"
+    deadzone: 0.0
+    autorepeat_rate: 50.0
+    coalesce_interval_ms: 1
+    sticky_buttons: false

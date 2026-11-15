@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>amw_moveit</name>
+  <version>1.0.0</version>
+  <description>MoveIt Servo runner with a clean shutdown for the AMW arm.</description>
+  <maintainer email="jp165@rice.edu">Joint Effort</maintainer>
+  <license>BSD-3-Clause</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>moveit_servo</depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

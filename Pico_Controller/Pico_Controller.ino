@@ -2,27 +2,18 @@
 // touchgadget/flight_stick_tinyusb (MIT). Board: Raspberry Pi Pico
 // (earlephilhower core), Tools > USB Stack > "Adafruit TinyUSB".
 //
-// What the Pi sees (check order with: jstest /dev/input/js0):
-//   X, Y      : stick                     (10-bit)
-//   twist     : stick twist, HID Rz       (8-bit)
-//   slider    : encoder speed level 1-20, sent as 0-255 (level 1 = 0, level 20 = 255)
-//   buttons 0-5 : stick button, panel buttons 1-5 (raw, 1 while pressed)
+// What the Pi sees (check with: amw joystick, or jstest /dev/input/js0):
+//   X, Y        : stick                     (10-bit)
+//   twist       : stick twist, HID Rz       (8-bit)
+//   slider      : encoder speed level 1-20, sent as 0-255 (level 1 = 0, level 20 = 255)
+//   buttons 0-5 : stick button, panel buttons 1-5 (raw, 1 while pressed, debounced)
 //   button 6    : encoder push switch
-//   button 7    : ENABLED - 1 while the arm is ON
-//   button 8    : ON      - same as bit 7 now (kept so older LCD/tools that read it still work)
 //   hat         : unused, always centred
 //
-// Buttons (read by amw_forwarder: enable_button 7, mode_button 0):
-//   button 0 (stick, GP2)   : mode. The forwarder toggles translate/rotate on each press and
-//                             holds the arm until the stick has been centred for 0.2 s
-//                             (core.py mode_rearm). The Pico no longer pauses: bit 7 stays 1.
-//   button 1 (panel 1, GP3) : ON/OFF. Turning ON needs the stick centred; OFF always works.
-//                             Also the way back after any stop/fault other than a mode change.
-//   button 2 (panel 2, GP4) : no function (raw state still reported).
-// "Centred" = all three axes inside CENTER_ZONE for CENTER_HOLD_MS, mode button released;
-// an ON press while not centred is ignored. Starts OFF; losing USB turns it OFF.
-// Needs the matching core.py (mode change re-arms by centring). With the old core.py a mode
-// change would need panel 1 OFF -> ON.
+// The Pico only reports what the controls are doing. All arm logic lives on the Pi
+// (amw_teleop): panel 1 toggles ON/OFF, the stick button switches translate/rotate, and the
+// arm only moves once the stick has been centred. Starting OFF after every Pi or Pico restart
+// is therefore guaranteed by the Pi, not by this firmware.
 
 #include "tinyusb.h"
 
@@ -46,13 +37,7 @@ const int ENC_STEPS_PER_DETENT = 4; // KY-040: 4 pin changes per click
 const bool ENC_INVERT = false;
 const int LEVEL_MIN = 1, LEVEL_MAX = 20; // speed levels; Pi maps level -> speed
 const int LEVEL_START = 10; // level at power-up
-const int BTN_MODE = 0; // stick button, GP2 (index into BUTTON_PINS): mode (handled by the forwarder)
-const int BTN_POWER = 1; // panel button 1, GP3: ON <-> OFF
-const int BIT_ENABLED = 7; // virtual button: ON
-const int BIT_ON = 8; // virtual button: ON (duplicate of bit 7, for older readers)
-const float CENTER_ZONE = 0.06f; // |axis| below this counts as centred (forwarder deadzone is 0.08)
-const int CENTER_HOLD_MS = 250; // centred this long before ON is accepted (forwarder needs 200)
-#define DEBUG 1 // 1 = print raw ADC values over USB serial
+#define DEBUG 0 // 1 = print raw ADC values over USB serial (for setting AxisCal)
 
 // ---------------- Globals ----------------
 Adafruit_USBD_HID G_usb_hid;
@@ -65,9 +50,6 @@ const int8_t ENC_TABLE[16] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0
 bool btnState[NUM_BUTTONS + 1], btnLast[NUM_BUTTONS + 1];
 uint32_t btnSince[NUM_BUTTONS + 1];
 int level = LEVEL_START;
-bool powered = false; // power-up: OFF
-bool lastPower = false; // previous debounced state, for press edges
-uint32_t centeredSince = 0; bool wasCentered = false;
 
 // ---------------- Helpers ----------------
 void encISR() { // quadrature state table
@@ -159,24 +141,6 @@ void loop() {
     if (debounce(i, BUTTON_PINS[i], now)) bits |= 1 << i;
   if (debounce(NUM_BUTTONS, ENC_SW, now)) bits |= 1 << 6;
 
-  bool modeBtn = bits & (1 << BTN_MODE), powerBtn = bits & (1 << BTN_POWER);
-
-  // Centred long enough? Same conditions the forwarder needs before it accepts an enable.
-  bool centeredNow = fabsf(x) < CENTER_ZONE && fabsf(y) < CENTER_ZONE && fabsf(t) < CENTER_ZONE && !modeBtn;
-  if (centeredNow && !wasCentered) centeredSince = now;
-  wasCentered = centeredNow;
-  bool centered = centeredNow && now - centeredSince >= (uint32_t)CENTER_HOLD_MS;
-
-  if (powerBtn && !lastPower) { // ON/OFF, once per press
-    if (powered) powered = false; // OFF always works
-    else if (centered) powered = true; // ON only when centred
-  }
-  // Mode presses no longer pause here: the forwarder re-arms after a mode change once the
-  // stick has been centred, without enable having to drop.
-  if (!TinyUSBDevice.mounted() || TinyUSBDevice.suspended()) powered = false; // host gone -> OFF
-  lastPower = powerBtn;
-  if (powered) bits |= 1 << BIT_ENABLED;
-  if (powered) bits |= 1 << BIT_ON;
   FSJoy.buttons(bits);
 
   noInterrupts(); // take whole clicks, keep the remainder
@@ -194,9 +158,8 @@ void loop() {
   static uint32_t lastPrint = 0;
   if (now - lastPrint >= 100) {
     lastPrint = now;
-    Serial.printf("raw x=%d y=%d t=%d  level=%d  %s%s  buttons=0x%03x\n",
-                  readRaw(PIN_X), readRaw(PIN_Y), readRaw(PIN_TWIST), level,
-                  powered ? "ON" : "OFF", centered ? " centred" : "", bits);
+    Serial.printf("raw x=%d y=%d t=%d  level=%d  buttons=0x%03x\n",
+                  readRaw(PIN_X), readRaw(PIN_Y), readRaw(PIN_TWIST), level, bits);
   }
 #endif
 }

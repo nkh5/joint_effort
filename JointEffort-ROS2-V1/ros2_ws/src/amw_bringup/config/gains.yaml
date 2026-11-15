@@ -1,0 +1,18 @@
+# Servo position-loop settings, stored in each servo's own memory (EEPROM).
+#
+# These are NOT applied when the arm starts. The servos keep whatever was last written to them.
+#   amw motors gains           show what each servo currently has
+#   amw motors tune            write the values below (ROS must be stopped)
+#
+# p, i, d    position PID, 0..255
+# deadband   counts the servo ignores around its goal, 0..255 (written to both directions)
+# punch      minimum drive once the servo decides to move, 0..255 (factory 16)
+#
+# These are the values the old launch file wrote at every start (as of 2026-11-13).
+# punch is left out (not tracked before); add it per joint if you change it.
+joints:
+  joint_1: {p: 20, i: 10, d: 10, deadband: 0}
+  joint_2: {p: 100, i: 10, d: 70, deadband: 0}
+  joint_3: {p: 100, i: 10, d: 70, deadband: 0}
+  joint_4: {p: 40, i: 10, d: 10, deadband: 0}
+  joint_5: {p: 40, i: 0, d: 20, deadband: 1}

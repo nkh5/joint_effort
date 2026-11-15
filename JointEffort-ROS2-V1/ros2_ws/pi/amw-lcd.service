@@ -1,21 +1,21 @@
-# AMW status screen on the Pi's HDMI LCD. Install (see LCD-SETUP.md step 6):
-#   sudo cp amw-lcd.service /etc/systemd/system/ && sudo systemctl daemon-reload
+# AMW status screen on the Pi's LCD (3.5" SPI LCD (B) framebuffer). Starts at boot and shows
+# NO DATA until `amw start` is running. Install (docs/lcd.md):
+#   sudo cp pi/amw-lcd.service /etc/systemd/system/ && sudo systemctl daemon-reload
 #   sudo systemctl enable --now amw-lcd
 # Logs: journalctl -u amw-lcd -f
+# Change AMW below if the repository is cloned somewhere else.
 [Unit]
-Description=AMW status screen (HDMI LCD)
+Description=AMW status screen
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 User=jointeffort
 Group=video
-# Change ROS_SETUP if the Pi's ROS 2 lives elsewhere (e.g. /opt/ros/humble/setup.bash).
-Environment=ROS_SETUP=/opt/ros/jazzy/setup.bash
-Environment=ROS_DOMAIN_ID=88
+Environment=AMW=/home/jointeffort/joint_effort/JointEffort-ROS2-V1/ros2_ws/amw
 # Keep the text console off the screen (it would draw over the status picture).
 ExecStartPre=+/bin/sh -c 'for v in /sys/class/vtconsole/vtcon*/bind; do echo 0 > "$v"; done || true'
-ExecStart=/bin/bash -c 'source "$ROS_SETUP" && exec python3 /home/jointeffort/amw/lcd.py --fb'
+ExecStart=/bin/sh -c 'exec python3 "$AMW" lcd --fb'
 Restart=always
 RestartSec=2
 

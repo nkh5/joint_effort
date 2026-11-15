@@ -1,0 +1,74 @@
+# AMW iron arm: motors, calibration and joint limits.
+# This is the only file you edit to calibrate the arm. `amw start` reads it straight from the
+# source tree, so changes need no rebuild - just restart.
+#
+# Joint angle (what ROS, RViz and every tool report):
+#
+#     angle = dir * (raw - zero) * 360 / 4096   degrees
+#
+#   zero     raw encoder count (0..4095) when the joint is at angle 0.  Set by `amw calibrate zero`.
+#   dir      +1 or -1.  Joint turns the wrong way in RViz?  Flip this sign.  Nothing else changes.
+#   lower_deg / upper_deg
+#            software travel limits.  Teleop, MoveIt Servo and jogs stop here; the motor driver
+#            refuses anything more than limit_margin_deg beyond them.  `amw calibrate limits`
+#            helps you measure them.
+#   reference_deg
+#            the joint's angle when its link sits on its physical 0-degree mark (link parallel to
+#            the motor's long side - the pose Calibration.csv was measured from).
+#            `amw calibrate zero` uses this pose.
+#   acceleration
+#            servo acceleration register, 1..254 (100 = driver default, lower = the servo eases
+#            into each new goal more gently).
+#
+# Values migrated on 2026-11-13 from sts_calibration.yaml (center_steps -> zero, old driver
+# convention -> dir -1, URDF limits -> degrees, datum_offset_rad -> reference_deg), so the arm
+# reports exactly the same angles as before.  Old file: archive/sts_calibration_v1_before_cleanup.yaml
+
+serial_port: /dev/serial/by-id/usb-1a86_USB_Single_Serial_5B14028914-if00
+baud_rate: 1000000
+
+limit_margin_deg: 3.0            # driver hard range = software limits widened by this much
+max_joint_speed_deg_s: 8.5944    # per joint (0.15 rad/s); used by MoveIt Servo and the task bridge
+max_joint_accel_deg_s2: 17.1887  # per joint (0.3 rad/s^2); used by MoveIt Servo
+
+joints:
+  joint_1:                       # base
+    motor_id: 1
+    zero: 2097
+    dir: -1
+    lower_deg: -30.0
+    upper_deg: 30.0
+    reference_deg: 0.0
+    acceleration: 100
+  joint_2:                       # shoulder
+    motor_id: 2
+    zero: 2285
+    dir: -1
+    lower_deg: -34.377
+    upper_deg: 85.944
+    reference_deg: 23.835
+    acceleration: 100
+  joint_3:                       # elbow
+    motor_id: 3
+    zero: 2861
+    dir: -1
+    lower_deg: -84.798
+    upper_deg: 0.0
+    reference_deg: 48.180
+    acceleration: 100
+  joint_4:                       # wrist 1
+    motor_id: 4
+    zero: 2024
+    dir: -1
+    lower_deg: -30.0
+    upper_deg: 30.0
+    reference_deg: 0.0
+    acceleration: 100
+  joint_5:                       # wrist 2
+    motor_id: 5
+    zero: 2051
+    dir: -1
+    lower_deg: 34.377
+    upper_deg: 137.510
+    reference_deg: 88.636
+    acceleration: 100

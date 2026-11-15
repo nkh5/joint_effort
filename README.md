@@ -1,20 +1,11 @@
-# Joint Effort arm — ROS 2
+# Joint Effort: Assisted Makers Workbench (AMW)
 
-ROS 2 Jazzy software for the five-joint soldering-iron arm, with MoveIt Servo,
-Pico joystick input, an STS motor interface and a Pi status display.
+Teleoperated soldering arm for Adaptive Artisans.
 
-The current launch files use `joint_effort_iron/urdf/iron.urdf`, draft-description
-visual meshes and the populated `joint_effort_iron/config/sts_calibration.yaml`.
-The R02 source model and saved R02 checks are retained separately. Those saved
-results describe a different model revision from the current physical-arm setup.
+| Folder | What |
+| --- | --- |
+| [`JointEffort-ROS2-V1/ros2_ws`](JointEffort-ROS2-V1/ros2_ws/README.md) | ROS 2 Jazzy software: the `amw` command, arm model, calibration, teleop |
+| `JointEffort-ROS2-V1/cad/r02` | R02 CAD export and zero-pose reference (not used by the running model) |
+| `Pico_Controller` | Pico joystick firmware (Arduino, USB gamepad) |
 
-- [Build and workspace layout](JointEffort-ROS2-V1/ros2_ws/README.md)
-- [Physical arm setup and calibration](JointEffort-ROS2-V1/ros2_ws/REAL-ARM.md)
-- [Pi status display](JointEffort-ROS2-V1/ros2_ws/LCD-SETUP.md)
-- [R02 integration reference](JointEffort-ROS2-V1/ros2_ws/R02-INTEGRATION.md)
-- [Saved software evidence](JointEffort-ROS2-V1/ros2_ws/reports/README.md)
-- [Cleanup review](CLEANUP_REVIEW.md)
-- [November 13 preserved files](NOVEMBER_13_PRESERVED_FILES.md)
-
-Model regeneration changes geometry and can invalidate physical calibration.
-Review the selected model, measured travel and actual tip offset before powered use.
+Start here: [JointEffort-ROS2-V1/ros2_ws/README.md](JointEffort-ROS2-V1/ros2_ws/README.md).

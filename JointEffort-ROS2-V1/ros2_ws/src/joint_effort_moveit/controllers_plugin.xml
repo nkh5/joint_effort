@@ -1,5 +1,0 @@
-<library path="joint_effort_no_execution_controller_manager">
- <class name="joint_effort_moveit/NoExecutionControllerManager" type="joint_effort_moveit::NoExecutionControllerManager" base_class_type="moveit_controller_manager::MoveItControllerManager">
-  <description>Explicitly provides no MoveIt path execution controllers; mock Servo owns motion.</description>
- </class>
-</library>

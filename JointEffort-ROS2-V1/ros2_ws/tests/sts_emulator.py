@@ -3,9 +3,9 @@
 
 Used by the tests and for dry runs without hardware:
 
-  python3 tests/sts_emulator.py --link /tmp/fake_sts 1=2064 2=2035 3=3338 4=2004 5=2041
+  python3 tests/sts_emulator.py --link /tmp/fake_sts 1=2097 2=1959 3=3643 4=2024 5=1073   (home pose)
   # then point a tool at it, e.g.
-  python3 tools/sts_preflight.py --readonly --port /tmp/fake_sts
+  amw motors read --port /tmp/fake_sts
 
 Each ID=RAW argument creates a servo whose present position starts at RAW. While running,
 type "hand ID RAW" + Enter to move a servo as if by hand (only while its torque is off),
