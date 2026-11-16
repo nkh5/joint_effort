@@ -100,6 +100,13 @@ class NodeNamesTest(unittest.TestCase):
                       'clients', 'services', 'timers', 'guards', 'waitables', 'name', 'clock', 'namespace'}
         self.assertEqual(ours & rclpy_node, set())
 
+    def test_each_log_line_has_one_severity(self):
+        """rclpy raises 'Logger severity cannot be changed between calls' if one line logs at two levels."""
+        source = (_paths.WS / 'src/amw_teleop/amw_teleop/joycon.py').read_text()
+        for line in source.splitlines():
+            levels = [lvl for lvl in ('.debug', '.info', '.warning', '.warn(', '.error', '.fatal') if lvl in line]
+            self.assertLessEqual(len(levels), 1, line)
+
 
 class HandTest(unittest.TestCase):
     def test_gravity_pulls_a_wrong_tilt_back(self):

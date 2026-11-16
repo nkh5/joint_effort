@@ -169,9 +169,13 @@ def main(args=None):
             self.thread.start()
 
         def say(self, text, warn=False):
+            # rclpy ties each logging call site to one severity, so warnings and infos need separate lines.
             if text != self.note:
                 self.note = text
-                (self.get_logger().warning if warn else self.get_logger().info)(text)
+                if warn:
+                    self.get_logger().warning(text)
+                else:
+                    self.get_logger().info(text)
 
         # ---- device discovery
         def open_devices(self):
@@ -216,22 +220,29 @@ def main(args=None):
         # ---- reader thread
         def read_loop(self):
             while self.running and rclpy.ok():
-                if not self.devices:
-                    if not self.open_devices():
-                        time.sleep(1.0)
-                        continue
                 try:
-                    ready, _, _ = select.select(self.devices, [], [], 0.1)
-                    for dev in ready:
-                        for e in dev.read():
-                            self.on_event(dev, e)
-                except (OSError, ValueError):
-                    self.say('Joy-Con disconnected; waiting for it to come back...', warn=True)
+                    self.read_once()
+                except Exception as e:                    # never let the reader thread die silently
+                    self.get_logger().error(f'Joy-Con reader error, reconnecting: {e!r}')
                     self.close_devices()
-                    continue
-                if time.monotonic() - max(self.last_imu, self.opened_at) > 2.0:
-                    self.say('No motion data from the Joy-Con. Is joycond running (it grabs the device)? '
-                             'Run: sudo systemctl stop joycond', warn=True)
+                    time.sleep(1.0)
+
+        def read_once(self):
+            if not self.devices and not self.open_devices():
+                time.sleep(1.0)
+                return
+            try:
+                ready, _, _ = select.select(self.devices, [], [], 0.1)
+                for dev in ready:
+                    for e in dev.read():
+                        self.on_event(dev, e)
+            except (OSError, ValueError):
+                self.say('Joy-Con disconnected; waiting for it to come back...', warn=True)
+                self.close_devices()
+                return
+            if time.monotonic() - max(self.last_imu, self.opened_at) > 2.0:
+                self.say('No motion data from the Joy-Con. Is joycond running (it grabs the device)? '
+                         'Run: sudo systemctl stop joycond', warn=True)
 
         def on_event(self, dev, e):
             now = time.monotonic()
