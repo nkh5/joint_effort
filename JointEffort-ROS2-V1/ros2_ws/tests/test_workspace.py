@@ -75,6 +75,27 @@ class WorkspaceTest(unittest.TestCase):
         for path in re.findall(r'package://amw_description/([^"]+)', text):
             self.assertTrue((SRC / 'amw_description' / path).exists(), path)
 
+    def test_package_dependencies_have_no_cycle(self):
+        """colcon refuses to build if two of our packages depend on each other."""
+        deps = {}
+        for pkg in OUR_PACKAGES:
+            root = ET.parse(SRC / pkg / 'package.xml').getroot()
+            deps[pkg] = {e.text.strip() for e in root if e.tag.endswith('depend') and e.text.strip() in OUR_PACKAGES}
+        done, visiting = set(), []
+
+        def visit(pkg):
+            self.assertNotIn(pkg, visiting, f'dependency cycle: {" -> ".join(visiting + [pkg])}')
+            if pkg in done:
+                return
+            visiting.append(pkg)
+            for d in deps[pkg]:
+                visit(d)
+            visiting.pop()
+            done.add(pkg)
+
+        for pkg in OUR_PACKAGES:
+            visit(pkg)
+
     def test_no_old_package_names_left(self):
         pattern = re.compile(r'joint_effort_(iron|input|robot|moveit|cad_review|arm_draft|arm_calibration)'
                              r'|amw_forwarder|iron_task_bridge|joy_teleop|display_state')
