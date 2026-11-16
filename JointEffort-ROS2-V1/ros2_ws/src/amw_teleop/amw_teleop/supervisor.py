@@ -11,8 +11,10 @@ Joy-Con (Joy message from amw_joycon; indices in teleop.yaml)
   on_button          D-pad right: toggles ON/OFF. ON is refused (with the reason) if the arm is not ready.
   speed_up/down      D-pad up/down: speed level +/- speed_step (1..20).
   z_button  (held)   L: stick up/down moves the tip up/down instead of x/y      -> mode 'z'
-  rotate_button (held) ZL: the iron follows the Joy-Con's rotation (stick ignored) -> mode 'rotation'
+  rotate_button (held) ZL: the iron points the way the Joy-Con points (stick ignored) -> mode 'rotation'
   neither held       stick x/y moves the tip in x/y                              -> mode 'translation'
+  recenter_button    D-pad left: the Joy-Con's current pose becomes "iron straight down" (counted in
+                     `recenters`; the node reads it). Works in any state.
 A mode change pauses only if the stick is pushed and the new mode uses the stick; centre it to go on.
 
 Anything in the stop list of faults.py turns the arm OFF; ON must be pressed again. Input loss
@@ -38,6 +40,7 @@ class Config:
     speed_down_button: int = 3             # D-pad down
     z_button: int = 0                      # L (held)
     rotate_button: int = 1                 # ZL (held)
+    recenter_button: int = 5               # D-pad left
     speed_step: int = 2
     start_level: int = 10
     deadzone: float = 0.12
@@ -53,10 +56,11 @@ class Config:
 
     @property
     def buttons(self):
-        return (self.on_button, self.speed_up_button, self.speed_down_button, self.z_button, self.rotate_button)
+        return (self.on_button, self.speed_up_button, self.speed_down_button, self.z_button, self.rotate_button,
+                self.recenter_button)
 
     def __post_init__(self):
-        if (len(self.stick_axes) != 2 or len(set(self.stick_axes)) != 2 or len(set(self.buttons)) != 5
+        if (len(self.stick_axes) != 2 or len(set(self.stick_axes)) != 2 or len(set(self.buttons)) != 6
                 or min(*self.stick_axes, *self.buttons) < 0
                 or any(s not in (-1.0, 1.0) for s in self.stick_signs) or len(self.stick_signs) != 2
                 or not 1 <= self.speed_step <= 10 or not 1 <= self.start_level <= LEVEL_MAX
@@ -91,6 +95,7 @@ class Supervisor:
         self.last_joy = -math.inf
         self.centred_since = None
         self.prev = None                         # buttons of the last report: no edge on connect
+        self.recenters = 0                       # D-pad left presses
         self.events = deque(maxlen=12)
         self._last_event = None
 
@@ -153,6 +158,9 @@ class Supervisor:
                 if level != self.level:
                     self.level = level
                     self.log(now, f'speed level {level}')
+        if pressed[c.recenter_button]:
+            self.recenters += 1
+            self.log(now, 'Joy-Con neutral set')
         if pressed[c.on_button]:
             if self.state == 'off':
                 self.try_on(now, health)

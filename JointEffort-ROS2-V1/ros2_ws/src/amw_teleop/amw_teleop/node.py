@@ -3,7 +3,7 @@
 One node owns the whole teleop path (earlier versions split it over four nodes):
 
   in   /joy                    Joy-Con stick and buttons (from amw_joycon; order in teleop.yaml)
-       /amw/hand_imu           Joy-Con gyro, bias removed (from amw_joycon), for the ZL rotation clutch
+       /amw/hand_imu           Joy-Con gyro (bias removed) + accel (from amw_joycon): where it points, for ZL
        /joint_states           arm feedback
        /iron_servo/status      MoveIt Servo status
        /dynamic_joint_states   motor temperature / voltage / current (real arm)
@@ -33,7 +33,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 
 from .core import velocity
-from .hand import HandRotation, follow_velocity, target_rotation
+from .hand import Orientation, hand_tilt, iron_target, point_velocity
 from .kinematics import Robot, differential_step
 from .supervisor import Config, Health, Supervisor
 
@@ -61,7 +61,8 @@ class Teleop(Node):
             stick_axes=tuple(param('stick_axes', [0, 1])), stick_signs=tuple(param('stick_signs', [1.0, 1.0])),
             on_button=param('on_button', 4), speed_up_button=param('speed_up_button', 2),
             speed_down_button=param('speed_down_button', 3), z_button=param('z_button', 0),
-            rotate_button=param('rotate_button', 1), speed_step=param('speed_step', 2),
+            rotate_button=param('rotate_button', 1), recenter_button=param('recenter_button', 5),
+            speed_step=param('speed_step', 2),
             start_level=param('start_level', 10), deadzone=param('stick_deadzone', 0.12),
             expo=param('stick_expo', 0.6), centre_time=param('centre_time_s', 0.2),
             input_timeout=param('input_timeout_s', 0.15), imu_timeout=param('imu_timeout_s', 0.15),
@@ -71,16 +72,20 @@ class Teleop(Node):
             motor_volt_range=(param('motor_volt_min', 9.5), param('motor_volt_max', 14.0))))
         self.speeds = {k: param(k, d) for k, d in [('linear_speed_m_s', 0.01), ('angular_speed_rad_s', 0.1),
                                                      ('z_speed_ratio', 0.5)]}
-        self.hand_cfg = dict(axes=tuple(param('hand_axes', [0, 1])), signs=tuple(param('hand_signs', [1.0, 1.0])),
-                             scale=param('hand_scale', 0.5), max_angle=math.radians(param('hand_max_angle_deg', 60.0)))
+        self.z_sign = param('z_sign', 1.0)
+        self.long_axis = param('hand_long_axis', 1)
+        self.hand_cfg = dict(axes=tuple(param('hand_axes', [0, 2])), signs=tuple(param('hand_signs', [1.0, 1.0])),
+                             scale=param('hand_scale', 1.0), max_angle=math.radians(param('hand_max_angle_deg', 60.0)))
         self.hand_gain = param('hand_gain_per_s', 3.0)
-        if (len(self.hand_cfg['axes']) != 2 or any(a not in (0, 1, 2) for a in self.hand_cfg['axes'])
-                or any(s not in (-1.0, 1.0) for s in self.hand_cfg['signs'])):
-            raise RuntimeError('hand_axes must be two of 0, 1, 2 and hand_signs two of 1.0 / -1.0 (teleop.yaml)')
-        self.hand = HandRotation()
+        axes = self.hand_cfg['axes']
+        if (len(axes) != 2 or len({*axes, self.long_axis}) != 3 or not {*axes, self.long_axis} <= {0, 1, 2}
+                or any(s not in (-1.0, 1.0) for s in (*self.hand_cfg['signs'], self.z_sign))):
+            raise RuntimeError('hand_long_axis and hand_axes must use each of 0, 1, 2 once; hand_signs and z_sign '
+                               'must be 1.0 or -1.0 (teleop.yaml)')
+        self.orient = Orientation(param('hand_gravity_gain', 1.0))
+        self.neutral = None                       # Joy-Con pose that means "iron straight down" (D-pad left)
+        self.recenters = 0
         self.imu_time = -math.inf
-        self.rotating = False
-        self.tool0 = None
         self.model = {k: param(k, d) for k, d in [
             ('task_max_linear_speed_m_s', 0.02), ('task_max_angular_speed_rad_s', 0.2),
             ('task_orientation_length_m', 0.12), ('task_damping_m', 0.002), ('task_min_singular_value_m', 0.003),
@@ -120,9 +125,8 @@ class Teleop(Node):
 
     def on_imu(self, msg):
         self.imu_time = time.monotonic()
-        if self.rotating:
-            w = msg.angular_velocity
-            self.hand.add((w.x, w.y, w.z), msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9)
+        w, a = msg.angular_velocity, msg.linear_acceleration
+        self.orient.add((w.x, w.y, w.z), (a.x, a.y, a.z), msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9)
 
     def on_joint_states(self, msg):
         values = dict(zip(msg.name, msg.position))
@@ -182,11 +186,9 @@ class Teleop(Node):
         self.refresh_health()
         moving = self.sup.step(self.health, now)
         qdot = np.zeros(5)
-        rotating = moving and self.sup.mode == 'rotation'
-        if rotating and not self.rotating:          # rotation (ZL) just started: hold the iron where it is
-            self.hand.reset()
-            self.tool0 = None
-        self.rotating = rotating
+        if self.sup.recenters != self.recenters:    # D-pad left: this Joy-Con pose = iron straight down
+            self.recenters = self.sup.recenters
+            self.set_neutral('D-pad left')
         if moving:
             q = np.array([self.health.joints[n] for n in self.names])
             linear, angular = self.command(q)
@@ -206,18 +208,26 @@ class Teleop(Node):
         self.log_changes()
         self.publish_status(now)
 
+    def set_neutral(self, why):
+        if self.orient.r is None:
+            self.get_logger().warning('No Joy-Con motion data yet, so its pose cannot be the neutral.')
+            return
+        self.neutral = self.orient.r.copy()
+        self.get_logger().info(f'Joy-Con neutral set ({why}): this pose = iron straight down.')
+
     def command(self, q):
         """(linear m/s, angular rad/s) for this tick, world frame, from the current mode."""
         if self.sup.mode != 'rotation':
+            z_ratio = self.speeds['z_speed_ratio'] * self.z_sign * self.sup.cfg.stick_signs[1]  # z ignores y's flip
             return velocity(self.sup.axes, self.sup.mode, self.sup.speed, self.speeds['linear_speed_m_s'],
-                            self.model['task_max_linear_speed_m_s'], self.speeds['z_speed_ratio']), [0., 0., 0.]
-        tool = self.robot.fk('iron', q)[:3, :3]
-        if self.tool0 is None:
-            self.tool0 = tool
-        target = target_rotation(self.tool0, self.hand.vector(), **self.hand_cfg)
-        w = follow_velocity(target, tool, self.hand_gain)
-        axis = tool[:, 0]                          # the iron; roll about it is left free by the solve
-        w = w - axis * float(axis @ w)
+                            self.model['task_max_linear_speed_m_s'], z_ratio), [0., 0., 0.]
+        if self.orient.r is None:
+            return [0., 0., 0.], [0., 0., 0.]
+        if self.neutral is None:
+            self.set_neutral('first ZL press; hold the Joy-Con upright and press D-pad left to set it properly')
+        target = iron_target(hand_tilt(self.neutral, self.orient.r, self.long_axis), **self.hand_cfg)
+        direction = self.robot.fk('iron', q)[:3, 0]      # the iron (tool +X) in the world frame
+        w = point_velocity(direction, target, self.hand_gain)
         cap = min(self.speeds['angular_speed_rad_s'] * self.sup.speed, self.model['task_max_angular_speed_rad_s'])
         n = float(np.linalg.norm(w))
         if n > cap:

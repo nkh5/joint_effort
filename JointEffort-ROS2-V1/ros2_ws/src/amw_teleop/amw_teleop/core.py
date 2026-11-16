@@ -33,7 +33,7 @@ def velocity(axes, mode, factor=1.0, linear=0.01, linear_cap=0.02, z_ratio=0.5):
     """Stick (x, y after `stick`) -> [vx, vy, vz] tip velocity in the world frame (m/s).
 
     translation: stick x/y -> tip X/Y at `linear` m/s at full stick (times the speed factor)
-    z:           stick up/down -> tip Z at z_ratio * that speed (L held)
+    z:           stick up/down -> tip Z at z_ratio * that speed (L held; a negative z_ratio reverses it)
     rotation:    no translation (the iron follows the hand; see node.py)
     """
     x, y = axes

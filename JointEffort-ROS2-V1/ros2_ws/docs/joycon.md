@@ -4,9 +4,10 @@ A left Joy-Con, held upright in one hand, replaces the Pico joystick.
 
 | Input | Does |
 | --- | --- |
-| stick | tip x/y (rate: further = faster) |
-| hold **L** + stick up/down | tip up/down (half the x/y speed) |
-| hold **ZL** + tilt the Joy-Con | the iron tilts the same way, half as much; release ZL to freeze it. Stick ignored. |
+| stick | tip x/y (rate: further = faster; both directions reversed by `stick_signs: [-1, -1]`) |
+| hold **L** + stick up/down | tip down/up (half the x/y speed; `z_sign: -1` = stick up moves down) |
+| hold **ZL** + point the Joy-Con | the iron points the way the Joy-Con points: Joy-Con upright (long side vertical, stick facing you) = iron straight down; tilt it and the iron tilts the same way. Release ZL to freeze the iron. Stick ignored. |
+| D-pad left | "this is upright": hold the Joy-Con upright and press it to set the neutral pose (any time) |
 | D-pad right | ON / OFF |
 | D-pad up / down | speed level +2 / -2 (1..20, 10 = 1x) |
 
@@ -16,10 +17,12 @@ All numbers (deadzone, curve, speeds, which buttons, hand scale and directions) 
 How it works: `amw_joycon` (src/amw_teleop/amw_teleop/joycon.py) reads the two input devices the
 kernel's hid-nintendo driver creates, `Joy-Con (L)` and `Joy-Con (L) (IMU)`, and publishes `/joy`
 (stick + buttons, 100 Hz) and `/amw/hand_imu` (gyro with its bias removed, ~200 Hz, stamped with the
-Joy-Con's own sample clock). `amw_teleop` turns the stick into tip velocity, and while ZL is held it
-integrates the gyro into "how far the hand has turned since ZL was pressed" and turns the iron toward
-half of that (hand.py). At start, `amw_joycon` measures the gyro bias and stick centre: **leave the
-Joy-Con still for a second** (e.g. on the table) before it says `Ready.`
+Joy-Con's own sample clock). `amw_teleop` turns the stick into tip velocity. It also tracks the
+Joy-Con's orientation all the time (gyro, with gravity correcting the tilt drift); while ZL is held it
+swings the iron toward the direction the Joy-Con's long side points, relative to the neutral pose set
+with D-pad left (hand.py). Without a neutral, the first ZL press uses the pose at that moment.
+At start, `amw_joycon` measures the gyro bias and stick centre: **leave the Joy-Con still for a
+second** (e.g. on the table) before it says `Ready.`
 
 ## One-time setup (Fedora host)
 
@@ -102,6 +105,9 @@ amw joystick
 | stick right, then up | x goes to about +1.0, then y to about +1.0 (if up shows -, set `invert_y: false`) |
 | press L, ZL, D-pad up/down/right | `held L`, `held ZL`, `held DPAD_UP` ... |
 | turn the Joy-Con | gyro numbers move; roughly 0 again when still |
+| hold it upright, twist it about its long side | **note which gyro axis moves: that is `hand_long_axis`** |
+| hold it upright, tip the top away from you | note the axis: put it first in `hand_axes` |
+| hold it upright, tip the top to your right | note the axis: put it second in `hand_axes` |
 
 Ctrl-C, then terminal 2:
 
@@ -112,19 +118,24 @@ amw status
 | Do (watch RViz) | Expect |
 | --- | --- |
 | D-pad right, stick centred | status ON, `[ON] moving (translation)` in terminal 1 |
-| stick right / up | tip moves +x / +y in RViz (world axes: show the TF of `world` in RViz if unsure); a small push moves slowly, a full push at 10 mm/s |
+| stick right / up | tip moves -x / -y in RViz (world axes: show the TF of `world` in RViz if unsure); a small push moves slowly, a full push at 10 mm/s |
 | D-pad up a few times, then down | `level` in `amw status` goes 12, 14 ... and back; full stick gets faster / slower |
-| hold L, stick up / down | tip goes up / down only, no x/y |
+| hold L, stick up / down | tip goes down / up only, no x/y |
 | push the stick, then press L | `MODE_CHANGED` "centre the stick"; let go, it carries on in z |
-| hold ZL, tilt the Joy-Con forward ~20 deg, hold it there | the iron tilts about 10 deg one way and stops; tilt back and it follows back |
-| still holding ZL: tilt sideways | the iron tilts about the other world axis |
+| hold the Joy-Con upright, press D-pad left | terminal 1: `Joy-Con neutral set (D-pad left)` |
+| hold ZL (Joy-Con still upright) | the iron swings slowly to straight down and stops |
+| still ZL: tip the Joy-Con top away ~20 deg | the iron tilts ~20 deg about world X; tip it back and it follows |
+| still ZL: tip it to the side | the iron tilts about world Y |
+| still ZL: twist it about its long side | the iron does not move |
 | release ZL | the iron stays where it is; the stick drives x/y again |
 | D-pad right | OFF |
 | turn the Joy-Con off (hold sync / disconnect) while ON | `[STOP] No controller input ...`; stays OFF after reconnect until D-pad right |
 
-If the iron tilts the wrong way or about the wrong axis: change `hand_signs` (direction) or `hand_axes`
-(which Joy-Con axis drives which world axis) in teleop.yaml and restart. The `amw joystick` gyro readout
-shows which axis (x, y, z) changes when you tilt forward and sideways.
+If twisting moves the iron, `hand_long_axis` is wrong; if the iron tilts about the wrong world axis,
+swap the two `hand_axes`; if it tilts the opposite way, flip that entry of `hand_signs`. Use the axes
+you noted with `amw joystick`, edit teleop.yaml and restart. Large tilts can run a joint into its limit:
+the arm then cannot hold the tip still while pointing, and the tip drifts (the same solve as before).
+`hand_scale: 0.5` halves the tilt for steadier control.
 
 ## If something is wrong
 

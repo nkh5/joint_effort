@@ -143,6 +143,15 @@ class SupervisorTests(unittest.TestCase):
             d.press(DOWN)
         self.assertEqual(d.s.level, 1)
 
+    def test_recenter_counts_presses_in_any_state(self):
+        d = Driver()
+        d.run(0.1)
+        d.press(5)
+        d.turn_on()
+        d.press(5)
+        self.assertEqual(d.s.recenters, 2)
+        self.assertEqual(d.s.state, 'active')
+
     def test_mode_while_off_only_changes_mode(self):
         d = Driver()
         d.run(0.1)

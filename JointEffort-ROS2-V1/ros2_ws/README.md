@@ -62,9 +62,9 @@ amw_teleop -> /amw/status -> amw status, LCD          (one place for every stop 
 ```
 
 Using the Joy-Con (left, held upright): the arm starts **OFF**. D-pad right turns it ON (or OFF again);
-it moves once the stick is centred. Stick = tip x/y. Hold **L**: stick up/down = tip up/down. Hold
-**ZL**: the iron tilts the way you tilt the Joy-Con (half as much), stick ignored. D-pad up/down =
-speed level. Any fault turns it OFF with the reason on the LCD and in `amw status`
+it moves once the stick is centred. Stick = tip x/y. Hold **L**: stick up/down = tip down/up. Hold
+**ZL**: the iron points the way the Joy-Con points (upright = straight down), stick ignored; D-pad
+left sets "upright". D-pad up/down = speed level. Any fault turns it OFF with the reason on the LCD and in `amw status`
 (see docs/troubleshooting.md). Setup and tests: [docs/joycon.md](docs/joycon.md).
 
 Joint angle reported everywhere: `angle = dir * (raw - zero) * 360/4096` degrees, with `zero` and `dir`

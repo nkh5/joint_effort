@@ -1,4 +1,4 @@
-"""Joy-Con event parsing (amw_teleop.joycon) and the ZL hand-rotation maths (amw_teleop.hand).
+"""Joy-Con event parsing (amw_teleop.joycon) and the ZL pointing maths (amw_teleop.hand).
 No ROS, evdev or Joy-Con needed."""
 import math
 import unittest
@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 import _paths  # noqa: F401  (adds src packages to sys.path)
-from amw_teleop.hand import HandRotation, exp_rotation, follow_velocity, log_rotation, target_rotation
+from amw_teleop.hand import G, Orientation, exp_rotation, hand_tilt, iron_target, point_velocity, swing
 from amw_teleop.joycon import (ABS_HAT0Y, ABS_RX, ABS_X, ABS_Y, BUTTONS, EV_ABS, EV_KEY, EV_MSC, EV_SYN,
                                MSC_TIMESTAMP, SYN_REPORT, Calibration, Clock, ImuStream, Pad)
 
@@ -102,28 +102,40 @@ class NodeNamesTest(unittest.TestCase):
 
 
 class HandTest(unittest.TestCase):
-    def test_log_exp_round_trip(self):
-        for v in [[0.3, -0.2, 0.1], [0.0, 0.0, 0.0], [0.0, 3.0, 0.0], [1e-7, 0, 0]]:
-            np.testing.assert_allclose(log_rotation(exp_rotation(v)), v, atol=1e-6)
+    def test_gravity_pulls_a_wrong_tilt_back(self):
+        o = Orientation(gravity_gain=2.0)
+        o.add([0, 0, 0], [0, 0, G], 0.0)                       # flat: body z up
+        np.testing.assert_allclose(o.r, np.eye(3), atol=1e-9)
+        o.r = exp_rotation([0.2, 0.0, 0.0])                    # pretend 11 deg of drift
+        for k in range(1, 2001):                               # 10 s still, at 200 Hz
+            o.add([0, 0, 0], [0, 0, G], k * 0.005)
+        np.testing.assert_allclose(o.r @ [0, 0, 1], [0, 0, 1], atol=1e-3)
 
-    def test_integrates_gyro_and_skips_gaps(self):
-        h = HandRotation()
-        for k in range(201):                                   # 1 s at 0.5 rad/s about y, 200 Hz
-            h.add([0.0, 0.5, 0.0], k * 0.005)
-        np.testing.assert_allclose(h.vector(), [0.0, 0.5, 0.0], atol=1e-9)
-        h.add([0.0, 5.0, 0.0], 2.0)                            # 1 s gap: not integrated
-        np.testing.assert_allclose(h.vector(), [0.0, 0.5, 0.0], atol=1e-9)
-        h.reset()
-        np.testing.assert_allclose(h.vector(), [0.0, 0.0, 0.0])
+    def test_gyro_rotation_is_tracked(self):
+        o = Orientation(gravity_gain=0.0)
+        o.add([0, 0, 0], [0, 0, G], 0.0)
+        for k in range(1, 201):                                # 1 s at 0.5 rad/s about body x
+            o.add([0.5, 0, 0], [0, 0, G], k * 0.005)
+        np.testing.assert_allclose(o.r, exp_rotation([0.5, 0, 0]), atol=1e-9)
 
-    def test_target_scaled_limited_and_followed(self):
-        tool0 = exp_rotation([0.0, math.pi / 2, 0.0])        # iron pointing straight down
-        t = target_rotation(tool0, [0.4, 0.0, 9.9], axes=(0, 1), signs=(1.0, 1.0), scale=0.5)
-        np.testing.assert_allclose(log_rotation(t @ tool0.T), [0.2, 0.0, 0.0], atol=1e-9)   # hand z ignored
-        t = target_rotation(tool0, [0.0, 4.0, 0.0], axes=(0, 1), signs=(1.0, -1.0), scale=1.0,
-                            max_angle=math.radians(60))
-        np.testing.assert_allclose(log_rotation(t @ tool0.T), [0.0, -math.radians(60), 0.0], atol=1e-9)
-        np.testing.assert_allclose(follow_velocity(t, tool0, 2.0), [0.0, -2 * math.radians(60), 0.0], atol=1e-9)
+    def test_twist_about_the_long_axis_is_not_a_tilt(self):
+        ref = exp_rotation([0.3, -0.2, 0.1])
+        np.testing.assert_allclose(hand_tilt(ref, ref @ exp_rotation([0, 0.7, 0]), long_axis=1), 0, atol=1e-9)
+        tilt = hand_tilt(ref, ref @ exp_rotation([0.25, 0, 0]), long_axis=1)
+        np.testing.assert_allclose(tilt, [0.25, 0, 0], atol=1e-9)
+
+    def test_iron_target_scaled_limited(self):
+        np.testing.assert_allclose(iron_target([0, 0, 0]), [0, 0, -1])
+        d = iron_target([0.4, 0.0, 9.9], axes=(0, 1), signs=(1.0, 1.0), scale=0.5)   # z component ignored
+        np.testing.assert_allclose(swing(np.array([0, 0, -1.0]), d), [0.2, 0, 0], atol=1e-9)
+        d = iron_target([0, 0, 4.0], axes=(0, 2), signs=(1.0, -1.0), scale=1.0, max_angle=math.radians(60))
+        np.testing.assert_allclose(swing(np.array([0, 0, -1.0]), d), [0, -math.radians(60), 0], atol=1e-9)
+
+    def test_point_velocity_is_perpendicular_to_the_iron(self):
+        d = np.array([0.3, 0.1, -0.9]) / np.linalg.norm([0.3, 0.1, -0.9])
+        w = point_velocity(d, [0, 0, -1.0], 2.0)
+        self.assertAlmostEqual(float(w @ d), 0.0)
+        self.assertAlmostEqual(float(np.linalg.norm(w)), 2.0 * math.acos(-d[2]))
 
 
 if __name__ == '__main__':

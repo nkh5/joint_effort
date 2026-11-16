@@ -6,6 +6,8 @@ import sys
 import types
 import unittest
 
+import numpy as np
+
 import _paths
 
 
@@ -93,7 +95,7 @@ def install_stubs():
     mod('std_srvs'), mod('std_srvs.srv', Trigger=msg())
 
 
-L, ZL, UP, DOWN, ON = 0, 1, 2, 3, 4
+L, ZL, UP, DOWN, ON, LEFT = 0, 1, 2, 3, 4, 5
 
 
 class TeleopNodeTest(unittest.TestCase):
@@ -130,6 +132,7 @@ class TeleopNodeTest(unittest.TestCase):
         self.buttons = [0] * 11
         self.axes = [0.0, 0.0]
         self.gyro = None                           # rad/s in Joy-Con axes; None = no IMU messages
+        self.accel = (0.0, 9.80665, 0.0)           # Joy-Con upright: its y axis (the long side) points up
         self.q = dict(self.home)
 
     def step(self, seconds=0.02):
@@ -148,7 +151,8 @@ class TeleopNodeTest(unittest.TestCase):
                     stamp = Clock.t - 0.02 + 0.005 * (k + 1)
                     self.f.subs['/amw/hand_imu'](Auto(
                         header=Auto(stamp=Auto(sec=int(stamp), nanosec=int((stamp % 1) * 1e9))),
-                        angular_velocity=Auto(x=self.gyro[0], y=self.gyro[1], z=self.gyro[2])))
+                        angular_velocity=Auto(x=self.gyro[0], y=self.gyro[1], z=self.gyro[2]),
+                        linear_acceleration=Auto(x=self.accel[0], y=self.accel[1], z=self.accel[2])))
             self.n.tick()
 
     def press(self, i):
@@ -234,30 +238,55 @@ class TeleopNodeTest(unittest.TestCase):
         self.step(0.1)
         linear, angular = self.n.command([self.q[n] for n in self.n.names])
         self.assertEqual((linear[0], linear[1]), (0.0, 0.0))
-        self.assertGreater(linear[2], 0.0)
+        self.assertGreater(linear[2] * self.n.z_sign, 0.0, 'stick up -> up when z_sign is 1, down when -1')
         self.assertTrue(any(abs(v) > 1e-6 for v in self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities))
 
-    def test_zl_turns_the_iron_with_the_hand(self):
+    def iron(self):
+        return self.n.robot.fk('iron', [self.q[n] for n in self.n.names])[:3, 0]
+
+    def test_zl_points_the_iron_like_the_joycon(self):
         self.gyro = (0.0, 0.0, 0.0)
         self.step(0.1)
+        self.press(LEFT)                           # Joy-Con upright: this is "iron straight down"
         self.press(ON)
         self.step(0.3)
         self.buttons[ZL] = 1
         self.step(0.1)
         self.assertEqual(self.status()['mode'], 'rotation')
-        self.assertEqual(self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities, [0.0] * 5,
-                         'hand still: iron holds')
-        self.gyro = (0.5, 0.0, 0.0)               # turn the Joy-Con about its x axis for 0.4 s (~11 deg)
+        q = [self.q[n] for n in self.n.names]
+        _, angular = self.n.command(q)
+        target = np.array([0.0, 0.0, -1.0])
+        expected = np.cross(self.iron(), target)   # Joy-Con upright: iron swings toward straight down
+        self.assertGreater(float(np.dot(angular, expected)), 0.0)
+        self.assertAlmostEqual(float(np.dot(angular, self.iron())), 0.0, places=9, msg='no roll about the iron')
+        self.assertTrue(any(abs(v) > 1e-6 for v in self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities))
+
+    def test_twisting_the_joycon_does_not_move_the_target(self):
+        self.gyro = (0.0, 0.0, 0.0)
+        self.step(0.1)
+        self.press(LEFT)
+        before = self.n.orient.r.copy()
+        self.gyro = (0.0, 0.8, 0.0)                # twist about the long (y) axis for 0.5 s
+        self.step(0.5)
+        self.gyro = (0.0, 0.0, 0.0)
+        from amw_teleop.hand import hand_tilt
+        tilt = hand_tilt(self.n.neutral, self.n.orient.r, self.n.long_axis)
+        self.assertGreater(np.degrees(np.linalg.norm(self.n.neutral.T @ self.n.orient.r - np.eye(3))), 1.0)
+        self.assertLess(np.degrees(np.linalg.norm(tilt)), 0.5)
+        self.assertIsNotNone(before)
+
+    def test_tilting_the_joycon_tilts_the_target(self):
+        self.gyro = (0.0, 0.0, 0.0)
+        self.step(0.1)
+        self.press(LEFT)
+        self.n.orient.gain = 0.0                   # the fake accel below does not turn with the gyro
+        self.gyro = (0.5, 0.0, 0.0)                # tilt about Joy-Con x for 0.4 s (~11 deg)
         self.step(0.4)
         self.gyro = (0.0, 0.0, 0.0)
-        self.step(0.04)
-        q = [self.q[n] for n in self.n.names]
-        linear, angular = self.n.command(q)
-        self.assertEqual(linear, [0.0, 0.0, 0.0])
-        self.assertGreater(angular[0], 0.0, 'hand x rotation -> iron tilt about world +X (hand_axes [0, 1])')
-        tool_axis = self.n.robot.fk('iron', q)[:3, 0]
-        self.assertAlmostEqual(float(tool_axis @ angular), 0.0, places=9)
-        self.assertTrue(any(abs(v) > 1e-6 for v in self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities))
+        from amw_teleop.hand import hand_tilt, iron_target
+        target = iron_target(hand_tilt(self.n.neutral, self.n.orient.r, self.n.long_axis), **self.n.hand_cfg)
+        tilt_deg = np.degrees(np.arccos(-target[2]))
+        self.assertAlmostEqual(tilt_deg, np.degrees(0.2) * self.n.hand_cfg['scale'], delta=1.5)
 
     def test_zl_without_imu_turns_off(self):
         self.step(0.1)

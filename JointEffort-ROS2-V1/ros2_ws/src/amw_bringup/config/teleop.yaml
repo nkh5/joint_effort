@@ -7,12 +7,14 @@ amw_teleop:
     #   buttons: 0 L, 1 ZL, 2 D-pad up, 3 D-pad down, 4 D-pad right, 5 D-pad left, 6 minus, 7 capture,
     #            8 stick click, 9 SL, 10 SR          axes: 0 stick x (right +), 1 stick y (up +)
     stick_axes: [0, 1]
-    stick_signs: [1.0, 1.0]        # flip an entry to reverse that stick axis
+    stick_signs: [-1.0, -1.0]      # flip an entry to reverse that stick axis (x/y moves)
+    z_sign: -1.0                   # L + stick up: -1 = tip goes down, 1 = up (independent of stick_signs)
     on_button: 4                   # D-pad right: ON/OFF (toggles on each press)
     speed_up_button: 2             # D-pad up: speed level + speed_step
     speed_down_button: 3           # D-pad down: speed level - speed_step
     z_button: 0                    # L held: stick up/down moves the tip up/down
-    rotate_button: 1               # ZL held: the iron follows the Joy-Con's rotation (stick ignored)
+    rotate_button: 1               # ZL held: the iron points the way the Joy-Con points (stick ignored)
+    recenter_button: 5             # D-pad left: hold the Joy-Con upright and press = "iron straight down"
     speed_step: 2                  # levels per press (1..20; 10 = 1x)
     start_level: 10
     stick_deadzone: 0.12           # round deadzone (fraction of full stick); raise for stronger tremor
@@ -21,12 +23,16 @@ amw_teleop:
     input_timeout_s: 0.15          # no controller report this long -> arm turns OFF
     imu_timeout_s: 0.15            # no Joy-Con motion data this long while ZL is held -> arm turns OFF
 
-    # --- ZL rotation clutch: iron tilt follows the Joy-Con's rotation since ZL was pressed ---
-    hand_axes: [0, 1]              # Joy-Con gyro axes (0 x, 1 y, 2 z) that tilt the iron about world X, Y
-    hand_signs: [1.0, 1.0]         # flip if the iron tilts the opposite way to your hand
-    hand_scale: 0.5                # iron angle per hand angle
-    hand_max_angle_deg: 60.0       # largest iron tilt per ZL hold
-    hand_gain_per_s: 3.0           # how quickly the iron catches up with the hand (capped by angular speed)
+    # --- ZL pointing: Joy-Con upright (long side vertical, stick facing you) = iron straight down; ---
+    # --- tilting the Joy-Con tilts the iron away from vertical. D-pad left sets that upright pose.   ---
+    # Axis numbers are the Joy-Con's gyro axes as `amw joystick` shows them (0 x, 1 y, 2 z):
+    hand_long_axis: 1              # the axis that moves when you twist the upright Joy-Con about its long side
+    hand_axes: [0, 2]              # the other two: [tilts the iron about world X, about world Y]
+    hand_signs: [1.0, 1.0]         # flip one if the iron tilts the opposite way to the Joy-Con
+    hand_scale: 1.0                # iron tilt per Joy-Con tilt (0.5 = half, steadier)
+    hand_max_angle_deg: 60.0       # most the iron tilts from vertical
+    hand_gain_per_s: 3.0           # how quickly the iron catches up with the Joy-Con (capped by angular speed)
+    hand_gravity_gain: 1.0         # how strongly gravity corrects the Joy-Con's tilt drift (0 = gyro only)
 
     # --- speed (full stick at speed level 10; level 1 = 0.1x, level 20 = 2x) ---
     linear_speed_m_s: 0.01

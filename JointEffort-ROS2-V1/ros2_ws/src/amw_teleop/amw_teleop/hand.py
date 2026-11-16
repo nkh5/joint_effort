@@ -1,14 +1,19 @@
-"""Hand-rotation clutch: while ZL is held, the iron turns the way the Joy-Con has turned since the
-moment the rotation started (scaled down). Pure Python + numpy, no ROS.
+"""Joy-Con pointing: while ZL is held, the iron points the way the Joy-Con points. Pure Python + numpy.
 
-  1. HandRotation integrates the Joy-Con gyro (bias already removed by amw_joycon) from the moment
-     rotation starts: R_rel = R_rel * Exp(w dt), in the Joy-Con's own axes at that moment.
-  2. target_rotation picks two of its rotation-vector components (Joy-Con forward tilt and side tilt,
-     set in teleop.yaml) and maps them to tilts about world X and Y, scaled by hand_scale:
-         R_target = Exp(scale * r_world) * R_tool0
-  3. follow_velocity turns the remaining error into an angular velocity for the five-joint solve:
-         w = gain * Log(R_target * R_tool^T)
-     The part along the iron is dropped by the solve (the arm leaves roll about the iron free).
+  Neutral: the Joy-Con held upright (long side vertical, stick facing you) = the iron pointing straight
+  down. D-pad left stores the Joy-Con's current pose as that neutral ("recentre").
+
+  1. Orientation tracks the Joy-Con all the time: gyro integration (bias already removed by amw_joycon),
+     with the accelerometer's gravity direction slowly pulling tilt back so it does not drift
+     (a Mahony-style complementary filter). Heading (turning about vertical) still drifts slowly;
+     recentring resets it.
+  2. hand_tilt: how far the Joy-Con's long axis has tilted away from where it was at the neutral pose,
+     as a rotation vector in the Joy-Con's own axes at the neutral pose. Twisting about the long axis
+     does not count (the iron cannot roll about itself either).
+  3. iron_target: two of those components (forward/back and sideways tilt, chosen in teleop.yaml) tilt
+     a straight-down iron about world X and Y, scaled by hand_scale and limited to hand_max_angle_deg.
+  4. point_velocity: angular velocity that swings the iron's current direction toward the target,
+     always perpendicular to the iron (no roll).
 """
 import math
 
@@ -16,19 +21,8 @@ import numpy as np
 
 from .kinematics import rotation
 
-
-def log_rotation(r):
-    """Rotation matrix -> rotation vector (axis * angle, rad)."""
-    c = max(-1.0, min(1.0, (np.trace(r) - 1.0) / 2.0))
-    angle = math.acos(c)
-    if angle < 1e-9:
-        return np.zeros(3)
-    if math.pi - angle < 1e-6:                      # 180 deg: axis from the largest diagonal entry
-        i = int(np.argmax(np.diag(r)))
-        axis = r[:, i] + np.eye(3)[i]
-        return axis / np.linalg.norm(axis) * angle
-    w = np.array([r[2, 1] - r[1, 2], r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]])
-    return w / (2.0 * math.sin(angle)) * angle
+G = 9.80665
+DOWN = np.array([0.0, 0.0, -1.0])
 
 
 def exp_rotation(v):
@@ -38,42 +32,67 @@ def exp_rotation(v):
     return np.eye(3) if angle < 1e-12 else rotation(v / angle, angle)
 
 
-class HandRotation:
-    """Relative Joy-Con rotation since reset(), from gyro samples (rad/s, Joy-Con axes)."""
+def swing(a, b):
+    """Rotation vector of the smallest rotation taking unit vector a to unit vector b."""
+    c = np.cross(a, b)
+    s = float(np.linalg.norm(c))
+    angle = math.atan2(s, float(np.dot(a, b)))
+    if s < 1e-12:
+        return np.zeros(3)                       # parallel (or exactly opposite: leave it)
+    return c / s * angle
 
-    MAX_GAP_S = 0.1          # a longer gap between samples is not integrated (lost data)
 
-    def __init__(self):
-        self.reset()
+def orthonormal(r):
+    u, _, vt = np.linalg.svd(r)
+    return u @ vt
 
-    def reset(self):
-        self.r = np.eye(3)
+
+class Orientation:
+    """Joy-Con orientation (Joy-Con axes -> gravity-aligned frame) from gyro (rad/s) + accel (m/s^2)."""
+
+    MAX_GAP_S = 0.1
+
+    def __init__(self, gravity_gain=1.0):
+        self.gain = gravity_gain                 # rad/s per unit tilt error; 0 = gyro only
+        self.r = None
         self.last_stamp = None
 
-    def add(self, gyro, stamp):
-        """One sample: gyro (3, rad/s) measured at `stamp` (s)."""
-        if self.last_stamp is not None:
-            dt = stamp - self.last_stamp
-            if 0.0 < dt <= self.MAX_GAP_S:
-                self.r = self.r @ exp_rotation(np.asarray(gyro, dtype=float) * dt)
-                u, _, vt = np.linalg.svd(self.r)       # keep it a clean rotation matrix
-                self.r = u @ vt
+    def add(self, gyro, accel, stamp):
+        a = np.asarray(accel, dtype=float)
+        n = float(np.linalg.norm(a))
+        if self.r is None:                       # first sample: tilt from gravity, heading arbitrary
+            if n > 0.5 * G:
+                self.r = exp_rotation(swing(a / n, np.array([0.0, 0.0, 1.0])))
+                self.last_stamp = stamp
+            return
+        dt = stamp - (self.last_stamp if self.last_stamp is not None else stamp)
         self.last_stamp = stamp
+        if not 0.0 < dt <= self.MAX_GAP_S:
+            return
+        w = np.asarray(gyro, dtype=float)
+        if self.gain > 0 and abs(n - G) < 0.15 * G:              # only trust gravity when not shaken
+            measured_up = a / n                                   # accelerometer reads +1 g upward at rest
+            predicted_up = self.r.T @ np.array([0.0, 0.0, 1.0])
+            w = w + self.gain * np.cross(measured_up, predicted_up)
+        self.r = orthonormal(self.r @ exp_rotation(w * dt))
 
-    def vector(self):
-        return log_rotation(self.r)
+
+def hand_tilt(r_ref, r_now, long_axis):
+    """Tilt of the Joy-Con's long axis since the neutral pose (rotation vector, neutral-pose axes)."""
+    a = np.eye(3)[long_axis]
+    return swing(a, (r_ref.T @ r_now) @ a)
 
 
-def target_rotation(r_tool0, hand_vector, axes=(0, 1), signs=(1.0, 1.0), scale=0.5, max_angle=math.radians(60)):
-    """Iron orientation the hand asks for. hand_vector[axes[0]] -> tilt about world X,
-    hand_vector[axes[1]] -> tilt about world Y (each times its sign), scaled and limited."""
-    v = np.array([signs[0] * hand_vector[axes[0]], signs[1] * hand_vector[axes[1]], 0.0]) * scale
-    n = np.linalg.norm(v)
+def iron_target(tilt, axes=(0, 2), signs=(1.0, 1.0), scale=1.0, max_angle=math.radians(60)):
+    """Direction the iron should point: straight down, tilted about world X by tilt[axes[0]] and about
+    world Y by tilt[axes[1]] (times signs and scale), at most max_angle from vertical."""
+    v = np.array([signs[0] * tilt[axes[0]], signs[1] * tilt[axes[1]], 0.0]) * scale
+    n = float(np.linalg.norm(v))
     if n > max_angle:
         v *= max_angle / n
-    return exp_rotation(v) @ r_tool0
+    return exp_rotation(v) @ DOWN
 
 
-def follow_velocity(r_target, r_tool, gain=3.0):
-    """World-frame angular velocity (rad/s) that turns r_tool toward r_target."""
-    return gain * log_rotation(r_target @ r_tool.T)
+def point_velocity(direction, target, gain=3.0):
+    """World angular velocity (rad/s) swinging the iron direction toward the target direction."""
+    return gain * swing(np.asarray(direction, dtype=float), np.asarray(target, dtype=float))
