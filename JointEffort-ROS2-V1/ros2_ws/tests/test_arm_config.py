@@ -124,7 +124,7 @@ class DescriptionTest(unittest.TestCase):
 
     def test_home_outside_limits_is_rejected(self):
         tight = A.load(ARM_YAML)
-        tight.joints['joint_3'].upper = -1.3      # home has joint_3 at -1.2
+        tight.joints['joint_3'].upper = -1.3      # home has joint_3 at -0.61 (-35 deg)
         with self.assertRaises(A.ArmConfigError):
             A.robot_description(URDF, SRDF, tight)
 
