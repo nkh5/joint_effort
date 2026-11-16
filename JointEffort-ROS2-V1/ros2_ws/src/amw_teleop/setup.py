@@ -8,4 +8,5 @@ setup(
     entry_points={'console_scripts': [
         'amw_teleop = amw_teleop.node:main',
         'amw_lcd = amw_teleop.lcd:main',
+        'amw_joycon = amw_teleop.joycon:main',
     ]})

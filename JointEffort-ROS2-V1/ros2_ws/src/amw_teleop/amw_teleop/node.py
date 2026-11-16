@@ -1,15 +1,16 @@
-"""amw_teleop: joystick -> ON/OFF and mode logic -> five-joint velocity -> MoveIt Servo.
+"""amw_teleop: Joy-Con -> ON/OFF and mode logic -> five-joint velocity -> MoveIt Servo.
 
 One node owns the whole teleop path (earlier versions split it over four nodes):
 
-  in   /joy                    Pico gamepad (raw axes and buttons; see Pico_Controller.ino)
+  in   /joy                    Joy-Con stick and buttons (from amw_joycon; order in teleop.yaml)
+       /amw/hand_imu           Joy-Con gyro, bias removed (from amw_joycon), for the ZL rotation clutch
        /joint_states           arm feedback
        /iron_servo/status      MoveIt Servo status
        /dynamic_joint_states   motor temperature / voltage / current (real arm)
   out  /iron_servo/delta_joint_cmds   JointJog, 50 Hz while moving (one zero command after stopping)
        /amw/status             JSON (latched): state, mode, speed, stop reason, warning, joints, events
        /diagnostics            standard DiagnosticArray (rqt_robot_monitor) at 1 Hz
-  srv  /amw/stop               Trigger: turn the arm OFF (like panel 1)
+  srv  /amw/stop               Trigger: turn the arm OFF (like the ON/OFF button)
 
 Every stop is printed once in this terminal as `[STOP] what happened -- what to do`.
 """
@@ -27,11 +28,12 @@ from moveit_msgs.srv import ServoCommandType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
-from sensor_msgs.msg import JointState, Joy
+from sensor_msgs.msg import Imu, JointState, Joy
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
 
 from .core import velocity
+from .hand import HandRotation, follow_velocity, target_rotation
 from .kinematics import Robot, differential_step
 from .supervisor import Config, Health, Supervisor
 
@@ -56,15 +58,29 @@ class Teleop(Node):
         self.names = self.robot.names('iron')
         self.limits = self.robot.limits('iron')
         self.sup = Supervisor(Config(
-            stick_axes=tuple(param('stick_axes', [0, 1, 2])), stick_signs=tuple(param('stick_signs', [1.0, 1.0, 1.0])),
-            slider_axis=param('slider_axis', 3), slider_low_axis=param('slider_low_axis', 1.0),
-            on_button=param('on_button', 1), mode_button=param('mode_button', 0),
-            deadzone=param('stick_deadzone', 0.08), centre_time=param('centre_time_s', 0.2),
-            input_timeout=param('input_timeout_s', 0.15), feedback_timeout=param('feedback_timeout_s', 0.3),
+            stick_axes=tuple(param('stick_axes', [0, 1])), stick_signs=tuple(param('stick_signs', [1.0, 1.0])),
+            on_button=param('on_button', 4), speed_up_button=param('speed_up_button', 2),
+            speed_down_button=param('speed_down_button', 3), z_button=param('z_button', 0),
+            rotate_button=param('rotate_button', 1), speed_step=param('speed_step', 2),
+            start_level=param('start_level', 10), deadzone=param('stick_deadzone', 0.12),
+            expo=param('stick_expo', 0.6), centre_time=param('centre_time_s', 0.2),
+            input_timeout=param('input_timeout_s', 0.15), imu_timeout=param('imu_timeout_s', 0.15),
+            feedback_timeout=param('feedback_timeout_s', 0.3),
             limit_tolerance=math.radians(param('limit_tolerance_deg', 2.0)),
             motor_warm_c=param('motor_warm_c', 55.0), motor_hot_c=param('motor_hot_c', 65.0),
             motor_volt_range=(param('motor_volt_min', 9.5), param('motor_volt_max', 14.0))))
-        self.speeds = {k: param(k, d) for k, d in [('linear_speed_m_s', 0.01), ('angular_speed_rad_s', 0.1)]}
+        self.speeds = {k: param(k, d) for k, d in [('linear_speed_m_s', 0.01), ('angular_speed_rad_s', 0.1),
+                                                     ('z_speed_ratio', 0.5)]}
+        self.hand_cfg = dict(axes=tuple(param('hand_axes', [0, 1])), signs=tuple(param('hand_signs', [1.0, 1.0])),
+                             scale=param('hand_scale', 0.5), max_angle=math.radians(param('hand_max_angle_deg', 60.0)))
+        self.hand_gain = param('hand_gain_per_s', 3.0)
+        if (len(self.hand_cfg['axes']) != 2 or any(a not in (0, 1, 2) for a in self.hand_cfg['axes'])
+                or any(s not in (-1.0, 1.0) for s in self.hand_cfg['signs'])):
+            raise RuntimeError('hand_axes must be two of 0, 1, 2 and hand_signs two of 1.0 / -1.0 (teleop.yaml)')
+        self.hand = HandRotation()
+        self.imu_time = -math.inf
+        self.rotating = False
+        self.tool0 = None
         self.model = {k: param(k, d) for k, d in [
             ('task_max_linear_speed_m_s', 0.02), ('task_max_angular_speed_rad_s', 0.2),
             ('task_orientation_length_m', 0.12), ('task_damping_m', 0.002), ('task_min_singular_value_m', 0.003),
@@ -86,6 +102,7 @@ class Teleop(Node):
         self.status_pub = self.create_publisher(String, '/amw/status', STATUS_QOS)
         self.diag_pub = self.create_publisher(DiagnosticArray, '/diagnostics', 10)
         self.create_subscription(Joy, '/joy', self.on_joy, qos_profile_sensor_data)
+        self.create_subscription(Imu, '/amw/hand_imu', self.on_imu, qos_profile_sensor_data)
         self.create_subscription(JointState, '/joint_states', self.on_joint_states, 10)
         self.create_subscription(ServoStatus, '/iron_servo/status', self.on_servo, 10)
         self.create_subscription(DynamicJointState, '/dynamic_joint_states', self.on_dynamic, 10)
@@ -94,12 +111,18 @@ class Teleop(Node):
         self.create_service(Trigger, '/amw/stop', self.on_stop)
         self.create_timer(PERIOD, self.tick)
         self.create_timer(1.0, self.slow_tick)
-        self.get_logger().info('Ready. The arm starts OFF: centre the stick and press ON (panel 1).')
+        self.get_logger().info('Ready. The arm starts OFF: centre the stick and press ON (D-pad right).')
 
     # ------------------------------------------------------------------ inputs
     def on_joy(self, msg):
         self.refresh_health()
         self.sup.joy(list(msg.axes), list(msg.buttons), time.monotonic(), self.health)
+
+    def on_imu(self, msg):
+        self.imu_time = time.monotonic()
+        if self.rotating:
+            w = msg.angular_velocity
+            self.hand.add((w.x, w.y, w.z), msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9)
 
     def on_joint_states(self, msg):
         values = dict(zip(msg.name, msg.position))
@@ -119,7 +142,7 @@ class Teleop(Node):
     def on_stop(self, request, response):
         self.sup.request_stop(time.monotonic())
         response.success = True
-        response.message = 'Arm turned OFF. Press ON (panel 1) to continue.'
+        response.message = 'Arm turned OFF. Press ON (D-pad right) to continue.'
         return response
 
     # ------------------------------------------------------------------ background checks (1 Hz)
@@ -150,6 +173,7 @@ class Teleop(Node):
     def refresh_health(self):
         now = time.monotonic()
         self.health.joints_age = now - self.joint_time
+        self.health.imu_age = now - self.imu_time
         self.health.servo_ready = self.servo_switched and now - self.servo_time < 1.0
 
     # ------------------------------------------------------------------ 50 Hz loop
@@ -158,13 +182,16 @@ class Teleop(Node):
         self.refresh_health()
         moving = self.sup.step(self.health, now)
         qdot = np.zeros(5)
+        rotating = moving and self.sup.mode == 'rotation'
+        if rotating and not self.rotating:          # rotation (ZL) just started: hold the iron where it is
+            self.hand.reset()
+            self.tool0 = None
+        self.rotating = rotating
         if moving:
             q = np.array([self.health.joints[n] for n in self.names])
-            twist = velocity(self.sup.axes, self.sup.mode, self.sup.speed,
-                             self.speeds['linear_speed_m_s'], self.speeds['angular_speed_rad_s'],
-                             self.model['task_max_linear_speed_m_s'], self.model['task_max_angular_speed_rad_s'])
-            if any(twist):
-                qdot, info = differential_step(self.robot, 'iron', q, twist[:3], twist[3:], self.model, PERIOD)
+            linear, angular = self.command(q)
+            if any(linear) or any(angular):
+                qdot, info = differential_step(self.robot, 'iron', q, linear, angular, self.model, PERIOD)
                 self.sup.kinematics_warning(info, self.names, self.limits, q, now)
         if moving or self.was_active:          # stream while moving, plus one zero after stopping
             msg = JointJog()
@@ -178,6 +205,26 @@ class Teleop(Node):
         self.qdot = qdot
         self.log_changes()
         self.publish_status(now)
+
+    def command(self, q):
+        """(linear m/s, angular rad/s) for this tick, world frame, from the current mode."""
+        if self.sup.mode != 'rotation':
+            return velocity(self.sup.axes, self.sup.mode, self.sup.speed, self.speeds['linear_speed_m_s'],
+                            self.model['task_max_linear_speed_m_s'], self.speeds['z_speed_ratio']), [0., 0., 0.]
+        tool = self.robot.fk('iron', q)[:3, :3]
+        if self.tool0 is None:
+            self.tool0 = tool
+        target = target_rotation(self.tool0, self.hand.vector(), **self.hand_cfg)
+        w = follow_velocity(target, tool, self.hand_gain)
+        axis = tool[:, 0]                          # the iron; roll about it is left free by the solve
+        w = w - axis * float(axis @ w)
+        cap = min(self.speeds['angular_speed_rad_s'] * self.sup.speed, self.model['task_max_angular_speed_rad_s'])
+        n = float(np.linalg.norm(w))
+        if n > cap:
+            w *= cap / n
+        if n < 1e-3:                               # within ~0.02 deg/s of the target: hold still
+            w = np.zeros(3)
+        return [0., 0., 0.], w.tolist()
 
     # ------------------------------------------------------------------ outputs
     def log_changes(self):

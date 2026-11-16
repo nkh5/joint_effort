@@ -4,7 +4,7 @@ The teleop node reports exactly one of these as `stop` (why it is off or paused)
 as `warning` (moving, but limited). The terminal, `amw status`, the LCD and docs/troubleshooting.md
 all show the same text, so there is one place to look.
 
-  kind   stop   arm turned OFF; press ON (panel 1) to try again
+  kind   stop   arm turned OFF; press ON (D-pad right) to try again
          pause  arm stays ON but waits; do what `fix` says (centre the stick)
          warn   arm keeps moving, but one direction is blocked or slowed
 
@@ -23,17 +23,21 @@ class Fault:
 
 FAULTS = {f.code: f for f in [
     # ---- off (not a fault)
-    Fault('OFF', 'stop', 'Arm is off.', 'Centre the stick and press ON (panel 1).'),
-    Fault('TURNED_OFF', 'stop', 'Turned off with panel 1.', 'Press ON (panel 1) to continue.'),
-    Fault('STOP_REQUESTED', 'stop', 'Stopped by `amw stop`.', 'Press ON (panel 1) to continue.'),
+    Fault('OFF', 'stop', 'Arm is off.', 'Centre the stick and press ON (D-pad right).'),
+    Fault('TURNED_OFF', 'stop', 'Turned off with the D-pad right button.', 'Press ON (D-pad right) to continue.'),
+    Fault('STOP_REQUESTED', 'stop', 'Stopped by `amw stop`.', 'Press ON (D-pad right) to continue.'),
     # ---- not ready when ON was pressed
     Fault('NOT_READY', 'stop', 'Arm not ready: {detail}.',
           'Wait until `amw start` has finished starting (Servo initialized), then press ON.'),
     # ---- input
-    Fault('JOYSTICK_LOST', 'stop', 'No joystick input for {value} s.',
-          'Check the Pico USB cable; `amw joystick` shows raw input. Press ON when it is back.'),
-    Fault('JOYSTICK_BAD', 'stop', 'Unusable joystick report: {detail}.',
-          'Check that only one controller is connected and the Pico runs Pico_Controller.ino.'),
+    Fault('JOYSTICK_LOST', 'stop', 'No controller input for {value} s.',
+          'Check the Joy-Con is connected (Bluetooth) and the amw_joycon node is running; `amw joystick` shows '
+          'raw input. Press ON when it is back.'),
+    Fault('JOYSTICK_BAD', 'stop', 'Unusable controller report: {detail}.',
+          'Check that only one Joy-Con is connected and teleop.yaml matches the amw_joycon button order.'),
+    Fault('IMU_LOST', 'stop', 'No Joy-Con motion data for {value} s while rotating.',
+          'Check the amw_joycon terminal (it waits for the Joy-Con to be held still at start). Press ON when '
+          'it is back.'),
     # ---- arm feedback and hardware
     Fault('FEEDBACK_STALE', 'stop', 'Joint states stopped arriving ({value} s old).',
           'Motor bus or driver problem: read the `amw start` terminal (e.g. "SyncRead failed"), check 12 V and '
@@ -54,7 +58,7 @@ FAULTS = {f.code: f for f in [
     Fault('SERVO_ERROR', 'stop', 'MoveIt Servo reports a problem: {detail}.', 'Restart `amw start`.'),
     # ---- pauses (arm stays ON)
     Fault('CENTRE_STICK', 'pause', 'Waiting for the stick to be centred.',
-          'Let go of the stick (and twist) for a moment.'),
+          'Let go of the stick for a moment.'),
     Fault('MODE_CHANGED', 'pause', 'Switched to {detail} mode.', 'Centre the stick to continue.'),
     # ---- warnings (arm keeps moving)
     Fault('JOINT_LIMIT', 'warn', '{joint} is at its {detail} limit; motion that way is blocked.',

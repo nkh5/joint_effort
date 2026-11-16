@@ -86,10 +86,10 @@ class LaunchFileTest(unittest.TestCase):
 
     def test_mock_teleop_starts_the_full_stack(self):
         exes = self.executables(self.run_setup())
-        for exe in ['robot_state_publisher', 'ros2_control_node', 'servo_lifetime', 'amw_teleop', 'joy_node']:
+        for exe in ['robot_state_publisher', 'ros2_control_node', 'servo_lifetime', 'amw_teleop', 'amw_joycon']:
             self.assertIn(exe, exes)
         self.assertNotIn('rviz2', exes)
-        self.assertNotIn('joy_node', self.executables(self.run_setup(joystick='false')))
+        self.assertNotIn('amw_joycon', self.executables(self.run_setup(joystick='false')))
 
     def test_teleop_gets_the_description_and_teleop_yaml(self):
         nodes = {n.kwargs['executable']: n for n in self.nodes(self.run_setup())}
@@ -98,7 +98,7 @@ class LaunchFileTest(unittest.TestCase):
         self.assertIn('<ros2_control', params['robot_description'])
         self.assertAlmostEqual(params['max_joint_velocity_rad_s'], 0.15, places=4)
         self.assertEqual(nodes['amw_teleop'].kwargs['name'], 'amw_teleop')
-        self.assertTrue(nodes['joy_node'].kwargs['parameters'][0].endswith('config/teleop.yaml'))
+        self.assertTrue(nodes['amw_joycon'].kwargs['parameters'][0].endswith('config/teleop.yaml'))
         servo = nodes['servo_lifetime'].kwargs['parameters']
         self.assertTrue(servo[1]['moveit_servo']['is_primary_planning_scene_monitor'])
         self.assertIn('joint_limits', servo[0]['robot_description_planning'])

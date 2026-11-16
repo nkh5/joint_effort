@@ -2,13 +2,14 @@
 <package format="3">
   <name>amw_teleop</name>
   <version>1.0.0</version>
-  <description>AMW teleoperation: joystick ON/OFF and mode logic, five-joint velocity solve for MoveIt Servo, status and LCD.</description>
+  <description>AMW teleoperation: Joy-Con driver, ON/OFF and mode logic, five-joint velocity solve for MoveIt Servo, status and LCD.</description>
   <maintainer email="jp165@rice.edu">Joint Effort</maintainer>
   <license>MIT</license>
   <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-pygame</exec_depend>
+  <exec_depend>python3-evdev</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>

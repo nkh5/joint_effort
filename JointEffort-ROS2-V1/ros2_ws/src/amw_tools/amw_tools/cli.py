@@ -8,7 +8,7 @@
   amw jog JOINT DEG                   move one joint a few degrees (needs `amw start ... --no-teleop`)
   amw track JOINT|all                 jog sequence with recording and plots
   amw motors scan|read|gains|tune|punch|set-id|recenter   servo bus tools (ROS stopped)
-  amw joystick                        print raw Pico input
+  amw joystick                        print raw Joy-Con input
   amw lcd [--demo|--fb]               status screen (desktop window, or the Pi's framebuffer)
   amw test                            unit tests (no ROS or hardware needed)
   amw ros2 ...                        any ros2 command in the AMW environment (domain 88)
@@ -173,7 +173,7 @@ def main(argv):
     s.add_argument('hardware', choices=['mock', 'real'])
     s.add_argument('--readonly', action='store_true', help='real arm with torque OFF (calibration and checks)')
     s.add_argument('--no-teleop', action='store_true', help='controllers only, for amw jog / amw track')
-    s.add_argument('--no-joystick', action='store_true', help='teleop without joy_node (for a synthetic /joy)')
+    s.add_argument('--no-joystick', action='store_true', help='teleop without the Joy-Con node (for a synthetic /joy)')
     s.add_argument('--rviz', dest='rviz', action='store_true', default=None, help='force RViz on')
     s.add_argument('--no-rviz', dest='rviz', action='store_false', help='force RViz off')
     s.add_argument('--port', help='servo adapter (default: serial_port in arm.yaml)')
@@ -203,7 +203,7 @@ def main(argv):
     m.add_argument('--max', type=int, default=20, help='scan: highest ID to try')
     m.add_argument('--yes', action='store_true')
 
-    sub.add_parser('joystick', help='print raw Pico input')
+    sub.add_parser('joystick', help='print raw Joy-Con input')
     lcd = sub.add_parser('lcd', help='status screen', add_help=False)
     lcd.add_argument('rest', nargs=argparse.REMAINDER)
     te = sub.add_parser('test', help='unit tests')

@@ -1,22 +1,37 @@
-# Teleop settings: the Pico joystick (joy_node) and the amw_teleop node.
+# Teleop settings: the Joy-Con (amw_joycon) and the amw_teleop node.
 # Edit and restart `amw start` (no rebuild needed).
 
 amw_teleop:
   ros__parameters:
-    # --- Pico controller mapping (raw Joy indices; see Pico_Controller.ino) ---
-    stick_axes: [0, 1, 2]          # X, Y, twist (twist = Z in translate mode)
-    stick_signs: [1.0, 1.0, 1.0]   # flip an entry to reverse that stick axis
-    slider_axis: 3                 # encoder speed level 1-20
-    slider_low_axis: 1.0
-    on_button: 1                   # panel 1: ON/OFF (toggles on each press)
-    mode_button: 0                 # stick button: translate <-> rotate
-    stick_deadzone: 0.08
+    # --- Joy-Con mapping (indices into the /joy message from amw_joycon; see joycon.py BUTTONS) ---
+    #   buttons: 0 L, 1 ZL, 2 D-pad up, 3 D-pad down, 4 D-pad right, 5 D-pad left, 6 minus, 7 capture,
+    #            8 stick click, 9 SL, 10 SR          axes: 0 stick x (right +), 1 stick y (up +)
+    stick_axes: [0, 1]
+    stick_signs: [1.0, 1.0]        # flip an entry to reverse that stick axis
+    on_button: 4                   # D-pad right: ON/OFF (toggles on each press)
+    speed_up_button: 2             # D-pad up: speed level + speed_step
+    speed_down_button: 3           # D-pad down: speed level - speed_step
+    z_button: 0                    # L held: stick up/down moves the tip up/down
+    rotate_button: 1               # ZL held: the iron follows the Joy-Con's rotation (stick ignored)
+    speed_step: 2                  # levels per press (1..20; 10 = 1x)
+    start_level: 10
+    stick_deadzone: 0.12           # round deadzone (fraction of full stick); raise for stronger tremor
+    stick_expo: 0.6                # 0 = linear, 1 = cubic: gentle near the centre, full speed at the edge
     centre_time_s: 0.2             # stick centred this long before the arm moves (after ON or a mode change)
-    input_timeout_s: 0.15          # no joystick report this long -> arm turns OFF
+    input_timeout_s: 0.15          # no controller report this long -> arm turns OFF
+    imu_timeout_s: 0.15            # no Joy-Con motion data this long while ZL is held -> arm turns OFF
+
+    # --- ZL rotation clutch: iron tilt follows the Joy-Con's rotation since ZL was pressed ---
+    hand_axes: [0, 1]              # Joy-Con gyro axes (0 x, 1 y, 2 z) that tilt the iron about world X, Y
+    hand_signs: [1.0, 1.0]         # flip if the iron tilts the opposite way to your hand
+    hand_scale: 0.5                # iron angle per hand angle
+    hand_max_angle_deg: 60.0       # largest iron tilt per ZL hold
+    hand_gain_per_s: 3.0           # how quickly the iron catches up with the hand (capped by angular speed)
 
     # --- speed (full stick at speed level 10; level 1 = 0.1x, level 20 = 2x) ---
     linear_speed_m_s: 0.01
-    angular_speed_rad_s: 0.1
+    z_speed_ratio: 0.5                   # up/down (L held) at this fraction of the x/y speed
+    angular_speed_rad_s: 0.1             # fastest the iron turns toward the hand at level 10
     task_max_linear_speed_m_s: 0.02      # hard cap on tip speed
     task_max_angular_speed_rad_s: 0.2    # hard cap on pointing rate
 
@@ -35,10 +50,10 @@ amw_teleop:
     motor_volt_min: 9.5                  # motor supply outside this range -> OFF
     motor_volt_max: 14.0
 
-joy_node:
+amw_joycon:
   ros__parameters:
-    device_name: AMW Controller    # Pico_Controller.ino: manufacturer "AMW" + product "Controller"
-    deadzone: 0.0
-    autorepeat_rate: 50.0
-    coalesce_interval_ms: 1
-    sticky_buttons: false
+    device_name: Joy-Con (L)       # part of the kernel input-device name; "Pro Controller" also works
+    publish_rate_hz: 100.0
+    invert_y: true                 # hid-nintendo reports stick up as negative; true makes up = +y
+    calibration_s: 1.0             # Joy-Con held still this long at start: gyro bias + stick centre
+    still_deg_s: 1.5               # more rotation than this restarts the calibration

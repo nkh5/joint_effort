@@ -10,22 +10,24 @@ ROS 2 Jazzy itself: follow the official Ubuntu (deb packages) install. On the Pi
 ```bash
 sudo apt update
 sudo apt install git python3-colcon-common-extensions python3-numpy python3-yaml python3-serial \
-  python3-pygame python3-matplotlib fonts-dejavu-core \
+  python3-pygame python3-matplotlib python3-evdev fonts-dejavu-core \
   ros-jazzy-moveit-servo ros-jazzy-moveit-kinematics ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
-  ros-jazzy-joy ros-jazzy-diagnostic-msgs
+  ros-jazzy-diagnostic-msgs
 ```
 
-(`python3-pygame` is for the status screen, `python3-matplotlib` only for `amw track` plots.)
+(`python3-evdev` reads the Joy-Con, `python3-pygame` is for the status screen, `python3-matplotlib`
+only for `amw track` plots.)
 
-## 2. Serial and joystick access (once)
+## 2. Serial and controller access (once)
 
 ```bash
 sudo usermod -aG dialout "$USER"      # in a distrobox: run this on the Fedora host instead
 ```
 
 Log out and back in. Check with `groups` (must list `dialout`), `ls /dev/serial/by-id/` (the adapter
-`usb-1a86_USB_Single_Serial_5B14028914-if00`) and `ls /dev/input/js*` (the Pico). If your adapter has
-a different id, change `serial_port` in `src/amw_bringup/config/arm.yaml`.
+`usb-1a86_USB_Single_Serial_5B14028914-if00`). If your adapter has a different id, change
+`serial_port` in `src/amw_bringup/config/arm.yaml`. The Joy-Con (pairing, `joycond`, the udev rule)
+is in [joycon.md](joycon.md).
 
 ## 3. The `amw` command
 

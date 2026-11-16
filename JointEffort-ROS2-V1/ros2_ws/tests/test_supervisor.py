@@ -3,31 +3,31 @@ import math
 import unittest
 
 import _paths  # noqa: F401  (adds src packages to sys.path)
-from amw_teleop.core import multiplier, speed_level, velocity
+from amw_teleop.core import multiplier, stick, velocity
 from amw_teleop.faults import FAULTS, KINDS, markdown
 from amw_teleop.supervisor import Health, Supervisor
 
 LIMITS = {f'joint_{i}': (-1.0, 1.0) for i in range(1, 6)}
-ON, MODE = 1, 0
+L, ZL, UP, DOWN, ON = 0, 1, 2, 3, 4
 
 
 def healthy(**changes):
     h = Health(joints={n: 0.0 for n in LIMITS}, joints_age=0.01, limits=LIMITS, controller='active',
-               servo_ready=True, servo_code=0)
+               servo_ready=True, servo_code=0, imu_age=0.01)
     for k, v in changes.items():
         setattr(h, k, v)
     return h
 
 
 class Driver:
-    """Feeds the supervisor Pico reports at 50 Hz, like the node does."""
+    """Feeds the supervisor Joy-Con reports at 50 Hz, like the node does."""
 
     def __init__(self, health=None):
         self.s = Supervisor()
         self.t = 0.0
         self.health = health or healthy()
-        self.buttons = [0] * 7
-        self.axes = [0.0, 0.0, 0.0, 0.0]          # X, Y, twist, slider (0 = level ~10)
+        self.buttons = [0] * 11
+        self.axes = [0.0, 0.0]                    # stick x, y
 
     def run(self, seconds=0.0, report=True):
         end = self.t + seconds
@@ -84,22 +84,70 @@ class SupervisorTests(unittest.TestCase):
         self.assertFalse(d.press(ON))
         self.assertEqual(d.s.stop['code'], 'TURNED_OFF')
 
-    def test_mode_change_pauses_until_centred_without_pressing_on(self):
+    def test_held_buttons_select_the_mode(self):
         d = Driver()
         d.turn_on()
-        d.axes[0] = 0.5
+        for held, mode in [((L,), 'z'), ((ZL,), 'rotation'), ((L, ZL), 'rotation'), ((), 'translation')]:
+            d.buttons = [0] * 11
+            for b in held:
+                d.buttons[b] = 1
+            self.assertTrue(d.run(0.1), mode)
+            self.assertEqual(d.s.mode, mode)
+
+    def test_mode_change_with_stick_pushed_pauses_until_centred(self):
+        d = Driver()
+        d.turn_on()
+        d.axes[1] = 0.5
         d.run(0.1)
-        d.press(MODE)
-        self.assertEqual(d.s.mode, 'rotation')
-        self.assertEqual(d.s.stop['code'], 'MODE_CHANGED')
+        d.buttons[L] = 1                          # L while pushing: z would jump, so wait for centre
+        d.run()
+        self.assertEqual((d.s.mode, d.s.stop['code']), ('z', 'MODE_CHANGED'))
         self.assertFalse(d.run(0.5))
-        d.axes[0] = 0.0
+        d.axes[1] = 0.0
         self.assertTrue(d.run(0.3))
 
-    def test_mode_press_while_off_only_changes_mode(self):
+    def test_rotation_ignores_the_stick_and_does_not_pause(self):
+        d = Driver()
+        d.turn_on()
+        d.axes[0] = 0.8
+        d.run(0.1)
+        d.buttons[ZL] = 1
+        self.assertTrue(d.run(0.1))
+        self.assertEqual(d.s.mode, 'rotation')
+
+    def test_rotation_needs_imu_data(self):
+        d = Driver()
+        d.turn_on()
+        d.buttons[ZL] = 1
+        d.health.imu_age = 0.01
+        self.assertTrue(d.run(0.1))
+        d.health.imu_age = 0.5
+        self.assertFalse(d.run())
+        self.assertEqual(d.s.stop['code'], 'IMU_LOST')
+
+    def test_translation_does_not_need_imu_data(self):
+        d = Driver(healthy(imu_age=math.inf))    # no Joy-Con motion data at all
+        self.assertTrue(d.turn_on())
+        self.assertTrue(d.run(0.5))
+
+    def test_speed_buttons_step_and_clamp(self):
         d = Driver()
         d.run(0.1)
-        d.press(MODE)
+        self.assertEqual(d.s.level, 10)
+        d.press(UP)
+        self.assertEqual(d.s.level, 12)
+        for _ in range(10):
+            d.press(UP)
+        self.assertEqual(d.s.level, 20)
+        for _ in range(15):
+            d.press(DOWN)
+        self.assertEqual(d.s.level, 1)
+
+    def test_mode_while_off_only_changes_mode(self):
+        d = Driver()
+        d.run(0.1)
+        d.buttons[ZL] = 1
+        d.run()
         self.assertEqual((d.s.mode, d.s.state), ('rotation', 'off'))
 
     def test_joystick_loss_turns_off_and_never_resumes_by_itself(self):
@@ -113,7 +161,7 @@ class SupervisorTests(unittest.TestCase):
     def test_bad_report_turns_off(self):
         d = Driver()
         d.turn_on()
-        d.s.joy([math.nan, 0, 0, 0], [0] * 7, d.t)
+        d.s.joy([math.nan, 0], [0] * 11, d.t)
         self.assertEqual(d.s.stop['code'], 'JOYSTICK_BAD')
 
     def test_on_refused_with_reason_when_not_ready(self):
@@ -188,21 +236,24 @@ class SupervisorTests(unittest.TestCase):
 
 
 class CoreAndFaultTests(unittest.TestCase):
-    def test_slider_quantization_all_levels_both_signs(self):
-        for level in range(1, 21):
-            hid = round((level - 1) * 255 / 19)
-            axis = 1 - 2 * hid / 255
-            self.assertEqual(speed_level(axis), level)
-            self.assertEqual(speed_level(-axis, -1.), level)
+    def test_multiplier(self):
         self.assertAlmostEqual(multiplier(1), .1)
         self.assertEqual(multiplier(10), 1.)
         self.assertEqual(multiplier(20), 2.)
 
-    def test_velocity_caps_and_free_roll(self):
-        self.assertAlmostEqual(math.hypot(*velocity([1., 1., 1.], 'translation', 2.)[:3]), 0.02)
-        angular = velocity([1., 1., 1.], 'rotation', 2.)[3:]
-        self.assertAlmostEqual(math.hypot(*angular), 0.2)
-        self.assertEqual(angular[2], 0.)
+    def test_round_deadzone_and_curve(self):
+        self.assertEqual(stick(0.08, 0.08, 0.12), (0.0, 0.0))            # inside the circle
+        x, y = stick(0.6, 0.6, 0.12)
+        self.assertAlmostEqual(x, y)                                       # diagonals stay diagonal
+        self.assertAlmostEqual(math.hypot(*stick(1.0, 0.0, 0.12, 0.6)), 1.0)
+        fine = stick(0.3, 0.0, 0.12, 0.6)[0]
+        self.assertLess(fine, stick(0.3, 0.0, 0.12, 0.0)[0])               # expo: slower near the centre
+
+    def test_velocity_modes_and_cap(self):
+        self.assertAlmostEqual(math.hypot(*velocity([1., 1.], 'translation', 2.)), 0.02)
+        self.assertEqual(velocity([1., 1.], 'translation')[2], 0.)
+        self.assertEqual(velocity([1., 0.5], 'z'), [0., 0., 0.5 * 0.01 * 0.5])
+        self.assertEqual(velocity([1., 1.], 'rotation'), [0., 0., 0.])
 
     def test_fault_table_is_complete(self):
         for f in FAULTS.values():

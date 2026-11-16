@@ -3,7 +3,7 @@
   hardware:=mock|real   mock = simulated motors (default), real = STS servos on the Waveshare adapter
   readonly:=true        real only: torque OFF, joint states only (calibration and checking)
   teleop:=false         controllers only, no Servo/teleop/joystick (for `amw jog` and `amw track`)
-  joystick:=false       teleop without joy_node (e.g. a synthetic /joy publisher)
+  joystick:=false       teleop without the Joy-Con node (e.g. a synthetic /joy publisher)
   rviz:=true|false|auto auto (default) = RViz only if a display is available
   port:=/dev/...        override serial_port from arm.yaml
   arm_config:=/path     arm.yaml to use (`amw start` passes the one in the source tree)
@@ -121,7 +121,8 @@ def setup(context):
                  parameters=[teleop_yaml, teleop_params], output='screen'),
         ]
         if flag(context, 'joystick'):
-            nodes.append(Node(package='joy', executable='joy_node', parameters=[teleop_yaml], output='screen'))
+            nodes.append(Node(package='amw_teleop', executable='amw_joycon', name='amw_joycon',
+                              parameters=[teleop_yaml], output='screen'))
 
     if flag(context, 'rviz'):
         nodes.append(Node(package='rviz2', executable='rviz2',

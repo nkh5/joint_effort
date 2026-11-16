@@ -1,14 +1,7 @@
-"""Joystick maths: speed level, deadzone, stick -> tip velocity. Pure Python, no ROS."""
+"""Controller maths: speed level, stick deadzone and curve, stick -> tip velocity. Pure Python, no ROS."""
 import math
 
 LEVEL_MAX = 20
-
-
-def speed_level(axis, low_axis=1.0):
-    """Encoder slider axis (-1..1) -> speed level 1..20."""
-    if not math.isfinite(axis) or abs(axis) > 1.001 or low_axis not in (-1., 1.):
-        raise ValueError('Invalid encoder slider')
-    return min(LEVEL_MAX, max(1, round((1.0 - max(-1., min(1., axis)) * low_axis) * 9.5) + 1))
 
 
 def multiplier(level):
@@ -18,8 +11,16 @@ def multiplier(level):
     return 10 ** ((level - 10) / 9) if level <= 10 else 2 ** ((level - 10) / 10)
 
 
-def deadzone(value, width):
-    return 0.0 if abs(value) <= width else math.copysign((abs(value) - width) / (1 - width), value)
+def stick(x, y, deadzone, expo=0.0):
+    """Joy-Con stick (x, y; each -1..1, rest offset already removed) -> (x, y) after a round deadzone
+    and a response curve. Round (radial) so diagonals do not snap to the axes. expo 0 = linear;
+    expo 0.6 = gentle near the centre for fine moves, full speed at full deflection."""
+    r = math.hypot(x, y)
+    if r <= deadzone:
+        return 0.0, 0.0
+    u = min(1.0, (r - deadzone) / (1.0 - deadzone))
+    f = (1.0 - expo) * u + expo * u ** 3
+    return x / r * f, y / r * f
 
 
 def capped(vector, limit):
@@ -28,13 +29,16 @@ def capped(vector, limit):
     return [v * scale for v in vector]
 
 
-def velocity(axes, mode, factor=1.0, linear=0.01, angular=0.1, linear_cap=0.02, angular_cap=0.2):
-    """Stick (X, Y, twist; each -1..1) -> [vx, vy, vz, wx, wy, wz] in the world frame.
+def velocity(axes, mode, factor=1.0, linear=0.01, linear_cap=0.02, z_ratio=0.5):
+    """Stick (x, y after `stick`) -> [vx, vy, vz] tip velocity in the world frame (m/s).
 
-    translation: X/Y/twist -> tip X/Y/Z at `linear` m/s per unit stick (times the speed factor)
-    rotation:    X/Y -> tilt about world X/Y at `angular` rad/s. World Z would mostly spin the iron
-                 about its own shaft (it points down), which the five-joint arm leaves free.
+    translation: stick x/y -> tip X/Y at `linear` m/s at full stick (times the speed factor)
+    z:           stick up/down -> tip Z at z_ratio * that speed (L held)
+    rotation:    no translation (the iron follows the hand; see node.py)
     """
+    x, y = axes
     if mode == 'translation':
-        return capped([v * linear * factor for v in axes], linear_cap) + [0., 0., 0.]
-    return [0., 0., 0.] + capped([axes[0] * angular * factor, axes[1] * angular * factor, 0.], angular_cap)
+        return capped([x * linear * factor, y * linear * factor, 0.0], linear_cap)
+    if mode == 'z':
+        return capped([0.0, 0.0, y * linear * factor * z_ratio], linear_cap)
+    return [0.0, 0.0, 0.0]

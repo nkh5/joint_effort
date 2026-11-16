@@ -55,10 +55,10 @@ def view(d):
         v['text'], v['fix'] = stop.get('text', ''), stop.get('fix', '')
     elif d.get('joystick') == 'lost':
         v['status'] = 'noctrl'
-        v['text'], v['fix'] = 'Controller not connected or not sending.', 'Check the Pico USB cable.'
+        v['text'], v['fix'] = 'Controller not connected or not sending.', 'Check the Joy-Con is connected.'
     elif stop.get('code') in (None, 'OFF', 'TURNED_OFF'):
         v['status'] = 'off'
-        v['text'], v['fix'] = '', 'Centre the stick and press ON (panel 1).'
+        v['text'], v['fix'] = '', 'Centre the stick and press ON (D-pad right).'
     else:
         v['status'] = 'stopped'
         v['text'], v['fix'] = stop.get('text', ''), stop.get('fix', '')
@@ -246,8 +246,8 @@ class DemoSource:
         if ch == 'o':
             on = d['state'] != 'active'
             d['state'] = 'active' if on else 'off'
-            d['stop'] = None if on else {'code': 'TURNED_OFF', 'kind': 'stop', 'text': 'Turned off with panel 1.',
-                                         'fix': 'Press ON (panel 1) to continue.'}
+            d['stop'] = None if on else {'code': 'TURNED_OFF', 'kind': 'stop', 'text': 'Turned off with the D-pad right button.',
+                                         'fix': 'Press ON (D-pad right) to continue.'}
         elif ch == 'c':
             d['state'] = 'centre'
             d['stop'] = {'code': 'MODE_CHANGED', 'kind': 'pause', 'text': 'Switched to rotation mode.',

@@ -1,4 +1,4 @@
-"""Drive the real amw_teleop node with stand-in ROS classes: joystick in, JointJog and /amw/status out.
+"""Drive the real amw_teleop node with stand-in ROS classes: Joy-Con in, JointJog and /amw/status out.
 Checks the wiring between the node, the supervisor and the kinematics without ROS installed."""
 import json
 import math
@@ -88,9 +88,12 @@ def install_stubs():
                                  DiagnosticStatus=status_cls, KeyValue=msg())
     mod('moveit_msgs'), mod('moveit_msgs.msg', ServoStatus=msg())
     mod('moveit_msgs.srv', ServoCommandType=types.SimpleNamespace(Request=msg(JOINT_JOG=0)))
-    mod('sensor_msgs'), mod('sensor_msgs.msg', JointState=msg(), Joy=msg())
+    mod('sensor_msgs'), mod('sensor_msgs.msg', JointState=msg(), Joy=msg(), Imu=msg())
     mod('std_msgs'), mod('std_msgs.msg', String=msg())
     mod('std_srvs'), mod('std_srvs.srv', Trigger=msg())
+
+
+L, ZL, UP, DOWN, ON = 0, 1, 2, 3, 4
 
 
 class TeleopNodeTest(unittest.TestCase):
@@ -124,8 +127,9 @@ class TeleopNodeTest(unittest.TestCase):
         self.node_module.time.monotonic = lambda: self.mono
         self.n = self.node_module.Teleop()
         self.f = FakeNode.instance
-        self.buttons = [0] * 7
-        self.axes = [0.0, 0.0, 0.0, 0.0]
+        self.buttons = [0] * 11
+        self.axes = [0.0, 0.0]
+        self.gyro = None                           # rad/s in Joy-Con axes; None = no IMU messages
         self.q = dict(self.home)
 
     def step(self, seconds=0.02):
@@ -139,6 +143,12 @@ class TeleopNodeTest(unittest.TestCase):
             self.n.health.controller = 'active'
             self.n.servo_switched = True
             self.f.subs['/joy'](Auto(axes=list(self.axes), buttons=list(self.buttons)))
+            if self.gyro is not None:
+                for k in range(4):                 # 200 Hz IMU, arriving bundled
+                    stamp = Clock.t - 0.02 + 0.005 * (k + 1)
+                    self.f.subs['/amw/hand_imu'](Auto(
+                        header=Auto(stamp=Auto(sec=int(stamp), nanosec=int((stamp % 1) * 1e9))),
+                        angular_velocity=Auto(x=self.gyro[0], y=self.gyro[1], z=self.gyro[2])))
             self.n.tick()
 
     def press(self, i):
@@ -156,7 +166,7 @@ class TeleopNodeTest(unittest.TestCase):
         self.assertEqual((st['state'], st['stop']['code']), ('off', 'OFF'))
         self.assertEqual(self.f.pubs['/iron_servo/delta_joint_cmds'], [], 'nothing sent to Servo while off')
 
-        self.press(1)
+        self.press(ON)
         self.step(0.3)
         self.assertEqual(self.status()['state'], 'active')
 
@@ -170,9 +180,10 @@ class TeleopNodeTest(unittest.TestCase):
         self.assertEqual(len(st['joints']), 5)
         self.assertAlmostEqual(st['joints'][2]['deg'], math.degrees(-1.2), places=1)
 
-        self.press(0)                              # mode change while moving
+        self.buttons[L] = 1                        # hold L while pushing: z mode waits for a centred stick
+        self.step()
         st = self.status()
-        self.assertEqual((st['state'], st['mode'], st['stop']['code']), ('centre', 'rotation', 'MODE_CHANGED'))
+        self.assertEqual((st['state'], st['mode'], st['stop']['code']), ('centre', 'z', 'MODE_CHANGED'))
         jogs = self.f.pubs['/iron_servo/delta_joint_cmds']
         self.assertEqual(jogs[-1].velocities, [0.0] * 5, 'a zero command right after stopping')
         sent = len(jogs)
@@ -181,6 +192,8 @@ class TeleopNodeTest(unittest.TestCase):
         self.axes[0] = 0.0
         self.step(0.3)
         self.assertEqual(self.status()['state'], 'active')
+        self.buttons[L] = 0
+        self.step()
 
         response = self.f.subs['/amw/stop'](None, Auto())
         self.assertTrue(response.success)
@@ -192,15 +205,17 @@ class TeleopNodeTest(unittest.TestCase):
 
     def test_joint_limit_warning_keeps_moving(self):
         self.step(0.1)
-        self.press(1)
+        self.press(ON)
         self.step(0.3)
         upper = self.n.limits[2][1]
         self.q['joint_3'] = upper - 0.01
-        for axis in range(3):                      # find a stick direction that pushes the elbow up
+        for axis in range(3):                      # find a direction (x, y, or z with L) that pushes the elbow up
             for sign in (1, -1):
-                self.axes[:3] = [0.0, 0.0, 0.0]
-                self.axes[axis] = sign
+                self.axes = [0.0, 0.0]
+                self.buttons[L] = int(axis == 2)
                 self.step(0.06)
+                self.axes[min(axis, 1)] = sign
+                self.step(0.4)
                 st = self.status()
                 if st['warning'] and st['warning']['code'] == 'JOINT_LIMIT':
                     self.assertEqual(st['state'], 'active')
@@ -209,9 +224,53 @@ class TeleopNodeTest(unittest.TestCase):
                     return
         self.fail('no stick direction produced a joint-limit warning for joint_3')
 
+    def test_z_mode_moves_up_and_down(self):
+        self.step(0.1)
+        self.press(ON)
+        self.step(0.3)
+        self.buttons[L] = 1
+        self.step(0.1)
+        self.axes[1] = 1.0
+        self.step(0.1)
+        linear, angular = self.n.command([self.q[n] for n in self.n.names])
+        self.assertEqual((linear[0], linear[1]), (0.0, 0.0))
+        self.assertGreater(linear[2], 0.0)
+        self.assertTrue(any(abs(v) > 1e-6 for v in self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities))
+
+    def test_zl_turns_the_iron_with_the_hand(self):
+        self.gyro = (0.0, 0.0, 0.0)
+        self.step(0.1)
+        self.press(ON)
+        self.step(0.3)
+        self.buttons[ZL] = 1
+        self.step(0.1)
+        self.assertEqual(self.status()['mode'], 'rotation')
+        self.assertEqual(self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities, [0.0] * 5,
+                         'hand still: iron holds')
+        self.gyro = (0.5, 0.0, 0.0)               # turn the Joy-Con about its x axis for 0.4 s (~11 deg)
+        self.step(0.4)
+        self.gyro = (0.0, 0.0, 0.0)
+        self.step(0.04)
+        q = [self.q[n] for n in self.n.names]
+        linear, angular = self.n.command(q)
+        self.assertEqual(linear, [0.0, 0.0, 0.0])
+        self.assertGreater(angular[0], 0.0, 'hand x rotation -> iron tilt about world +X (hand_axes [0, 1])')
+        tool_axis = self.n.robot.fk('iron', q)[:3, 0]
+        self.assertAlmostEqual(float(tool_axis @ angular), 0.0, places=9)
+        self.assertTrue(any(abs(v) > 1e-6 for v in self.f.pubs['/iron_servo/delta_joint_cmds'][-1].velocities))
+
+    def test_zl_without_imu_turns_off(self):
+        self.step(0.1)
+        self.press(ON)
+        self.step(0.3)
+        self.buttons[ZL] = 1
+        self.step(0.3)
+        st = self.status()
+        self.assertEqual((st['state'], st['stop']['code']), ('off', 'IMU_LOST'))
+
     def test_lost_feedback_turns_off(self):
         self.step(0.1)
-        self.press(1)
+        self.press(ON)
         self.step(0.3)
         self.f.subs['/joint_states'] = lambda msg: None          # joint states stop arriving
         self.step(0.4)

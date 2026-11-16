@@ -2,22 +2,27 @@
 
 States
   off     arm does not move. `stop` says why (OFF at start, TURNED_OFF, or a fault).
-  centre  ON was pressed (or the mode changed); waits until the stick has been centred for
-          `centre_time` seconds, then moves on to active. `stop` is CENTRE_STICK or MODE_CHANGED.
-  active  stick commands move the arm. `warning` may say why a direction is blocked or slowed.
+  centre  ON was pressed (or the mode changed with the stick pushed); waits until the stick has
+          been centred for `centre_time` seconds, then moves on to active. `stop` is CENTRE_STICK
+          or MODE_CHANGED.
+  active  the controller moves the arm. `warning` may say why a direction is blocked or slowed.
 
-Buttons (raw Pico buttons, rising edges)
-  on_button    toggles ON/OFF. ON is refused (with the reason) if the arm is not ready.
-  mode_button  translate <-> rotate. While active this pauses until the stick is centred again.
+Joy-Con (Joy message from amw_joycon; indices in teleop.yaml)
+  on_button          D-pad right: toggles ON/OFF. ON is refused (with the reason) if the arm is not ready.
+  speed_up/down      D-pad up/down: speed level +/- speed_step (1..20).
+  z_button  (held)   L: stick up/down moves the tip up/down instead of x/y      -> mode 'z'
+  rotate_button (held) ZL: the iron follows the Joy-Con's rotation (stick ignored) -> mode 'rotation'
+  neither held       stick x/y moves the tip in x/y                              -> mode 'translation'
+A mode change pauses only if the stick is pushed and the new mode uses the stick; centre it to go on.
 
 Anything in the stop list of faults.py turns the arm OFF; ON must be pressed again. Input loss
-always turns it OFF, so a Pico or Pi restart can never resume motion by itself.
+always turns it OFF, so a controller or Pi restart can never resume motion by itself.
 """
 import math
 from collections import deque
 from dataclasses import dataclass, field
 
-from .core import deadzone, multiplier, speed_level
+from .core import LEVEL_MAX, multiplier, stick
 from .faults import report
 
 SERVO_OK, SERVO_SLOWING_SINGULAR, SERVO_HALT_SINGULAR = 0, 1, 2
@@ -26,27 +31,38 @@ SERVO_SLOWING_COLLISION, SERVO_SLOWING_COLLISION_2, SERVO_HALT_COLLISION, SERVO_
 
 @dataclass
 class Config:
-    stick_axes: tuple = (0, 1, 2)          # Joy axis for X, Y, twist
-    stick_signs: tuple = (1.0, 1.0, 1.0)
-    slider_axis: int = 3                   # encoder speed level
-    slider_low_axis: float = 1.0
-    on_button: int = 1                     # panel 1
-    mode_button: int = 0                   # stick button
-    deadzone: float = 0.08
+    stick_axes: tuple = (0, 1)             # Joy axis for stick x, y
+    stick_signs: tuple = (1.0, 1.0)
+    on_button: int = 4                     # D-pad right
+    speed_up_button: int = 2               # D-pad up
+    speed_down_button: int = 3             # D-pad down
+    z_button: int = 0                      # L (held)
+    rotate_button: int = 1                 # ZL (held)
+    speed_step: int = 2
+    start_level: int = 10
+    deadzone: float = 0.12
+    expo: float = 0.6
     centre_time: float = 0.2               # s centred before moving
     input_timeout: float = 0.15            # s without a valid Joy report
+    imu_timeout: float = 0.15              # s without hand IMU data while rotating
     feedback_timeout: float = 0.3          # s without joint states
     limit_tolerance: float = math.radians(2.0)   # rad a joint may sit beyond its limit (sag, overshoot)
     motor_warm_c: float = 55.0
     motor_hot_c: float = 65.0
     motor_volt_range: tuple = (9.5, 14.0)
 
+    @property
+    def buttons(self):
+        return (self.on_button, self.speed_up_button, self.speed_down_button, self.z_button, self.rotate_button)
+
     def __post_init__(self):
-        idx = (*self.stick_axes, self.slider_axis)
-        if (len(self.stick_axes) != 3 or len(set(idx)) != 4 or self.on_button == self.mode_button
-                or any(s not in (-1.0, 1.0) for s in self.stick_signs) or self.slider_low_axis not in (-1.0, 1.0)
-                or not 0.01 <= self.deadzone <= 0.25 or not 0.05 <= self.input_timeout <= 0.5):
-            raise ValueError('invalid joystick configuration (check teleop.yaml)')
+        if (len(self.stick_axes) != 2 or len(set(self.stick_axes)) != 2 or len(set(self.buttons)) != 5
+                or min(*self.stick_axes, *self.buttons) < 0
+                or any(s not in (-1.0, 1.0) for s in self.stick_signs) or len(self.stick_signs) != 2
+                or not 1 <= self.speed_step <= 10 or not 1 <= self.start_level <= LEVEL_MAX
+                or not 0.01 <= self.deadzone <= 0.4 or not 0.0 <= self.expo <= 1.0
+                or not 0.05 <= self.input_timeout <= 0.5 or not 0.05 <= self.imu_timeout <= 0.5):
+            raise ValueError('invalid controller configuration (check teleop.yaml)')
 
 
 @dataclass
@@ -60,6 +76,7 @@ class Health:
     servo_code: int = None
     servo_message: str = ''
     motors: dict = field(default_factory=dict)   # name -> {'temperature': C, 'voltage': V}
+    imu_age: float = math.inf              # s since the last hand IMU sample
 
 
 class Supervisor:
@@ -67,13 +84,13 @@ class Supervisor:
         self.cfg = config or Config()
         self.state = 'off'
         self.mode = 'translation'
-        self.level = 10
-        self.axes = [0.0, 0.0, 0.0]
+        self.level = self.cfg.start_level
+        self.axes = [0.0, 0.0]
         self.stop = report('OFF')
         self.warning = None
         self.last_joy = -math.inf
         self.centred_since = None
-        self.prev_on = self.prev_mode = None      # None until the first report: no edge on connect
+        self.prev = None                         # buttons of the last report: no edge on connect
         self.events = deque(maxlen=12)
         self._last_event = None
 
@@ -112,26 +129,35 @@ class Supervisor:
     def joy(self, axes, buttons, now, health=None):
         """One Joy report. Returns False if it was unusable."""
         c = self.cfg
-        if (len(axes) <= max(*c.stick_axes, c.slider_axis) or len(buttons) <= max(c.on_button, c.mode_button)
+        if (len(axes) <= max(c.stick_axes) or len(buttons) <= max(c.buttons)
                 or any(not math.isfinite(v) or abs(v) > 1.001 for v in axes) or any(b not in (0, 1) for b in buttons)):
             if self.state != 'off':
                 self.turn_off(now, report('JOYSTICK_BAD', detail=f'{len(axes)} axes, {len(buttons)} buttons'))
             return False
         self.last_joy = now
-        self.axes = [deadzone(max(-1.0, min(1.0, axes[i])) * s, c.deadzone) for i, s in zip(c.stick_axes, c.stick_signs)]
-        self.level = speed_level(axes[c.slider_axis], c.slider_low_axis)
-        on, mode = bool(buttons[c.on_button]), bool(buttons[c.mode_button])
-        if self.prev_mode is not None and mode and not self.prev_mode:
-            self.mode = 'rotation' if self.mode == 'translation' else 'translation'
-            self.log(now, f'mode {self.mode}')
-            if self.state != 'off':
-                self.pause(now, report('MODE_CHANGED', detail=self.mode))
-        if self.prev_on is not None and on and not self.prev_on:
+        x, y = (max(-1.0, min(1.0, axes[i])) * s for i, s in zip(c.stick_axes, c.stick_signs))
+        self.axes = list(stick(x, y, c.deadzone, c.expo))
+        held = {b: bool(buttons[b]) for b in c.buttons}
+        pressed = {b: self.prev is not None and held[b] and not self.prev[b] for b in c.buttons}
+        self.prev = held
+
+        mode = 'rotation' if held[c.rotate_button] else ('z' if held[c.z_button] else 'translation')
+        if mode != self.mode:
+            self.mode = mode
+            self.log(now, f'mode {mode}')
+            if self.state != 'off' and mode != 'rotation' and any(self.axes):
+                self.pause(now, report('MODE_CHANGED', detail=mode))
+        for button, step in ((c.speed_up_button, c.speed_step), (c.speed_down_button, -c.speed_step)):
+            if pressed[button]:
+                level = max(1, min(LEVEL_MAX, self.level + step))
+                if level != self.level:
+                    self.level = level
+                    self.log(now, f'speed level {level}')
+        if pressed[c.on_button]:
             if self.state == 'off':
                 self.try_on(now, health)
             else:
                 self.turn_off(now, report('TURNED_OFF'))
-        self.prev_on, self.prev_mode = on, mode
         return True
 
     def request_stop(self, now):
@@ -184,6 +210,8 @@ class Supervisor:
                 problem = report('FEEDBACK_STALE', value=f'{health.joints_age:.1f}')
             elif health.controller is not None and health.controller != 'active':
                 problem = report('CONTROLLER_INACTIVE', detail=health.controller)
+            elif self.mode == 'rotation' and health.imu_age > c.imu_timeout:
+                problem = report('IMU_LOST', value=f'{min(health.imu_age, 999.0):.1f}')
             else:
                 problem = self.outside_limits(health)
             if problem is None and health.servo_code == SERVO_HALT_COLLISION:
