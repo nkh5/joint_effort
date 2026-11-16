@@ -150,7 +150,8 @@ def main(args=None):
     class JoyConNode(Node):
         def __init__(self):
             super().__init__('amw_joycon')
-            self.name = self.declare_parameter('device_name', 'Joy-Con (L)').value
+            # Attribute names below avoid rclpy.Node's own (handle, name, clock, executor, context...).
+            self.device_name = self.declare_parameter('device_name', 'Joy-Con (L)').value
             rate = self.declare_parameter('publish_rate_hz', 100.0).value
             self.invert_y = self.declare_parameter('invert_y', True).value
             self.cal = Calibration(self.declare_parameter('calibration_s', 1.0).value,
@@ -175,12 +176,12 @@ def main(args=None):
         # ---- device discovery
         def open_devices(self):
             found = [evdev.InputDevice(p) for p in evdev.list_devices()]
-            imu = [d for d in found if self.name in d.name and 'IMU' in d.name]
-            pad = [d for d in found if self.name in d.name and 'IMU' not in d.name and 'Combined' not in d.name]
+            imu = [d for d in found if self.device_name in d.name and 'IMU' in d.name]
+            pad = [d for d in found if self.device_name in d.name and 'IMU' not in d.name and 'Combined' not in d.name]
             if not pad or not imu:
                 for d in found:
                     d.close()
-                self.say(f'Waiting for "{self.name}": pair it over Bluetooth (bluetoothctl) and check that '
+                self.say(f'Waiting for "{self.device_name}": pair it over Bluetooth (bluetoothctl) and check that '
                          f'/dev/input/event* is readable (udev rule, docs/joycon.md). Found: '
                          f'{sorted(d.name for d in found) or "no readable input devices"}', warn=True)
                 return False
@@ -193,7 +194,7 @@ def main(args=None):
             with self.lock:
                 self.pad = Pad(stick.max if stick and stick.max else 32767, self.invert_y)
                 self.stream = ImuStream(accel.resolution or ACCEL_COUNTS_PER_G, gyro.resolution or GYRO_COUNTS_PER_DPS)
-                self.clock = Clock()
+                self.sample_clock = Clock()
                 self.cal.reset()
             self.devices = [pad, imu]
             self.imu_dev = imu
@@ -223,7 +224,7 @@ def main(args=None):
                     ready, _, _ = select.select(self.devices, [], [], 0.1)
                     for dev in ready:
                         for e in dev.read():
-                            self.handle(dev, e)
+                            self.on_event(dev, e)
                 except (OSError, ValueError):
                     self.say('Joy-Con disconnected; waiting for it to come back...', warn=True)
                     self.close_devices()
@@ -232,7 +233,7 @@ def main(args=None):
                     self.say('No motion data from the Joy-Con. Is joycond running (it grabs the device)? '
                              'Run: sudo systemctl stop joycond', warn=True)
 
-        def handle(self, dev, e):
+        def on_event(self, dev, e):
             now = time.monotonic()
             with self.lock:
                 if dev is not self.imu_dev:
@@ -250,7 +251,7 @@ def main(args=None):
                         self.say(f'Ready. Gyro bias {b[0]:+.2f} {b[1]:+.2f} {b[2]:+.2f} deg/s, stick centre '
                                  f'{self.cal.rest[0]:+.3f} {self.cal.rest[1]:+.3f}.')
                     return
-                stamp = self.clock.to_ros(t, time.time())
+                stamp = self.sample_clock.to_ros(t, time.time())
             msg = Imu()
             msg.header.stamp.sec = int(stamp)
             msg.header.stamp.nanosec = int((stamp - int(stamp)) * 1e9)

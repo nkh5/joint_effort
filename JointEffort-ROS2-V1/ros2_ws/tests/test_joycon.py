@@ -90,6 +90,17 @@ class CalibrationTest(unittest.TestCase):
         self.assertEqual(cal.rest, [0.0, 0.0])
 
 
+class NodeNamesTest(unittest.TestCase):
+    def test_joycon_node_does_not_shadow_rclpy_node(self):
+        """rclpy.Node uses these names itself; redefining one crashes the node at start (as `handle` did)."""
+        import re
+        source = (_paths.WS / 'src/amw_teleop/amw_teleop/joycon.py').read_text()
+        ours = set(re.findall(r'self\.(\w+)\s*=', source)) | set(re.findall(r'^\s+def (\w+)\(self', source, re.M))
+        rclpy_node = {'handle', 'executor', 'context', 'default_callback_group', 'publishers', 'subscriptions',
+                      'clients', 'services', 'timers', 'guards', 'waitables', 'name', 'clock', 'namespace'}
+        self.assertEqual(ours & rclpy_node, set())
+
+
 class HandTest(unittest.TestCase):
     def test_log_exp_round_trip(self):
         for v in [[0.3, -0.2, 0.1], [0.0, 0.0, 0.0], [0.0, 3.0, 0.0], [1e-7, 0, 0]]:
