@@ -8,7 +8,7 @@ amw_teleop:
     #            8 stick click, 9 SL, 10 SR          axes: 0 stick x (right +), 1 stick y (up +)
     stick_axes: [0, 1]
     stick_signs: [-1.0, -1.0]      # flip an entry to reverse that stick axis (x/y moves)
-    z_sign: -1.0                   # L + stick up: -1 = tip goes down, 1 = up (independent of stick_signs)
+    z_sign: 1.0                   # L + stick up: -1 = tip goes down, 1 = up (independent of stick_signs)
     on_button: 4                   # D-pad right: ON/OFF (toggles on each press)
     speed_up_button: 2             # D-pad up: speed level + speed_step
     speed_down_button: 3           # D-pad down: speed level - speed_step
@@ -35,11 +35,11 @@ amw_teleop:
     hand_gravity_gain: 1.0         # how strongly gravity corrects the Joy-Con's tilt drift (0 = gyro only)
 
     # --- speed (full stick at speed level 10; level 1 = 0.1x, level 20 = 2x) ---
-    linear_speed_m_s: 0.01
+    linear_speed_m_s: 0.04
     z_speed_ratio: 0.5                   # up/down (L held) at this fraction of the x/y speed
-    angular_speed_rad_s: 0.1             # fastest the iron turns toward the hand at level 10
-    task_max_linear_speed_m_s: 0.02      # hard cap on tip speed
-    task_max_angular_speed_rad_s: 0.2    # hard cap on pointing rate
+    angular_speed_rad_s: 0.4             # fastest the iron turns toward the hand at level 10
+    task_max_linear_speed_m_s: 0.08      # hard cap on tip speed
+    task_max_angular_speed_rad_s: 0.8    # hard cap on pointing rate
 
     # --- five-joint solve (tip XYZ + iron pointing; roll about the iron is free) ---
     task_orientation_length_m: 0.12      # weights pointing vs. position

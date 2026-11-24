@@ -28,7 +28,7 @@ serial_port: /dev/serial/by-id/usb-1a86_USB_Single_Serial_5B14028914-if00
 baud_rate: 1000000
 
 limit_margin_deg: 3.0            # driver hard range = software limits widened by this much
-max_joint_speed_deg_s: 8.5944    # per joint (0.15 rad/s); used by MoveIt Servo and the task bridge
+max_joint_speed_deg_s: 34.3776    # per joint (0.15 rad/s); used by MoveIt Servo and the task bridge
 max_joint_accel_deg_s2: 17.1887  # per joint (0.3 rad/s^2); used by MoveIt Servo
 
 joints:
